@@ -1,0 +1,10 @@
+system_management/migrations/*
+system_management/__pycache__
+!system_management/migrations/__init__.py
+
+industry/migrations/*
+industry/__pycache__
+!industry/migrations/__init__.py
+
+minicom_dashboard/__pycache__
+.env
