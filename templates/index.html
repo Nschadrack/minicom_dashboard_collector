@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+	<script src="{% static 'js/main.js' %}"></script>
+
+    <title>MINICOM</title>
+  </head>
+  <body>
+	<main class="index">
+        <div class="sections section-one">
+            <img src="{% static 'images/minicom_logo.png' %}" class="index-logo"/>
+            <p class="index-logo">Ministry of Trade and Industry (MINICOM)</p>
+            {% comment %} <h4>You're welcome to Equity Bank Rwanda Enterprise Asset Management</h4> {% endcomment %}
+        </div>
+        <div class="sctions section-two">
+            <form class="onboarding-forms login-form" method="POST" action="{% url 'system_management:login' %}" id="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-group-label">E-mail</label><br/>
+                    <input type="email" name="username" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-group-label">Password</label><br/>
+                    <input type="password" name="password" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <input type="submit" value="Login"/>
+                <hr/>
+                <button onclick="showUserRegistrationForm()" id="open-registration" type="button">Open an account</button>
+            </form>
+            <form class="onboarding-forms register-form" method="POST" action="" id="registration-form">
+                {% csrf_token %}
+                <legend>Fill out the form below to open an account</legend>
+                <hr/>
+                <div class="form-group">
+                    <label class="form-group-label">E-mail(your username)</label><br/>
+                    <input type="email" name="username" maxlength="100" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-group-label">Firstname</label><br/>
+                    <input type="text" maxlength="60" name="first_name" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-group-label">Lastname</label><br/>
+                    <input type="text"  maxlength="60" name="last_name" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-group-label">Password</label><br/>
+                    <input type="password"  minlength="8" name="password" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-group-label">Re-type password</label><br/>
+                    <input type="password"  minlength="8" name="password2" class="form-group-control-input" required autocomplete="off"/>
+                </div>
+                <input type="submit" value="Open an account"/>
+                <hr/>
+                <button onclick="showUserLoginForm()" id="login-button" type="button">Back to login</button>
+            </form>
+        </div>
+	</main>
+  </body>
+</html>

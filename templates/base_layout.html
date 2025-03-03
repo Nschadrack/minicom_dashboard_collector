@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+	<script src="{% static 'js/main.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" 
+	integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" 
+	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+	<script src="https://unpkg.com/jspdf-autotable@3.5.22/dist/jspdf.plugin.autotable.js"></script>
+    <title>Ministry of Trade and Industry</title>
+  </head>
+  <body>
+    <div id="aside_navigation">
+		<div id="sfjourney_aside_logo">
+			<img src="{% static 'images/minicom_logo.png' %}" id="aside_logo" class="aside-header-data"/>
+			<p class="aside-header-data">Ministry of Trade and Industry</p>
+		</div>
+		<div id="aside_navigations">
+			<a href="">Dashboard</a>
+			<button onclick="toggleAssetRegistrySection()">Industries management</button>
+			<section id="assets-registry-section">
+				<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
+				<a href="{% url 'industry:companies-industries-list' %}">Companies/Industries</a>
+				<a href="{% url 'industry:land-requests' %}">Land Information</a>
+			</section>
+			<button onclick="toggleUsersManagementAssetSection()">Administration</button>
+			<section id="users-management-section">
+				<a href="{% url 'system_management:users-list' %}">Users management</a>
+				<a href="{% url 'system_management:roles-list' %}">Roles management</a>
+                <a href="{% url 'system_management:zones-list' %}">Industrial zones</a>
+                <a href="">Economic sectors</a>
+                <a href="">Economic sub-sectors</a>
+				<a href="{% url 'system_management:system-settings' %}">System settings</a>
+			</section>
+			<a href="">Requests</a>
+			<a href="{% url 'system_management:logout' %}">Sign out</a>
+			{% comment %} <a href="#">Notifications <span class="aside-navigation-spans">0</span></a> {% endcomment %}
+			{% comment %} <a href="#">Settings</a> {% endcomment %}
+		</div>
+	</div>
+	<div id="main_load">
+		<div id="main_load_header">
+			<button onclick="toggleNavigations()"><img src="{% static 'images/icon.png' %}" width="20" height="20"/></button>
+			<p>Welcome, {{ request.user.first_name|capfirst }} {{ request.user.last_name|lower|capfirst }}</p>
+		</div>
+		<div id="main_load_data">
+			{% block main_data_load %}
+
+            {% endblock %}
+		</div>
+	</div>
+  </body>
+</html>

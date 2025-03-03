@@ -1,0 +1,52 @@
+<form class="car_new_form" method="post" action="">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Registering a company/industry profile in the system</legend>	
+        <div class="form-group">
+            <label>Company category</label>
+            <select required name="category" required>
+                <option selected value="INDUSTRY">INDUSTRY</option>
+                <option value="NOT INDUSTRY">NOT INDUSTRY</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>The name of company</label>
+            <input type="text" maxlength="200" name="name" required/>
+        </div>
+        <div class="form-group">
+            <label>Tax Identification Number(TIN)</label>
+            <input type="number" min="100000000" max="999999999" name="tin_number" required/>
+        </div>
+        <div class="form-group">
+            <label>Contact phone number</label>
+            <input type="text" name="phone_contact" pattern="^\+250(78|79|72|73)\d{7}$" title="Enter a valid phone number starting with +25078, +25079, +25072, or +25073 followed by 7 digits." required>
+        </div>
+        <div class="form-group">
+            <label>Contact email address</label>
+            <input type="email" name="email_contact" required/>
+        </div>
+        <div class="form-group">
+            <label>Company size</label>
+            <select name="company_size" required>
+                <option value="Large">Large</option>
+                <option value="Medium">Medium</option>
+                <option value="Small">Small</option>
+                <option value="Micro">Micro</option>
+            </select>
+        </div>
+        <div class="form-group date-picker-container">
+            <label for="date-picker">RDB registration date</label>
+            <input type="date" id="date-picker" name="registeration_date" required>
+        </div>
+        <div class="form-group">
+            <label for="investor-origin-country">Investor Origin Country</label>
+            <select id="investor-origin-country" name="investor_origin_country[]" multiple required size="10">
+                {% for country in countries %}
+                    <option value="{{ country|title }}">{{ country|title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Save profile"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

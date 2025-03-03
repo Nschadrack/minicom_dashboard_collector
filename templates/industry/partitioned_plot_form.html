@@ -1,0 +1,37 @@
+<form class="car_new_form" method="post" action="{% url 'industry:add-partitioned-plot' industrial_park.id %}">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Registering a partitioned plot in the system</legend>	
+        <div class="form-group">
+            <label>UPI Status</label>
+            <select required name="upi_status">
+                <option selected value="Not Yet Requested">Not Yet Requested</option>
+                <option value="Pending To Land Institution">Pending To Land Institution</option>
+                <option value="Issued">Issued</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Plot Number</label>
+            <input type="text" maxlength="30" name="plot_number" required/>
+        </div>
+        <div class="form-group">
+            <label>Plot UPI</label>
+            <input type="text" maxlength="50" name="plot_upi"/>
+        </div>
+        <div class="form-group">
+            <label>Plot Size(Area) in M<sup>2</sup></label>
+            <input type="number" min="0" name="plot_size" step=".00001" required/>
+        </div>
+        <div class="form-group">
+            <label>Which Zone?</label>
+            <input list="partitioned-plot-zones" id="partitioned-plot-zone" name="zone" required>
+            <datalist id="partitioned-plot-zones">
+                {% for zone in zones %}
+                    <option value="{{ zone.id }}-{{zone.name|title}}"></option>
+                {% endfor %}
+            </datalist>
+        </div>
+        <input type="submit" value="Save"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

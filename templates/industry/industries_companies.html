@@ -1,0 +1,159 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% block main_data_load %}
+    <br/>
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="companies-industries-profiles">Companies Profiles</li>
+            <li class="tab-link" data-tab="companies-industries-in-parks">Companies/Industries In Parks</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="car_body_data">
+        <!-- companies industries profiles Tab -->
+        <div id="companies-industries-profiles" class="tab-content active">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% if companies_industries_profiles|length > 0 %}	
+                        <h4>List of Companies/Industries Profiles</h4>		
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a company/industry profile</button>		
+                        <table class="table-data">
+                            <thead>
+                                <th>#</th>
+                                <th>COMPANY TIN</th>
+                                <th>COMPANY/INDUSTRY NAME</th>
+                                <th>CATEGORY</th>
+                                <th>SIZE</th>
+                                <th>EMAIL</th>
+                                <th>PHONE NUMBER</th>
+                                <th>RDB REGISTRATION</th>
+                                <th colspan="3">Action</th>
+                            </thead>
+                            <tbody>
+                                {% for company_industry_profile in companies_industries_profiles %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ company_industry_profile.tin_number }}</td>
+                                        <td>{{ company_industry_profile.name|title }}</td>
+                                        <td>{{ company_industry_profile.category|upper }}</td>
+                                        <td>{{ company_industry_profile.company_size|upper }}</td>
+                                        <td>{{ company_industry_profile.email_contact|lower }}</td>
+                                        <td>{{ company_industry_profile.phone_contact|lower }}</td>
+                                        <td>{{ company_industry_profile.registeration_date|date:'d-m-Y' }}</td>
+                                        <td><a href="" class="view_button">view details</a></td>
+                                        <td><a href="" class="update_button">update</a></td>
+                                        <td><a href="" class="delete_button">delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h4>There are no recorded companies/industries profiles</h4>	
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a company/industry profile</button>	
+                    {% endif %}						
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment car_new_form_div">
+                <!-- form for recording a company/industry-->
+                {% include 'industry/company_industry_form.html' %}
+            </div>
+        </div>
+
+        <!-- allocated plots tab -->
+        <div id="companies-industries-in-parks" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% if user_roles|length > 0 %}	
+                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} is a member of the following role(s)</h4>		
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>		
+                        <table class="table-data">
+                            <thead>
+                                <th>#</th>
+                                <th>ROLE NAME</th>
+                                <th>ASSIGNED DATE</th>
+                                <th>ASSIGNED BY</th>
+                                <th colspan="2">Action</th>
+                            </thead>
+                            <tbody>
+                                {% for user_role in user_roles %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ user_role.role.name }}</td>
+                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ user_role.assigned_by.email }}</td>
+                                        <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
+                                        <td><a href="" class="delete_button">remove</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} has no role which limits the system accessibility</h4>	
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
+                    {% endif %}						
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("none")'>cancel the action</button>
+                {% if roles|length > 0 %}
+                    <form method="POST" action="{% url 'system_management:assign-role' user.id %}">
+                        {% csrf_token %}
+                        <table class="current_price_list table-data">
+                            <thead>
+                                <th>SELECT ROLES TO ADD</th>
+                                <th>ROLE NAME</th>
+                                <th><button type="submit" class="view_button_selected">Assign selected roles</button></th>
+                            </thead>
+                            <tbody>
+                                {% for role in roles %}
+                                    <tr>
+                                        <td><input type="checkbox" id="{{role.id}}" name="{{ role.id }}" value="{{ role.id }}"></td>
+                                        <td><label for="{{role.id}}">{{role.name}}</label></td>  
+                                        <td></td>                                     
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                {% else %}
+                    <h4>There are no roles in the system or all roles are already assigned to this user!</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        const container = document.getElementById('multi-select-container');
+        const select = document.getElementById('country-select');
+
+        select.addEventListener('change', () => {
+            const value = select.value;
+            const text = select.options[select.selectedIndex].text;
+            
+            if (value && !isDuplicate(value)) {
+                addTag(value, text);
+            }
+            select.value = ''; // Reset the select
+        });
+
+        function addTag(value, text) {
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.setAttribute('data-value', value);
+            tag.innerHTML = `${text} <span onclick="removeTag(this)">×</span>`;
+            
+            container.appendChild(tag);
+        }
+
+        function removeTag(element) {
+            element.parentElement.remove();
+        }
+
+        function isDuplicate(value) {
+            return container.querySelector(`[data-value="${value}"]`) !== null;
+        }
+    </script>
+{% endblock %}

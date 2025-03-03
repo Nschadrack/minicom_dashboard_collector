@@ -1,0 +1,96 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#USER:  {{ user.email|upper}}</p>
+        <a href="{% url 'system_management:users-list' %}" id="price_back_to_car_list">Back to users list</a>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="user-detail">Details</li>
+            <li class="tab-link" data-tab="user-roles">User Roles</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="car_body_data">
+        <!-- Role users Tab -->
+        <div id="user-detail" class="tab-content active">
+            <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                <div>
+                    <p><strong>Firstname: </strong>{{ user.first_name|upper }}</p>
+                    <p><strong>Lastname: </strong>{{ user.last_name|upper }}</p>                 
+                    <p><strong>E-mail(username): </strong>{{ user.email|upper }}</p>
+                    <p><strong>Time Joined: </strong>{{ user.date_joined|date:'d-m-Y H:i:s' }}</p>
+                </div>
+                <div>
+                    <p><strong>Last Login: </strong>{{ user.last_login|date:'d-m-Y H:i:s' }}</p>
+                    <p><strong>Account Status: </strong>{% if user.is_active %}ACTIVE{% else %}INACTIVE{% endif %}</p>
+                    <p><strong>User Category: </strong>{{ user.user_category}}
+                </div>
+            </div>
+        </div>
+        <!-- permissions Tab -->
+        <div id="user-roles" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% if user_roles|length > 0 %}	
+                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} is a member of the following role(s)</h4>		
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>		
+                        <table class="table-data">
+                            <thead>
+                                <th>#</th>
+                                <th>ROLE NAME</th>
+                                <th>ASSIGNED DATE</th>
+                                <th>ASSIGNED BY</th>
+                                <th colspan="2">Action</th>
+                            </thead>
+                            <tbody>
+                                {% for user_role in user_roles %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ user_role.role.name }}</td>
+                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ user_role.assigned_by.email }}</td>
+                                        <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
+                                        <td><a href="" class="delete_button">remove</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} has no role which limits the system accessibility</h4>	
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
+                    {% endif %}						
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("none")'>cancel the action</button>
+                {% if roles|length > 0 %}
+                    <form method="POST" action="{% url 'system_management:assign-role' user.id %}">
+                        {% csrf_token %}
+                        <table class="current_price_list table-data">
+                            <thead>
+                                <th style="text-align: left; padding-left: 20px;" colspan="2">SELECT ROLES TO ADD</th>
+                                <th><button type="submit" class="view_button_selected">Assign selected roles</button></th>
+                            </thead>
+                            <tbody>
+                                {% for role in roles %}
+                                    <tr>
+                                        <td style="text-align: left; padding-left: 20px;"><input type="checkbox" id="{{role.id}}" name="{{ role.id }}" value="{{ role.id }}"></td>
+                                        <td style="text-align: left; padding-left: 0px;"><label for="{{role.id}}">{{role.name}}</label></td>  
+                                        <td></td>                                     
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                {% else %}
+                    <h4>There are no roles in the system or all roles are already assigned to this user!</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

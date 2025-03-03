@@ -1,0 +1,46 @@
+{% extends 'base_layout.html' %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">List of Role</p>
+        <button id="car_title_header_and_new_btn_button">+ new role</button>
+    </div>
+    <div id="car_body_data">
+        <div id="car_table_data" class="table-data">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>ROLE NAME</th>
+                    <th>CREATED DATE</th>
+                    <th colspan="3">ACTIONS</th>
+                </thead>
+                <tbody>
+                    {% for role in roles %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{role.name}}</td>
+                            <td>{{ role.created_date|date:"d-m-Y H:i:s"}}</td>
+                            <td><a href="{% url 'system_management:role-details' role.id %}" class="view_button">view details</a></td>
+                            <td><a href="" class="update_button">update</a></td>
+                            <td><a href="" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+        <div class="car_new_form_div">
+            <form class="car_new_form" method="post" action="">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Creating a new system role</legend>	
+                    <div class="form-group">
+                        <label>Role name</label>
+                        <input type="text" maxlength="60" name="role_name" required/>
+                    </div>
+                    <input type="submit" value="Save new role"/>
+                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}

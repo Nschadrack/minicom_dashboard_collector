@@ -1,0 +1,43 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#SYSTEM SETTINGS</p>
+    </div>
+    <div id="car_body_data">				
+        <div id="car_prices">
+            <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                <div>
+                    <p><a href="{% url 'system_management:feed-modules' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
+                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Industrial Zones</a></p><br/>
+                </div>
+                <div>
+                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
+                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sub-Sectors</a></p><br/>
+                </div>
+                <div>
+                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>
+                </div>
+            </div>
+            <div class="current_price_list table-data">     		
+                <table class="table-data">
+                    <thead>
+                        <th>MODULES</th>
+                        <th>INDUSTRIAL ZONES</th>
+                        <th>ECONOMIC SECTORS</th>
+                        <th>ECONOMIC SUB-SECTORS</th>
+                        <th>ADMINISTRATIVE DIVISIONS</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ modules }}</td>
+                            <td>{{ zones }}</td>
+                            <td>{{ economic_sectors }}</td>
+                            <td>{{ economic_sub_sectors }}</td>
+                            <td>{{ administrative_divisions }}</td>
+                        </tr>
+                    </tbody>
+                </table>					
+            </div>					
+        </div>
+    </div>
+{% endblock %}

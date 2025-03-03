@@ -1,11 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+    USER_CATEGORIES = (
+        ("MINICOM STAFF", "MINICOM STAFF"),
+        ("COMPANY", "COMPANY"),
+        ("VISITOR", "VISITOR"),
+    )
+
+    first_name = models.CharField(max_length=250, null=False, blank=False)
     username = None
-    email = models.EmailField(unique=True)
+    change_password_required = models.BooleanField(default=False)
+    user_category = models.CharField(max_length=20, choices=USER_CATEGORIES, null=False, blank=False)
+    email = models.EmailField(unique=True, max_length=250)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ["first_name", "last_name"]
@@ -15,7 +23,8 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
-        db_table = 'users'
+        db_table = 'Users'
+
 
 class Role(models.Model):
     name = models.CharField(max_length=120, null=False, blank=False, unique=True)
@@ -26,11 +35,13 @@ class Role(models.Model):
 
     def __str__(self):
         return f"Role: {self.name}"
+    
 
 class Module(models.Model):
     module_id = models.CharField(max_length=10, null=False, blank=False, unique=True, primary_key=True)
+    parent_id = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=40, null=False, blank=False, unique=True)
-    created_date = models.CharField(auto_now_add=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'Modules'
@@ -38,11 +49,11 @@ class Module(models.Model):
     def __str__(self):
         return f"Module: {self.name}"
     
+    
 class UserRole(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="all_user_roles")
     assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="all_users_assigned")
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="all_role_users")
-    assignment_reason = models.CharField(max_length=200, null=True, blank=True)
     assigned_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -50,6 +61,7 @@ class UserRole(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} has {self.role.name} role"
+    
     
 class RolePermission(models.Model):
     ACTIONS = (
@@ -82,8 +94,9 @@ class RolePermission(models.Model):
     def __str__(self):
         return f"{self.role.name} is permitted to {self.action.lower()} on {self.module.name}"
     
+    
 class EconomicSector(models.Model):
-    name = models.CharField(max_length=150, null=False, blank=False)
+    name = models.CharField(max_length=200, null=False, blank=False)
     recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -91,6 +104,7 @@ class EconomicSector(models.Model):
 
     def __str__(self):
         return f"Economic sector: {self.name}"
+      
 
 class EconomicSubSector(EconomicSector):
     economic_sector = models.ForeignKey(EconomicSector, on_delete=models.CASCADE, related_name="sub_sectors")
@@ -100,6 +114,18 @@ class EconomicSubSector(EconomicSector):
 
     def __str__(self):
         return f"Economic sub-sector: {self.name}"
+    
+
+class IndustrialZone(models.Model):
+    name = models.CharField(max_length=200, null=False, blank=False)
+    recorded_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'IndustrialZones'
+
+    def __str__(self):
+        return f"Industrial zone: {self.name}"
+    
     
 class AdministrativeUnit(models.Model):
     CATEGORIES = (

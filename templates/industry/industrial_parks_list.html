@@ -1,0 +1,111 @@
+{% extends 'base_layout.html' %}
+{% load humanize %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">List of Industrial Parks/Economic Zones</p>
+        <button id="car_title_header_and_new_btn_button">+ new industrial park/economic zone</button>
+    </div>
+    <div id="car_body_data">
+        <div id="car_table_data" class="table-data">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>NAME</th>
+                    <th>CATEGORY</th>
+                    <th>TOTAL AREA(M<sup>2</sup>)</th>
+                    <th>LEASABLE AREA(M<sup>2</sup>)</th>
+                    <th>PROVINCE</th>
+                    <th>DISTRICT</th>
+                    <th>SECTOR</th>
+                    <th colspan="3">ACTIONS</th>
+                </thead>
+                <tbody>
+                    {% for industrial_park in industrial_parks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{industrial_park.name|title}}</td>
+                            <td>{{industrial_park.category|title}}</td>
+                            <td>
+                                {% with value=industrial_park.total_land_size|floatformat:5 %}
+                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with value=industrial_park.leasable_land|floatformat:5 %}
+                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                {% endwith %}
+                            </td>
+                            <td>{{ industrial_park.province|title}}</td>
+                            <td>{{ industrial_park.district|title}}</td>
+                            <td>{{ industrial_park.sector|title}}</td>                        
+                            <td><a href="{% url 'industry:park-details' industrial_park.id %}" class="view_button">view details</a></td>
+                            <td><a href="" class="update_button">update</a></td>
+                            <td><a href="" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="car_new_form_div">
+            <form class="car_new_form" method="post" action="">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Registering a new industrial park/economic zone in the system</legend>	
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select required name="category">
+                            <option selected value="Industrial Park">Industrial Park</option>
+                            <option value="Special Economic Zone">Special Economic Zone</option>
+                            <option value="Light Industrial Zone">Light Industrial Zone</option>
+                            <option value="Industrial Zone">Industrial Zone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" maxlength="60" name="name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Area(M<sup>2</sup>)</label>
+                        <input type="number" min="0" name="total_area" step=".00001" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Leasable Area(M<sup>2</sup>)</label>
+                        <input type="number" min="0" name="leasable_area" step=".00001" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Province</label>
+                        <select name="province" required> 
+                            <option value="Kigali">Kigali</option>
+                            <option value="Western province">Western province</option>
+                            <option value="Eastern province">Eastern province</option>
+                            <option value="Northern">Northern province</option>
+                            <option value="Southern province">Southern province</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>District</label>
+                        <select name="district" required> 
+                            <option value="Gasabo">Gasabo</option>
+                            <option value="Rwamagana">Rwamagana</option>
+                            <option value="Muhanga">Muhanga</option>
+                            <option value="Rusizi">Rusizi</option>
+                            <option value="Rubavu">Rubavu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sector</label>
+                        <select name="sector" required> 
+                            <option value="Gisozi">Gisozi</option>
+                            <option value="Jabana">Jabana</option>
+                            <option value="Mururu">Mururu</option>
+                            <option value="Kimironko">Kimironko</option>
+                            <option value="Nyamabuye">Nyamabuye</option>
+                        </select>
+                    </div>
+                    <input type="submit" value="Save"/>
+                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}

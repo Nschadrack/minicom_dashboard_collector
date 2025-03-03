@@ -1,0 +1,36 @@
+[{
+    "module_id": "0001",
+    "name": "Administration",
+    "parent_id": null
+},
+{
+    "module_id": "0002",
+    "name": "User",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0003",
+    "name": "Role",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0004",
+    "name": "Industrial Zone",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0005",
+    "name": "Economic Sector",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0007",
+    "name": "System Setting",
+    "parent_id": "0001"
+}
+]

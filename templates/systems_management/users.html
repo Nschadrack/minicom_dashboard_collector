@@ -1,0 +1,79 @@
+{% extends 'base_layout.html' %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">List of Users</p>
+        <button id="car_title_header_and_new_btn_button">+ new user</button>
+    </div>
+    <div id="car_body_data">
+        <div id="car_table_data" class="table-data">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>FIRSTNAME</th>
+                    <th>LASTNAME</th>
+                    <th>E-MAIL</th>
+                    <th>USER CATEGORY</th>
+                    <th>DATE JOINED</th>
+                    <th>ACCOUNT STATUS</th>
+                    <th colspan="4">ACTIONS</th>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{user.first_name}}</td>
+                            <td>{{user.last_name}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.user_category}}</td>
+                            <td>{{ user.date_joined|date:"d-m-Y H:i:s"}}</td>
+                            {% if user.is_active %}
+                                <td>Active</td>
+                            {% else %}
+                                <td>Inactive</td>
+                            {% endif %}
+                            {% if user.is_active %}
+                                <td><a href="#" class="publish_button">Deactivate</a></td>
+                            {% else %}
+                                <td><a href="#" class="publish_button">Activate</a></td>
+                            {% endif %}                          
+                            <td><a href="{% url 'system_management:user-details' user.id %}" class="view_button">view details</a></td>
+                            <td><a href="" class="update_button">update</a></td>
+                            <td><a href="" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+        <div class="car_new_form_div">
+            <form class="car_new_form" method="post" action="">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Registering a new user in the system</legend>	
+                    <div class="form-group">
+                        <label>User category</label>
+                        <select required name="user_category">
+                            <option selected value="MINICOM STAFF">MINICOM STAFF</option>
+                            <option value="COMPANY">COMPANY</option>
+                            <option value="VISITOR">VISITOR</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Firstname</label>
+                        <input type="text" maxlength="60" name="first_name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Lastname</label>
+                        <input type="text"  maxlength="60" name="last_name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail(will be username)</label>
+                        <input type="email"  maxlength="100" name="email" required/>
+                    </div>
+                    <input type="submit" value="Save new user"/>
+                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}

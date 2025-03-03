@@ -1,0 +1,134 @@
+[{
+    "permission_id": 0,
+    "module_id": "0001",
+    "name": "Administration",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 1,
+    "module_id": "0002",
+    "name": "User",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 2,
+    "module_id": "0002",
+    "name": "User",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 3,
+    "module_id": "0002",
+    "name": "User",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 4,
+    "module_id": "0002",
+    "name": "User",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 5,
+    "module_id": "0003",
+    "name": "Role to a user or Permission to a role",
+    "action_value": 6,
+    "action": "Grant"
+},
+{
+    "permission_id": 6,
+    "module_id": "0003",
+    "name": "Role from a user or Permission from a role",
+    "action_value": 7,
+    "action": "Revoke"
+},
+{
+    "permission_id": 7,
+    "module_id": "0004",
+    "name": "Industrial Zone",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 8,
+    "module_id": "0004",
+    "name": "Industrial Zone",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 9,
+    "module_id": "0004",
+    "name": "Industrial Zone",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 10,
+    "module_id": "0004",
+    "name": "Industrial Zone",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 11,
+    "module_id": "0005",
+    "name": "Economic Sector",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 12,
+    "module_id": "0005",
+    "name": "Economic Sector",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 13,
+    "module_id": "0005",
+    "name": "Economic Sector",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 14,
+    "module_id": "0005",
+    "name": "Economic Sector",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 15,
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 16,
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 17,
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 18,
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "action_value": 4,
+    "action": "Delete"
+}
+]

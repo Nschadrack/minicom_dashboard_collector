@@ -1,0 +1,115 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#ROLE: {{ role.name }}</p>
+        <a href="{% url 'system_management:roles-list' %}" id="price_back_to_car_list">Back to roles list</a>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="role-users">Users</li>
+            <li class="tab-link" data-tab="role-permissions">Permissions</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="car_body_data">
+        <!-- Role users Tab -->
+        <div id="role-users" class="tab-content active">
+            <div class="current_price_list table-data">
+                {% if role_users|length > 0 %}
+                    <h4>List of users assigned to this role</h4>
+                    <table class="table-data">
+                        <thead>
+                            <th>#</th>
+                            <th>USER FULLNAME</th>
+                            <th>USERNAME</th>
+                            <th>ASSIGNED BY</th>
+                            <th>USER CATEGORY</th>
+                            <th colspan="2">Action</th>
+                        </thead>
+                        <tbody>
+                            {% for role_user in role_users %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ role_user.user.get_full_name }}</td>
+                                    <td>{{ role_user.assigned_date|date:"d-m-Y H:i:s" }}</td>
+                                    <td>{{ role_user.assigned_by.email }}</td>
+                                    <td>{{ role_user.user.user_category }}</td>
+                                    <td><a href="{% url 'system_management:user-details' role_user.user.id %}" class="view_button">view details</a></td>
+                                    <td><a href="" class="delete_button">remove</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h4>There are no users assigned to this role</h4>
+                {% endif %}
+            </div>
+        </div>
+        <!-- permissions Tab -->
+        <div id="role-permissions" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">
+                    {% if role_permissions|length > 0 %}
+                        <h4>List of permissions granted to this role</h4>
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new permission</button>
+                        <table class="table-data">
+                            <thead>
+                                <th>#</th>
+                                <th>ROLE NAME</th>
+                                <th>ACTION</th>
+                                <th>MODULE NAME</th>
+                                <th colspan="1">Action</th>
+                            </thead>
+                            <tbody>
+                                {% for permission in role_permissions %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ role.name }}</td>
+                                        <td>can {{ permission.action|lower }}</td>
+                                        <td>{{ permission.module.name|lower }}</td>
+                                        <td><a href="" class="delete_button">remove</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h4>This role has no permission granted yet!</h4>
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new permission</button>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("none")'>cancel this action</button>
+                {% if permissions|length > 0 %}
+                    <form method="POST" action="{% url 'system_management:assign-role-permission' role.id %}">
+                        {% csrf_token %}
+                        <table class="current_price_list table-data">
+                            <thead>
+                                <th colspan="5" style="padding-left: 10px;">SELECT PERMISSIONS TO ASSIGN TO THIS ROLE</th>
+                                <th><button type="submit" class="view_button_selected">Assign selected permissions</button></th>
+                            </thead>
+                            <tbody>
+                                {% for permission in permissions %}
+                                    <tr>
+                                        <td><input type="checkbox" id="{{permission.permission_id}}" name="{{ permission.permission_id }}" value="{{ permission.permission_id }}"></td>
+                                        <td style="text-align: left; padding-left: 20px;"><label for="{{permission.permission_id}}">{{role.name|title}}</label></td>
+                                        <td><label for="{{permission.permission_id}}">can</td>
+                                        <td style="text-align: left; padding-left: 20px;"><label for="{{permission.permission_id}}">{{permission.action|lower}}</label></td>
+                                        <td style="text-align: left; padding-left: 20px;"><label for="{{permission.permission_id}}">{{permission.name|lower}}</label></td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                {% else %}
+                    <h4>There are no permissions in the system to assign!</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
