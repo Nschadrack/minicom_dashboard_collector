@@ -29,8 +29,8 @@
                     <input type="password" name="password" class="form-group-control-input" required autocomplete="off"/>
                 </div>
                 <input type="submit" value="Login"/>
-                <hr/>
-                <button onclick="showUserRegistrationForm()" id="open-registration" type="button">Open an account</button>
+                {% comment %} <hr/>
+                <button onclick="showUserRegistrationForm()" id="open-registration" type="button">Open an account</button> {% endcomment %}
             </form>
             <form class="onboarding-forms register-form" method="POST" action="" id="registration-form">
                 {% csrf_token %}

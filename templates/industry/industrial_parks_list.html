@@ -17,6 +17,7 @@
                     <th>PROVINCE</th>
                     <th>DISTRICT</th>
                     <th>SECTOR</th>
+                    <th>CELL</th>
                     <th colspan="3">ACTIONS</th>
                 </thead>
                 <tbody>
@@ -37,7 +38,8 @@
                             </td>
                             <td>{{ industrial_park.province|title}}</td>
                             <td>{{ industrial_park.district|title}}</td>
-                            <td>{{ industrial_park.sector|title}}</td>                        
+                            <td>{{ industrial_park.sector|title}}</td>      
+                            <td>{{ industrial_park.cell|title}}</td>                      
                             <td><a href="{% url 'industry:park-details' industrial_park.id %}" class="view_button">view details</a></td>
                             <td><a href="" class="update_button">update</a></td>
                             <td><a href="" class="delete_button">delete</a></td>
@@ -73,33 +75,30 @@
                         <input type="number" min="0" name="leasable_area" step=".00001" required/>
                     </div>
                     <div class="form-group">
-                        <label>Province</label>
-                        <select name="province" required> 
-                            <option value="Kigali">Kigali</option>
-                            <option value="Western province">Western province</option>
-                            <option value="Eastern province">Eastern province</option>
-                            <option value="Northern">Northern province</option>
-                            <option value="Southern province">Southern province</option>
+                        <label for="exampleInputProvince">Province</label>
+                        <select id="exampleInputProvince" name="province" required onchange="fillInDistricts('{{ districts|escapejs }}');">
+                            <option disabled selected>choose province</option>
+                            {% for province in provinces %}
+                                <option value="{{ province.id }}">{{ province.name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>District</label>
-                        <select name="district" required> 
-                            <option value="Gasabo">Gasabo</option>
-                            <option value="Rwamagana">Rwamagana</option>
-                            <option value="Muhanga">Muhanga</option>
-                            <option value="Rusizi">Rusizi</option>
-                            <option value="Rubavu">Rubavu</option>
+                        <label for="exampleInputDistrict">District</label>
+                        <select id="exampleInputDistrict" name="district" required onchange="fillInSectors('{{ sectors|escapejs }}');">
+
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Sector</label>
-                        <select name="sector" required> 
-                            <option value="Gisozi">Gisozi</option>
-                            <option value="Jabana">Jabana</option>
-                            <option value="Mururu">Mururu</option>
-                            <option value="Kimironko">Kimironko</option>
-                            <option value="Nyamabuye">Nyamabuye</option>
+                        <label for="exampleInputSector">Sector</label>
+                        <select id="exampleInputSector" name="sector" required onchange="fillInCells('{{ cells|escapejs }}');">
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputCell">Cell</label>
+                        <select id="exampleInputCell" name="cell" required>
+
                         </select>
                     </div>
                     <input type="submit" value="Save"/>

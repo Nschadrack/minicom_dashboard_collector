@@ -7,14 +7,14 @@ from django.contrib.auth.decorators import login_required
 from .models import (User, Role, UserRole, Module, RolePermission, IndustrialZone,
                      EconomicSector, EconomicSubSector, AdministrativeUnit)
 from .utils import (generate_random_code, build_default_password_email_template,
-                    build_default_account_creation_email_template, send_mails)
+                    bulk_saving_administrative, bulk_saving_zoning, send_mails)
 
 
 def login_user(request):
     if request.method == "POST":
-        username = request.POST["username"].strip()
+        username = request.POST["username"].strip().lower()
         password = request.POST["password"].strip()
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=username, password=password)
         if user is not None:
             login(request, user)
             return redirect("dashboard:dashboard") 
@@ -36,7 +36,7 @@ def users_list(request):
         user_category = request.POST.get("user_category").strip()
         first_name = request.POST.get("first_name").strip()
         last_name = request.POST.get("last_name").strip()
-        email = request.POST.get("email").strip()
+        email = request.POST.get("email").strip().lower()
         password = generate_random_code()
 
         user = User(
@@ -178,6 +178,42 @@ def zones_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def economic_sectors_list(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        EconomicSector.objects.create(name=name)
+
+        return redirect("system_management:economic-sectors-list")
+
+    economic_sectors = EconomicSector.objects.all().order_by("name")
+    context = {
+        "economic_sectors": economic_sectors,
+    }
+
+    return render(request, "systems_management/economic_sectors.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def economic_sub_sectors_list(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        economic_sector = request.POST.get("economic_sector", "-1||").split("||")[0]
+        economic_sector = EconomicSector.objects.filter(id=economic_sector.strip()).first()
+        EconomicSubSector.objects.create(name=name, economic_sector=economic_sector)
+
+        return redirect("system_management:economic-sub-sectors-list")
+
+    economic_sub_sectors = EconomicSubSector.objects.all().order_by("economic_sector__name", "name")
+    economic_sectors = EconomicSector.objects.all().order_by("name")
+    context = {
+        "economic_sub_sectors": economic_sub_sectors,
+        "economic_sectors": economic_sectors
+    }
+
+    return render(request, "systems_management/economic_sub_sector.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def system_settings(request, flag=None):
     if flag == "modules":
         with open(os.path.join(os.getcwd(), "modules.json")) as f:
@@ -191,6 +227,13 @@ def system_settings(request, flag=None):
                         name=module["name"],
                         parent_id=parent
                     )
+    elif flag == "administrative_divisions":
+        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv")) as f:
+            result = bulk_saving_administrative(f)
+    elif flag == "zoning":
+        with open(os.path.join(os.getcwd(), "zoning.csv")) as f:
+            bulk_saving_zoning(f)
+        
     
     modules = len(Module.objects.all())
     zones = len(IndustrialZone.objects.all())

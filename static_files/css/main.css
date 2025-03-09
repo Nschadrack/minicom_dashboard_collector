@@ -23,6 +23,102 @@
 	font-family:Verdana, Geneva, Tahoma, sans-serif;
 	font-size: 12px;
 }
+html {
+    scroll-behavior: smooth;
+}
+
+/* uploading document */
+.custom-file-upload {
+    display: block;
+    cursor: pointer;
+}
+
+.upload-container {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.upload-container:hover {
+    border-color: #0066cc;
+    background: #e9f5ff;
+}
+.upload-title {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.upload-subtitle {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
+
+.file-name {
+    display: block;
+    margin-top: 1rem;
+    color: #0066cc;
+    font-weight: 500;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+.file-selected {
+    border-color: #0066cc !important;
+    background-color: #e9f5ff !important;
+}
+
+/* Existing styles remain the same, add this new rule */
+.upload-container {
+    transition: all 0.2s ease; /* Smoother transition */
+}
+
+small {
+    display: block;
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.checkbox-item {
+	list-style-type: none;
+	display: flex; /* Use flexbox */
+	align-items: center; /* Vertically center items */
+	gap: 8px; /* Space between checkbox and label */
+	margin: 8px 0;
+}
+  
+.checkbox-item input[type="checkbox"] {
+margin: 0 8px 0 0; /* Add space between checkbox and label */
+vertical-align: middle; /* Align checkbox vertically with text */
+}
+
+.checkbox-item label {
+vertical-align: middle; /* Align label text with checkbox */
+}
+
+.industry-action-btns{
+	color: var(--darkBlue);
+	background-color: white;
+	border: 1px solid var(--darkBlue);
+	padding: 10px;
+	text-decoration:none;
+	display: block;
+	margin-bottom: 5px;
+}
+.industry-action-btns:hover{
+	background-color: var(--darkBlue);
+	color: white;
+	border: 1px solid var(--darkBlue);
+	padding: 10px;
+}
 
 table tr{
 	cursor: pointer;
@@ -397,16 +493,18 @@ body{
 }
 /* styling new form car */
 .car_new_form_div{
-	height: 98%;
-	width: 70%;
+	height: 100%;
+	width: 100%;
 	margin: auto;
 	overflow: auto;
 	background-color: var(--aside_fg);
 	display: none;
+	justify-content: center; /* Center horizontally */
+	align-items: center;     /* Center vertically */
 }
 
 .car_new_form_div div{
-	width:auto;
+	width:100%;
 	height: auto;
 	overflow: auto;
 	margin-bottom: 2px;
@@ -418,7 +516,7 @@ body{
 	width: 80%;
 	height: auto;
 	overflow: auto;
-	margin: 5px auto;
+	margin: 5px 10%;
 	padding: 10px;
 	float: left;
 	border-radius: 10px;
@@ -445,10 +543,12 @@ body{
 	outline: none;
 	padding: 5px;
 }
-.car_new_form_div legend, #computer_update_form_div legend{
+.car_new_form_div legend{
 	font-weight: bold;
 	margin-bottom: 0px;
 	font-size: 14px;
+	margin-left: 5px;
+	text-align: center;
 }
 .car_new_form_div label, #computer_update_form_div label{
 	font-weight: normal;

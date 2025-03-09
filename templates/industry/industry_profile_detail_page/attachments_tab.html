@@ -1,0 +1,32 @@
+<div id="attachment-profile" class="tab-content">
+    <div class="upper-detail-div">
+        <div class="current_price_list table-data">
+            <h4>List of Attachments</h4>
+            <table class="table-data">
+                <thead>
+                    <th>#</th>
+                    <th>ATTACHMENT NAME</th>
+                    <th>ATTACHMENT CATEGORY</th>
+                    <th>UPLOADED DATE</th>
+                    <th>ATTACHED TO</th>
+                    <th>COMMENT</th>
+                    <th colspan="2">ACTION</th>
+                </thead>
+                <tbody>
+                    {% for attachment in attachments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ attachment.name }}</td>
+                            <td>{{ attachment.category|title }}</td>
+                            <td>{{ attachment.uploaded_date|date:'d-m-Y H:i:s' }}</td>
+                            <td>{{ attachment.industry.allocated_plot.park.name|title }} {{ attachment.industry.allocated_plot.park.category|title }}</th>
+                            <td>{{ attachment.comment|lower }}</td>
+                            <td><a href="{{ attachment.document_url }}" class="view_button" target="_blank">view</a></td>
+                            <td><a href="" class="delete_button">remove</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

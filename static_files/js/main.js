@@ -8,7 +8,78 @@ window.onload=function(){
     // cancelOperation.addEventListener('click', showGroupCarList);
 }
 
-/* javascript for group car page */
+
+// Tabs
+document.addEventListener("DOMContentLoaded", function() {
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and contents
+            tabLinks.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to the clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+
+    // Get the hash from the URL (e.g., #companies-industries-in-parks)
+    const hash = window.location.hash.substring(1); // Remove the '#' from the hash
+
+    if (hash) {
+        // Deactivate all tabs and content
+        document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        // Activate the matching tab and content if they exist
+        const tab = document.querySelector(`.tab-link[data-tab="${hash}"]`);
+        const content = document.getElementById(hash);
+
+        if (tab && content) {
+            tab.classList.add('active');
+            content.classList.add('active');
+            content.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    // uplaoding documents
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileNameSpan = document.querySelector('.file-name');
+    const uploadContainer = document.querySelector('.upload-container');
+
+    fileInput.addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            fileNameSpan.textContent = this.files[0].name;
+            uploadContainer.classList.add('file-selected');
+            uploadContainer.style.borderColor = '#0066cc';
+        } else {
+            fileNameSpan.textContent = '';
+            uploadContainer.classList.remove('file-selected');
+            uploadContainer.style.borderColor = '#ccc';
+        }
+    });
+
+    // Optional: Add drag and drop highlight
+    uploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadContainer.style.borderColor = '#0066cc';
+        uploadContainer.style.backgroundColor = '#e9f5ff';
+    });
+    
+    uploadContainer.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        if (!fileInput.files.length) {
+            uploadContainer.style.borderColor = '#ccc';
+            uploadContainer.style.backgroundColor = '#f8f9fa';
+        }
+    });
+});
+
 function showNewGroupCarRegiseterForm(e){
     var form_div_to_shows = document.getElementsByClassName("car_new_form_div");
     var car_list_to_hide = document.getElementById("car_table_data");
@@ -159,55 +230,123 @@ function showAssignmentTable(value){
     });
 }
 
-function generateReport() {
-//   var pdf = new jsPDF('p', 'pt', 'letter');
-var pdf = new jsPDF();
-//   var reportContent = document.getElementById("content-report")
-//   pdf.canvas.height = 72 * 11;
-//   pdf.canvas.width = 72 * 8.5;
+/* fill in data */
+function fillInZones(data){
+    let loaded_zones= JSON.parse(data);
+    let parkField = document.getElementById("parks_fill_field");
+    let targetedZoneField = document.getElementById("zones_fill_field");
+    let selectedIndex = parkField.selectedIndex;
+    let selectIndexValue = parkField.options[selectedIndex].value;
 
-//   pdf.autoTable(reportContent);
-  /*content-report */
-  pdf.autoTable({ html: '#content-report' })
-  pdf.save('table.pdf')
+    targetedZoneField.innerHTML = "<option disabled selected>choose zoning</option>"
+    for(const element of loaded_zones) {
+        if (element.park_id.toString() === selectIndexValue) {
+            targetedZoneField.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+function fillInZonesDataList(data){
+    let loaded_zones= JSON.parse(data);
+    let parkField = document.getElementById("parks_fill_field");
+    let targetedZoneField = document.getElementById("zones_fill_field");
+    let selectedIndex = parkField.selectedIndex;
+    let selectIndexValue = parkField.options[selectedIndex].value;
 
-//   pdf.save('test.pdf');
+    targetedZoneField.innerHTML = ""
+    for(const element of loaded_zones) {
+        if (element.park_id.toString() === selectIndexValue) {
+            targetedZoneField.innerHTML += `<option value="${element.id}-${element.name}"></option>`
+        }
+    }
 }
 
-// function generateReport()
-//   {
-//     var reportContent = document.getElementById("content-report");
-//     html2canvas(reportContent,{
-//     onrendered:function(canvas){
-//     var pdf = new jsPDF('p', 'pt', 'letter');
-//     pdf.canvas.height = 72 * 11;
-//     pdf.canvas.width = 72 * 8.5;
-//     pdf.fromHTML(reportContent);
+function fillInLandRequestPartitionedPlots(data){
+    let loaded_plots = JSON.parse(data);
+    let zoneField = document.getElementById("zones_fill_field");
+    let targetedPartitionedPlotTable= document.getElementById("land_request_candidate_partitioned_plots");
+    let selectedIndex = zoneField.selectedIndex;
+    let selectIndexValue = zoneField.options[selectedIndex].value;
+    let countPlots = 0;
 
-//     pdf.save('test.pdf');
-//    }
+    targetedPartitionedPlotTable.innerHTML = ""
+    for(const element of loaded_plots) {
+        if (element.zone_id.toString() === selectIndexValue) {
+            countPlots += 1;
+            targetedPartitionedPlotTable.innerHTML += `
+                <tr>
+                    <td><input type="checkbox" id="${element.id}" name="partitioned_plots[]" value="${ element.id }"></td>
+                    <td style="text-align: left; padding-left: 20px;"><label for="${element.id}">${element.plot_number}</label></td>
+                    <td><label for="${element.id}">${element.plot_upi}</td>
+                    <td style="text-align: left; padding-left: 20px;"><label for="${element.id}">${element.plot_size} m<sup>2</sup></label></td>
+                    <td style="text-align: left; padding-left: 20px;"><label for="${element.id}">${element.zone_name}</label></td>
+                </tr>
+            `
+        }
+    }
 
-//    });
+    if (countPlots == 0){
+        targetedPartitionedPlotTable.innerHTML = "<p>There are no partitioned plots in the selected zone";
+    }
+}
 
-//   }
+function AddOtherSupportingDocumentFieldName(e){
+    let attachmentCategory= document.getElementById("industry-document-attachment");
+    let targetFieldDiv = document.getElementById("other-supporting-document-name");
+    let selectedCategoryIndex = attachmentCategory.selectedIndex;
+    let selectedCategoryIndexValue = attachmentCategory.options[selectedCategoryIndex].value;
 
-// Tabs
-document.addEventListener("DOMContentLoaded", function() {
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
+    if (selectedCategoryIndexValue == "Other Supporting Document"){
+        console.log("Other documents");
+        targetFieldDiv.innerHTML = `
+        <label>Give the document a name <b>[required]</b></label>
+        <input type="text" name="name" maxlength="100" required/>
+        `;
+    }else{
+        targetFieldDiv.innerHTML = "";
+    }
+}
 
-    tabLinks.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
+function fillInDistricts(data){
+    let loaded_districts = JSON.parse(data);
+    let districtProvince = document.getElementById("exampleInputProvince");
+    let targetedDistricts = document.getElementById("exampleInputDistrict");
+    let selectedIndex = districtProvince.selectedIndex;
+    let selectIndexValue = districtProvince.options[selectedIndex].value;
 
-            // Remove active class from all tabs and contents
-            tabLinks.forEach(tab => tab.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
+     targetedDistricts.innerHTML = "<option disabled selected>choose district</option>"
+    for(const element of loaded_districts) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedDistricts.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+function fillInSectors(data){
+    let loaded_sectors = JSON.parse(data);
+    let districtSelected = document.getElementById("exampleInputDistrict");
+    let targetedSectors = document.getElementById("exampleInputSector");
+    let selectedIndex = districtSelected.selectedIndex;
+    let selectIndexValue = districtSelected.options[selectedIndex].value;
 
-            // Add active class to the clicked tab and corresponding content
-            this.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
-        });
-    });
-});
+     targetedSectors.innerHTML = "<option disabled selected>choose sector</option>"
+    for(const element of loaded_sectors) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedSectors.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+
+function fillInCells(data){
+    let loaded_cells = JSON.parse(data);
+    let sectorSelected = document.getElementById("exampleInputSector");
+    let targetedCells = document.getElementById("exampleInputCell");
+    let selectedIndex = sectorSelected.selectedIndex;
+    let selectIndexValue = sectorSelected.options[selectedIndex].value;
+
+     targetedCells.innerHTML = "<option disabled selected>choose cell</option>"
+    for(const element of loaded_cells) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedCells.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
 

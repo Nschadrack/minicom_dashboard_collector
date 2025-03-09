@@ -1,0 +1,65 @@
+<form class="car_new_form" method="post" action="{% url 'industry:land-request-allocate-plot' land_request.id 'ALLOCATE_PLOT' %}">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Assigning plot to the request in the system</legend>	
+        <div class="form-group">
+            <label>The name of land requester</label>
+            <input type="text" value="{{ land_request.land_owner.user.first_name|title }}" readonly/>
+        </div>
+        <div class="form-group">
+            <label>Allocated Plot UPI</label>
+            <input type="text" name="plot_upi" maxlength="50"/>
+        </div>
+        <div class="form-group">
+            <label>Allocated UPI status <b>[required]</b></label>
+            <select required name="upi_status" required>
+                <option selected value="Not Yet Requested">Not Yet Requested</option>
+                <option value="Pending To Land Institution">Pending To Land Institution</option>
+                <option value="Issued">Issued</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Allocated Land title status <b>[required]</b></label>
+            <select required name="land_title_status" required>
+                <option selected value="Not Yet Requested">Not Yet Requested</option>
+                <option value="Pending">Pending</option>
+                <option value="Issued">Issued</option>
+            </select>
+        </div>
+        <div class="form-group date-picker-container">
+            <label for="date-picker">Date of letter address to NLA</label>
+            <input type="date" id="date-picker" name="date_of_letter_addressed_to_nla">
+        </div>
+        <div class="form-group">
+            <label>In which park? <b>[required]</b></label>
+            <select name="park" required id="parks_fill_field" onchange="fillInZones('{{ zones|escapejs }}');">
+                <option disabled selected>choose a park</option>
+                {% for park in parks %}
+                    <option value="{{ park.id }}">{{ park.name|title }} {{ park.category|title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>In which zoning? <b>[required]</b></label>
+            <select name="zone" required id="zones_fill_field" onchange="fillInLandRequestPartitionedPlots('{{ partitioned_plots|escapejs }}');">
+                
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Which partitioned plots allocated(allocated land will be summation of selected plots sizes below) <b>[required]</b></label>
+            <table class="current_price_list table-data">
+                <thead>
+                    <th colspan="2">PLOT NUMBER</th>
+                    <th>PLOT UPI</th>
+                    <th>PLOT SIZE</th>
+                    <th>ZONING</th>
+                </thead>
+                <tbody id="land_request_candidate_partitioned_plots">
+                    
+                </tbody>
+            </table>
+        </div>
+        <input type="submit" value="Save plot"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

@@ -7,6 +7,7 @@ import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.conf import settings
+from .models import AdministrativeUnit, IndustrialZone
 
 
 def generate_random_code(length=10):
@@ -17,6 +18,70 @@ def generate_random_code(length=10):
     random_code = ''.join(random.choice(characters) for _ in range(length))
     
     return random_code
+
+def bulk_saving_zoning(filestream):
+    try:
+        lines = filestream.readlines()
+        for line in lines:
+            name = line.split(",")[0]
+            name= name.strip().title()
+            zoning = IndustrialZone.objects.filter(name=name).first()
+            if zoning is None:
+                IndustrialZone.objects.create(name=name)
+    except Exception as e:
+        zonings = IndustrialZone.objects.all()
+        zonings.delete()
+        print(f"\n[ERROR]: {str(e)}\n")
+
+def bulk_saving_administrative(filestream):
+    try:
+        lines = filestream.readlines()
+        count = 0
+        for line in lines:
+            count += 1
+            province_name, district_name, sector_name, cell_name, village_name = line.split(",")
+            province_name, district_name, sector_name, cell_name, village_name = (province_name.upper(), district_name.upper(), 
+                                                                                  sector_name.upper(), cell_name.upper(), village_name.upper())
+
+            province = AdministrativeUnit.objects.filter(name=province_name.strip(), category="PROVINCE").first()
+            if not province:
+                province = AdministrativeUnit(name=province_name.strip(), category="PROVINCE")
+                province.save()
+
+            district = AdministrativeUnit.objects.filter(name=district_name.strip(), category="DISTRICT", parent=province).first()
+            if not district:
+                district = AdministrativeUnit(name=district_name.strip(), category="DISTRICT", parent=province)
+                district.save()
+
+            sector = AdministrativeUnit.objects.filter(name=sector_name.strip(), category="SECTOR", parent=district).first()
+            if not sector:
+                sector = AdministrativeUnit(name=sector_name.strip(), category="SECTOR", parent=district)
+                sector.save()
+
+            cell = AdministrativeUnit.objects.filter(name=cell_name.strip(), category="CELL", parent=sector).first()
+            if not cell:
+                cell = AdministrativeUnit(name=cell_name.strip(), category="CELL", parent=sector)
+                cell.save()
+
+            village = AdministrativeUnit.objects.filter(name=village_name.strip(),category="VILLAGE", parent=cell).first()
+            if not village:
+                village = AdministrativeUnit(name=village_name.strip(),category="VILLAGE", parent=cell)
+                village.save()
+
+        return f"Processed {count} data instances"
+    except Exception as e:
+        print(f"\n[ERROR]: {str(e)}\n")
+        villages = AdministrativeUnit.objects.filter(category="VILLAGE")
+        villages.delete()
+        cells = AdministrativeUnit.objects.filter(category="CELL")
+        cells.delete()
+        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
+        sectors.delete()
+        districts = AdministrativeUnit.objects.filter(category="DISTRICT")
+        districts.delete()
+        provinces = AdministrativeUnit.objects.filter(category="PROVINCE")
+        provinces.delete()
+        return f"{str(e)}<br/><br/><b>Data have been rolled back</b>"
 
 def send_mails(receiver_email, subject, body):
     try:

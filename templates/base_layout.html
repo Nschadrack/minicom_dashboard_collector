@@ -22,10 +22,10 @@
 		</div>
 		<div id="aside_navigations">
 			<a href="">Dashboard</a>
-			<button onclick="toggleAssetRegistrySection()">Industries management</button>
+			<button onclick="toggleAssetRegistrySection()">Industry management</button>
 			<section id="assets-registry-section">
 				<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
-				<a href="{% url 'industry:companies-industries-list' %}">Companies/Industries</a>
+				<a href="{% url 'industry:companies-industries-list' %}">Industries List</a>
 				<a href="{% url 'industry:land-requests' %}">Land Information</a>
 			</section>
 			<button onclick="toggleUsersManagementAssetSection()">Administration</button>
@@ -33,8 +33,8 @@
 				<a href="{% url 'system_management:users-list' %}">Users management</a>
 				<a href="{% url 'system_management:roles-list' %}">Roles management</a>
                 <a href="{% url 'system_management:zones-list' %}">Industrial zones</a>
-                <a href="">Economic sectors</a>
-                <a href="">Economic sub-sectors</a>
+                <a href="{% url 'system_management:economic-sectors-list' %}">Economic sectors</a>
+                <a href="{% url 'system_management:economic-sub-sectors-list' %}">Economic sub-sectors</a>
 				<a href="{% url 'system_management:system-settings' %}">System settings</a>
 			</section>
 			<a href="">Requests</a>

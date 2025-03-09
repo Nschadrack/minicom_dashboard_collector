@@ -1,0 +1,45 @@
+<form class="car_new_form" method="post" action="{% url 'industry:upload-industry-attachment' industry.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Add New Industry Attachment</legend>	
+        <div class="form-group">
+            <label>Select the document to add <b>[required]</b></label>
+            <select name="category" id="industry-document-attachment" required onchange="AddOtherSupportingDocumentFieldName();">
+                <option value="Business Plan">Business Plan</option>
+                <option value="EIA Certificate">EIA Certificate</option>
+                <option value="Land Title">Land Title</option>
+                <option value="Construction Permit">Construction Permit</option>
+                <option value="Architectural Drawings">Architectural Drawings</option>
+                <option value="Investment Certificate">Investment Certificate</option>
+                <option value="Repossession Letter">Repossession Letter</option>
+                <option value="Contract">Contract</option>
+                <option value="Company Registration Certificate">Company Registration Certificate</option>
+                <option value="Application Letter">Application Letter</option>
+                <option value="Other Supporting Document">Other Supporting Document</option>
+            </select>
+        </div>
+        <div class="form-group" id="other-supporting-document-name">
+            {% comment %} Fill on condition {% endcomment %}
+        </div>
+        <div class="form-group">
+            <label class="custom-file-upload">
+                <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required/>
+                <div class="upload-container">
+                    <div class="upload-content">
+                        <div class="upload-content">
+                            <span class="upload-title">Click to upload document <b>[required]</b></span>
+                            <span class="file-name"></span>
+                        </div>
+                    </div>
+                </div>
+            </label>
+            <small>Supported formats: PDF, DOC/DOCX, JPG/JPEG, PNG</small>
+        </div>
+        <div class="form-group">
+            <label>Any comment?</label>
+            <input type="text" name="comment" maxlength="200"/>
+        </div>
+        <input type="submit" value="Save attachment"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

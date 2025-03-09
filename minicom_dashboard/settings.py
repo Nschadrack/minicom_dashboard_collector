@@ -92,7 +92,7 @@ WSGI_APPLICATION = "minicom_dashboard.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "database.sqlite3",
     }
 }
 
@@ -121,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = os.getenv("TIMEZONE")
 
 USE_I18N = True
 
@@ -135,6 +135,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static_files"
 ]
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "Documents", "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

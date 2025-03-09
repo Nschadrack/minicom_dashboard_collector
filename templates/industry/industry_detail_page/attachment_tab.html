@@ -1,0 +1,37 @@
+<div id="attachment-industry" class="tab-content">
+    <div class="upper-detail-div">
+        <div class="current_price_list table-data">
+            <h4>List of Attachments</h4>
+            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new attachment</button>
+            <table class="table-data">
+                <thead>
+                    <th>#</th>
+                    <th>ATTACHMENT NAME</th>
+                    <th>ATTACHMENT CATEGORY</th>
+                    <th>UPLOADED DATE</th>
+                    {% comment %} <th>COMMENT</th> {% endcomment %}
+                    <th>ATTACHMENT LINK</th>
+                    <th colspan="2">ACTION</th>
+                </thead>
+                <tbody>
+                    {% for attachment in attachments %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ attachment.name }}</td>
+                            <td>{{ attachment.category|title }}</td>
+                            <td>{{ attachment.uploaded_date|date:'d-m-Y H:i:s' }}</td>
+                            {% comment %} <td>{{ attachment.comment|lower }}</td> {% endcomment %}
+                            <td>{{ attachment.document_url }}</td>
+                            <td><a href="{{ attachment.document_url }}" class="view_button" target="_blank">view</a></td>
+                            <td><a href="" class="delete_button">remove</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- New Attachment Form -->
+    <div class="new-assignment car_new_form_div">
+        {% include 'industry/industry_detail_page/new_attachment_form.html' %}
+    </div>
+</div>

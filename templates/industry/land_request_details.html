@@ -1,0 +1,152 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#LAND INFORMATION: REQUEST BY {{ land_request.land_owner.user.first_name|upper }}</p>
+        <a href="{% url 'industry:land-requests' %}" id="price_back_to_car_list">Back to the list</a>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="land-request-detail">Land Request Information Details</li>
+            <li class="tab-link" data-tab="land-request-allocated-plot">Allocated Plot on Land Request</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="car_body_data">
+        <!-- Role users Tab -->
+        <div id="land-request-detail" class="tab-content active">
+            <div class="upper-detail-div">
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                    <div>
+                        <p><strong>Land Requester Name: </strong>{{ land_request.land_owner.user.first_name|title }}</p>   
+                        <p><strong>Land Requester E-mail: </strong>{{ land_request.land_owner.user.email|upper }}</p>   
+                        <p><strong>Land Requester phone: </strong>{{ land_request.land_owner.phone_contact }}</p>                
+                        <p><strong>Total Requested Land Area: </strong>
+                            {% with value=land_request.requested_land_size|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            <b>m<sup>2</sup></b>
+                        </p>
+                        <p><strong>Total Allocated Land Area: </strong>
+                            {% with value=allocated_plot.plot_size|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            {% if industry.occupied_space %}
+                                            <b>m<sup>2</sup></b>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <p><strong>Requested in: </strong>{{ land_request.park.name|title }} {{ land_request.park.category|title }}</p>  
+                        <p><strong>Requested Zoning: </strong>{{ land_request.zone.name|title }}</p>  
+                        <p><strong>Request Date: </strong>{{ land_request.request_date|date:'d-m-Y' }}</p>
+                        <p><strong>Request Closure Date: </strong>{{ land_request.request_closure_date|date:'d-m-Y' }}
+                        <p><strong>System Recorded Date: </strong>{{ land_request.recorded_date|date:'d-m-Y H:i:s' }}</p><br/><br/>
+                        {% if allocated_plot %}
+                            <p style="float: left;"><button id="view_price_archive_button" style="background-color: rgb(116, 24, 4);"><a href="#" style="text-decoration:none; color: white;">Deallocated Plot</a></button><p>
+                        {% else %}
+                            <p style="float: left;"><button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Allocated Partitioned Plot(s)</button><p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment car_new_form_div">
+                <!-- form for recording an allocated plot-->
+                {% include 'industry/allocate_plot_form.html' %}
+            </div>
+        </div>
+        <!-- partitioned plots Tab -->
+        <div id="land-request-allocated-plot" class="tab-content">
+            <div class="upper-detail-div">
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                    <div>
+                        <p><strong>Plot Owner Name: </strong>{{ allocated_plot.land_owner.user.first_name|title }}</p>   
+                        <p><strong>Plot Owner E-mail: </strong>{{ land_request.land_owner.user.email|upper }}</p>   
+                        <p><strong>Plot owner phone: </strong>{{ land_request.land_owner.phone_contact }}</p>                
+                        <p><strong>Total Requested Land Area: </strong>
+                            {% with value=land_request.requested_land_size|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            <b>m<sup>2</sup></b>
+                        </p>
+                        <p><strong>Total Allocated Land Area: </strong>
+                            {% with value=allocated_plot.plot_size|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            {% if allocated_plot.plot_size %}
+                                <b>m<sup>2</sup></b>
+                            {% endif %}
+                        </p>
+                        <p><strong>Allocated Plot UPI: </strong>{{ allocated_plot.plot_upi|title }}</p> 
+                        <p><strong>Allocated Plot UPI Status: </strong>{{ allocated_plot.upi_status|title }}</p> 
+                    </div>
+                    <div>
+                        <p><strong>Allocated in: </strong>{{ allocated_plot.park.name|title }} {{ allocated_plot.park.category|title }}</p>
+                        <p><strong>Allocated Zoning: </strong>{{ allocated_plot.zone.name|title }}</p>  
+                        <p><strong>Allocated Land Title Status: </strong>{{ allocated_plot.land_title_status|title }}</p> 
+                        <p><strong>Date of Letter Address to LNA: </strong>{{ allocated_plot.date_of_letter_addressed_to_nla|date:'d-m-Y' }}</p>
+                        <p><strong>System Recorded Date: </strong>{{ allocated_plot.recorded_date|date:'d-m-Y H:i:s' }}</p><br/><br/>
+                    </div>
+                </div>
+                <div  class="current_price_list table-data">
+                    <h4>List of Industries in This Plot</h4>		
+                    <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add industry</button>		
+                    <table class="table-data">
+                        <thead>
+                            <th>#</th>
+                            <th>INDUSTRY TIN</th>
+                            <th>INDUSTRY NAME</th>
+                            <th>CATEGORY</th>
+                            <th>SIZE</th>
+                            <th>OCCUPIED SPACE</th>
+                            <th>PROVINCE</th>
+                            <th>DISTRICT</th>
+                            <th>INVESTMENT AMOUNT</th>
+                            <th>CONSTRUCTION STATUS</th>
+                            <th>OPERATIONAL STATUS</th>
+                            <th>ACTION</th>
+                        </thead>
+                        <tbody>
+                            {% for industry in park_industries %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ industry.company.tin_number }}</td>
+                                    <td>{{ industry.company.name|title }}</td>
+                                    <td>{{ industry.company.category|upper }}</td>
+                                    <td>{{ industry.company.company_size|upper }}</td>
+                                    <td>
+                                        {% with value=industry.occupied_space|floatformat:5 %}
+                                            {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                        {% endwith %}
+                                        {% if industry.occupied_space %}
+                                            <b>m<sup>2</sup></b>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ industry.province|title }}</td>
+                                    <td>{{ industry.district|title }}</td>
+                                    {% if industry.investment_amount %}
+                                        <td>{{ industry.investment_amount}} {{ industry.investment_currency }}</td>
+                                    {% else %}
+                                        <td></td>
+                                    {%  endif %}
+                                    <td>{{ industry.construction_status|title }}</td>
+                                    <td>{{ industry.operational_status|title }}</td>
+                                    <td><a href="{% url 'industry:industry-info-details' industry.id %}#industry-detail" class="view_button">view details</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment car_new_form_div">
+                <!-- form for recording an allocated plot-->
+                {% include 'industry/add_industry_form.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

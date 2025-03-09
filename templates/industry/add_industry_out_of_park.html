@@ -1,0 +1,68 @@
+<form class="car_new_form" method="post" action="{% url 'industry:add-indusrty-outof-park' %}">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Add an industry which is not in any industrial park, special economic zone and light industrial zone</legend>	
+        <div class="form-group">
+            <label>Select the industry to add <b>[required]</b></label>
+            <input list="industries-list" id="industry-field" name="industry" required autocomplete="off">
+            <datalist id="industries-list">
+                {% for industry in companies_industries_profiles %}
+                    <option value="{{ industry.tin_number }} || {{industry.name|title}}"></option>
+                {% endfor %}
+            </datalist>
+        </div>
+        <div class="form-group">
+            <label>Occupied space in the plot</label>
+            <input type="number" name="occupied_space" step="0.00001" min="0"/>
+        </div>
+        <div class="form-group">
+            <label>Investment amount </label>
+            <input type="number" name="investment_amount" min="0" step="0.01"/>
+        </div>
+        <div class="form-group">
+            <label>Investment currency</label>
+            <select name="investment_currency" required>
+                <option selected disabled>Choose currency</option>
+                <option selected value="USD">USD</option>
+                <option value="RWF">RWF</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Longitude coordinate</b></label>
+            <input type="number" step="0.00000001" name="longitude"/>
+        </div>
+        <div class="form-group">
+            <label>Latitude coordinate</b></label>
+            <input type="number" step="0.00000001" name="latitude"/>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputProvince">Province <b>[required]</b></label>
+            <select id="exampleInputProvince" name="province" required onchange="fillInDistricts('{{ districts|escapejs }}');" required>
+                <option disabled selected>choose province</option>
+                {% for province in provinces %}
+                    <option value="{{ province.id }}">{{ province.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputDistrict">Distric <b>[required]</b></label>
+            <select id="exampleInputDistrict" name="district" required onchange="fillInSectors('{{ sectors|escapejs }}');" required>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputSector">Sector <b>[required]</b></label>
+            <select id="exampleInputSector" name="sector" required onchange="fillInCells('{{ cells|escapejs }}');" required>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputCell">Cell <b>[required]</b></label>
+            <select id="exampleInputCell" name="cell" required>
+
+            </select>
+        </div>
+        <input type="submit" value="Save industry"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

@@ -24,7 +24,7 @@
         </div>
         <div class="form-group">
             <label>Which Zone?</label>
-            <input list="partitioned-plot-zones" id="partitioned-plot-zone" name="zone" required>
+            <input list="partitioned-plot-zones" id="partitioned-plot-zone" name="zone" required autocomplete="off">
             <datalist id="partitioned-plot-zones">
                 {% for zone in zones %}
                     <option value="{{ zone.id }}-{{zone.name|title}}"></option>

@@ -7,4 +7,5 @@ industry/__pycache__
 !industry/migrations/__init__.py
 
 minicom_dashboard/__pycache__
+database.sqlite3
 .env

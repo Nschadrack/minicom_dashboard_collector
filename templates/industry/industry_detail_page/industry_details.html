@@ -1,0 +1,85 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#INDUSTRY DETAILS: {{ industry.company.tin_number }} - {{ industry.company.name }}</p>
+        <a href="{% url 'industry:companies-industries-list' %}#companies-industries-in-parks" id="price_back_to_car_list">Back to the list</a>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="industry-detail">Industry Information Details</li>
+            <li class="tab-link" data-tab="attachment-industry">Attachments</li>
+            <li class="tab-link" data-tab="payment-industry">Payment</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="car_body_data">
+        <!-- Role users Tab -->
+        <div id="industry-detail" class="tab-content active">
+            <div class="upper-detail-div">
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                    <div>
+                        <p><strong>Industry TIN: </strong>{{ industry.company.tin_number }}</p>   
+                        <p><strong>Industry Name: </strong>{{ industry.company.name|title }}</p>   
+                        <p><strong>Category: </strong>{{ industry.company.category|upper }}</p>    
+                        <p><strong>Industry size: </strong>{{ industry.company.company_size|upper }}</p>   
+                        <p><strong>Investment Amount: </strong>
+                            {% with value=industry.investment_amount|floatformat:3 %}
+                                {{ value|floatformat:3|intcomma|cut:".000" }}
+                            {% endwith %}
+                            {{ industry.investment_currency }}
+                        </p>
+                        <p><strong>Occupied space: </strong>
+                            {% with value=industry.occupied_space|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            <b>m<sup>2</sup></b>
+                        </p>
+                        <p><strong>Total Plot Size: </strong>
+                            {% with value=industry.allocated_plot.plot_size|floatformat:5 %}
+                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {% endwith %}
+                            <b>m<sup>2</sup></b>
+                        </p>
+                        <p><strong>Longitude: </strong>{{ industry.longitude }}</p>    
+                        <p><strong>Latitude: </strong>{{ industry.latitude }}</p> 
+                        <p><strong>Construction Status: </strong>{{ industry.construction_status|title }}</p> 
+                        <p><strong>Construction Start Date: </strong>{{ industry.construction_start_date|date:'d-m-Y'  }}</p>
+                        <p><strong>Operational Status: </strong>{{ industry.operational_status|title }}</p>  
+                        <p><strong>Operational Start Date: </strong>{{ industry.operational_start_date|date:'d-m-Y' }}</p> 
+                        <p style="float: left;"><a href="{% url 'industry:land-request-detail' industry.allocated_plot.land_request.id %}#land-request-allocated-plot" class="industry-action-btns">View The Plot</a><p>
+                    </div>
+                    <div>
+                        <p><strong>Located in: </strong>{{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}</p> 
+                        <p><strong>Province: </strong>{{ industry.province|title }}</p> 
+                        <p><strong>District: </strong>{{ industry.district|title }}</p> 
+                        <p><strong>Sector: </strong>{{ industry.sector|title }}</p> 
+                        <p><strong>Cell: </strong>{{ industry.cell|title }}</p> 
+                        <p><strong>Phone Contact: </strong>{{ industry.company.phone_contact }}</p> 
+                        <p><strong>E-mail Contact: </strong>{{ industry.company.email_contact|upper }}</p> 
+                        <p><strong>Investor(s) Origin Countries: </strong>{{ industry.company.investor_origin_country|upper }}</p> 
+                        <p><strong>Plot Zoning: </strong>{{ industry.allocated_plot.zone.name|title }}</p>  
+                        <p><strong>RDB Registration Date: </strong>{{ industry.company.registeration_date|date:'d-m-Y' }}</p>
+                        <p><strong>System Recorded Date: </strong>{{ industry.recorded_date|date:'d-m-Y H:i:s' }}</p><br/><br/>
+                        <button class="industry-action-btns" id="change_construction_status_button">Change Construction Status</button>
+                        <button class="industry-action-btns" id="change_operational_status_button">Change Operational Status</button>
+                    </div>
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment car_new_form_div">
+                <!-- form for recording an allocated plot-->
+                {% comment %} {% include 'industry/allocate_plot_form.html' %} {% endcomment %}
+            </div>
+        </div>
+        <!-- Attachments Tab -->
+        {% include 'industry/industry_detail_page/attachment_tab.html' %}
+
+        <!-- Payment Tab -->
+        {% comment %} {% include 'industry/allocate_plot_form.html' %} {% endcomment %}
+        
+    </div>
+{% endblock %}

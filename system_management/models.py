@@ -1,7 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
+class CustomUserManager(BaseUserManager):
+    def create_superuser(self, email, first_name, last_name, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        user = self.model(email=email, first_name=first_name, last_name=last_name)
+        user.set_password(password)
+        user.save()
+        return user
+    
 class User(AbstractUser):
     USER_CATEGORIES = (
         ("MINICOM STAFF", "MINICOM STAFF"),
@@ -17,6 +26,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ["first_name", "last_name"]
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
@@ -137,7 +147,7 @@ class AdministrativeUnit(models.Model):
     )
     name = models.CharField(max_length=50, null=False, blank=False)
     category = models.CharField(max_length=30, null=False, blank=False)
-    parent = models.ForeignKey("self", on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         db_table = 'AdministrativeUnits'

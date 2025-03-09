@@ -7,15 +7,15 @@
         <div id="car_prices">
             <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
                 <div>
-                    <p><a href="{% url 'system_management:feed-modules' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Industrial Zones</a></p><br/>
+                    <p><a href="{% url 'system_management:feed-data' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
+                    <p><a href="{% url 'system_management:feed-data' 'zoning' %}" class="system_settings_button_feed">Feed Industrial Zonings</a></p><br/>
                 </div>
                 <div>
                     <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
                     <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sub-Sectors</a></p><br/>
                 </div>
                 <div>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>
+                    <p><a href="{% url 'system_management:feed-data' 'administrative_divisions' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>
                 </div>
             </div>
             <div class="current_price_list table-data">     		

@@ -9,10 +9,10 @@
     <!-- Tabs Navigation -->
     <div id="tabs-container">
         <ul class="tabs">
-            <li class="tab-link active" data-tab="park-detail">Details</li>
+            <li class="tab-link active" data-tab="park-detail">Information Details</li>
             <li class="tab-link" data-tab="partitioned-plots">Partitioned Plots</li>
             <li class="tab-link" data-tab="allocated-plots">Allocated Plots</li>
-            <li class="tab-link" data-tab="company-industries">Companies/Industries</li>
+            <li class="tab-link" data-tab="company-industries">Industries In Parks</li>
         </ul>
     </div>
 
@@ -34,10 +34,11 @@
                     <p><strong>Province: </strong>{{ industrial_park.province|title }}</p>
                     <p><strong>District: </strong>{{ industrial_park.district|title}}
                     <p><strong>Sector: </strong>{{ industrial_park.sector|title}}
+                    <p><strong>Cell: </strong>{{ industrial_park.cell|title}}
                 </div>
                 <div>
                     <p><strong>System Recorded Date: </strong>{{ industrial_park.recorded_date|date:'d-m-Y H:i:s' }}</p>
-                    <p><strong>Total Leasable Land Areas: </strong>
+                    <p><strong>Total Leasable Land Area: </strong>
                         {% with value=industrial_park.leasable_land|floatformat:5 %}
                             {{ value|floatformat:5|intcomma|cut:".00000" }}
                         {% endwith %}
@@ -57,10 +58,11 @@
                             <thead>
                                 <th>#</th>
                                 <th>PLOT NUMBER</th>
-                                <th>PLOT UPI</th>
-                                <th>UPI STATUS</th>
                                 <th>PLOT SIZE</th>
                                 <th>ZONING</th>
+                                <th>AVAILABILITY STATUS</th>
+                                <th>UPI STATUS</th>
+                                <th>PARTITIONED PLOT UPI</th>
                                 <th>RECORDED DATE</th>
                                 <th colspan="2">Action</th>
                             </thead>
@@ -69,16 +71,23 @@
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ park_partitioned_plot.plot_number|upper }}</td>
-                                        <td>{{ park_partitioned_plot.plot_upi }}</td>
-                                        <td>{{ park_partitioned_plot.upi_status|title }}</td>
                                         <td>
                                             {% with value=park_partitioned_plot.plot_size|floatformat:5 %}
                                                 {{ value|floatformat:5|intcomma|cut:".00000" }}
                                             {% endwith %}
-                                            <b>m<sup>2</sup></b>
+                                            m<sup>2</sup>
                                         </td>
                                         <td>{{ park_partitioned_plot.zone.name|title }}</td>
-                                        <td>{{ park_partitioned_plot.recorded_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>
+                                            {% if park_partitioned_plot.is_allocated %}
+                                                <a class="delete_button" style="background-color: #090030;color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">Allocated</a>
+                                            {% else %}
+                                                <a href="" class="delete_button" style="background-color: green; color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">available</a>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ park_partitioned_plot.upi_status|title }}</td>                               
+                                        <td>{{ park_partitioned_plot.partitioned_plot_upi }}</td>
+                                        <td>{{ park_partitioned_plot.recorded_date|date:"d-m-Y H:i:s" }}</td>                                     
                                         <td><a href="" class="delete_button">remove</a></td>
                                     </tr>
                                 {% endfor %}
@@ -96,130 +105,104 @@
                 {% include 'industry/partitioned_plot_form.html' %}
             </div>
         </div>
-
         <!-- allocated plots tab -->
         <div id="allocated-plots" class="tab-content">
             <div class="upper-detail-div">
                 <div class="current_price_list table-data">     
-                    {% if user_roles|length > 0 %}	
-                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} is a member of the following role(s)</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>		
+                    {% if allocated_plots|length > 0 %}	
+                        <h4>List of Allocated Plots In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		
                         <table class="table-data">
                             <thead>
                                 <th>#</th>
-                                <th>ROLE NAME</th>
-                                <th>ASSIGNED DATE</th>
-                                <th>ASSIGNED BY</th>
-                                <th colspan="2">Action</th>
+                                <th>PLOT OWNER</th>
+                                <th>ALLOCATED PLOT UPI</th>
+                                <th>UPI STATUS</th>
+                                <th>PLOT SIZE</th>
+                                <th>LAND TITLE STATUS</th>
+                                <th>ZONING</th>
+                                <th>RECORDED DATE</th>
+                                <th colspan="1">Action</th>
                             </thead>
                             <tbody>
-                                {% for user_role in user_roles %}
+                                {% for allocated_plot in allocated_plots %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ user_role.role.name }}</td>
-                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s" }}</td>
-                                        <td>{{ user_role.assigned_by.email }}</td>
-                                        <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
-                                        <td><a href="" class="delete_button">remove</a></td>
+                                        <td>{{ allocated_plot.land_owner.user.first_name|title }}</td>
+                                        <td>{{ allocated_plot.allocated_plot_upi }}</td>
+                                        <td>{{ allocated_plot.upi_status|title }}</td>
+                                        <td>
+                                            {% with value=allocated_plot.plot_size|floatformat:5 %}
+                                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                            {% endwith %}
+                                            <b>m<sup>2</sup></b>
+                                        </td>
+                                        <td>{{ allocated_plot.zone.name|title }}</td>
+                                        <td>{{ allocated_plot.land_title_status|title }}</td>
+                                        <td>{{ allocated_plot.recorded_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td><a href="{% url 'industry:land-request-detail' allocated_plot.land_request.id %}#land-request-allocated-plot" class="view_button">view</a></td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     {% else %}
-                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} has no role which limits the system accessibility</h4>	
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
+                        <h4>There are no recorded allocated plots in {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>	
                     {% endif %}						
                 </div>
-            </div>
-            <!-- New Assignment Form -->
-            <div class="new-assignment">
-                <button id="view_price_archive_button" onclick='showAssignmentTable("none")'>cancel the action</button>
-                {% if roles|length > 0 %}
-                    <form method="POST" action="{% url 'system_management:assign-role' user.id %}">
-                        {% csrf_token %}
-                        <table class="current_price_list table-data">
-                            <thead>
-                                <th>SELECT ROLES TO ADD</th>
-                                <th>ROLE NAME</th>
-                                <th><button type="submit" class="view_button_selected">Assign selected roles</button></th>
-                            </thead>
-                            <tbody>
-                                {% for role in roles %}
-                                    <tr>
-                                        <td><input type="checkbox" id="{{role.id}}" name="{{ role.id }}" value="{{ role.id }}"></td>
-                                        <td><label for="{{role.id}}">{{role.name}}</label></td>  
-                                        <td></td>                                     
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </form>
-                {% else %}
-                    <h4>There are no roles in the system or all roles are already assigned to this user!</h4>
-                {% endif %}
             </div>
         </div>
-
-        <!-- company/industries ta -->
-        <div id="allocated-plots" class="tab-content">
+        <!-- industries tab -->
+        <div id="company-industries" class="tab-content">
             <div class="upper-detail-div">
-                <div class="current_price_list table-data">     
-                    {% if user_roles|length > 0 %}	
-                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} is a member of the following role(s)</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>		
-                        <table class="table-data">
-                            <thead>
-                                <th>#</th>
-                                <th>ROLE NAME</th>
-                                <th>ASSIGNED DATE</th>
-                                <th>ASSIGNED BY</th>
-                                <th colspan="2">Action</th>
-                            </thead>
-                            <tbody>
-                                {% for user_role in user_roles %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ user_role.role.name }}</td>
-                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s" }}</td>
-                                        <td>{{ user_role.assigned_by.email }}</td>
-                                        <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
-                                        <td><a href="" class="delete_button">remove</a></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} has no role which limits the system accessibility</h4>	
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
-                    {% endif %}						
+                <div  class="current_price_list table-data">
+                    <h4>List of Industries In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</h4>		
+                    <table class="table-data">
+                        <thead>
+                            <th>#</th>
+                            <th>INDUSTRY TIN</th>
+                            <th>INDUSTRY NAME</th>
+                            <th>CATEGORY</th>
+                            <th>SIZE</th>
+                            <th>PARK/ECONOMIC ZONE</th>
+                            <th>OCCUPIED SPACE</th>
+                            <th>PROVINCE</th>
+                            <th>DISTRICT</th>
+                            <th>INVESTMENT AMOUNT</th>
+                            <th>CONSTRUCTION STATUS</th>
+                            <th>OPERATIONAL STATUS</th>
+                            <th colspan="1">ACTION</th>
+                        </thead>
+                        <tbody>
+                            {% for industry in park_industries %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ industry.company.tin_number }}</td>
+                                    <td>{{ industry.company.name|title }}</td>
+                                    <td>{{ industry.company.category|upper }}</td>
+                                    <td>{{ industry.company.company_size|upper }}</td>
+                                    <td>{{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}</td>
+                                    <td>
+                                        {% with value=industry.occupied_space|floatformat:5 %}
+                                            {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                        {% endwith %}
+                                        {% if industry.occupied_space %}
+                                            <b>m<sup>2</sup></b>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ industry.province|title }}</td>
+                                    <td>{{ industry.district|title }}</td>
+                                    {% if industry.investment_amount %}
+                                    <td>{{ industry.investment_amount }} {{ industry.investment_currency }}</td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                    <td>{{ industry.construction_status|title }}</td>
+                                    <td>{{ industry.operational_status|title }}</td>
+                                    <td><a href="{% url 'industry:industry-info-details' industry.id %}" class="view_button">view details</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <!-- New Assignment Form -->
-            <div class="new-assignment">
-                <button id="view_price_archive_button" onclick='showAssignmentTable("none")'>cancel the action</button>
-                {% if roles|length > 0 %}
-                    <form method="POST" action="{% url 'system_management:assign-role' user.id %}">
-                        {% csrf_token %}
-                        <table class="current_price_list table-data">
-                            <thead>
-                                <th>SELECT ROLES TO ADD</th>
-                                <th>ROLE NAME</th>
-                                <th><button type="submit" class="view_button_selected">Assign selected roles</button></th>
-                            </thead>
-                            <tbody>
-                                {% for role in roles %}
-                                    <tr>
-                                        <td><input type="checkbox" id="{{role.id}}" name="{{ role.id }}" value="{{ role.id }}"></td>
-                                        <td><label for="{{role.id}}">{{role.name}}</label></td>  
-                                        <td></td>                                     
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </form>
-                {% else %}
-                    <h4>There are no roles in the system or all roles are already assigned to this user!</h4>
-                {% endif %}
             </div>
         </div>
     </div>

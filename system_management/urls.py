@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (users_list, user_detail, login_user, 
                     logout_user, roles_list, role_details,
-                    zones_list,
+                    zones_list, economic_sub_sectors_list, economic_sectors_list,
                     assign_roles, system_settings, assign_role_permissions)
 
 app_name = "systems_management"
@@ -24,8 +24,12 @@ urlpatterns = [
     # Zones routers
     path("industrial-zoning/", zones_list, name="zones-list"),
 
+    # economic sector routers
+    path("economic-sector/", economic_sectors_list, name="economic-sectors-list"),
+    path("economic/sub-sector/", economic_sub_sectors_list, name="economic-sub-sectors-list"),
+
     # System settings routers
     path("system-settings/", system_settings, name="system-settings"),
-    path("system-settings/feed-<str:flag>/", system_settings, name="feed-modules"),
+    path("system-settings/feed-<str:flag>/", system_settings, name="feed-data"),
 
 ]
