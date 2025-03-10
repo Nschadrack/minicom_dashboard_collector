@@ -38,13 +38,9 @@
             <label for="date-picker">RDB registration date</label>
             <input type="date" id="date-picker" name="registeration_date">
         </div>
-        <div class="form-group">
-            <label for="investor-origin-country">Investor Origin Country</label>
-            <select id="investor-origin-country" name="investor_origin_country[]" multiple required size="10">
-                {% for country in countries %}
-                    <option value="{{ country|title }}">{{ country|title }}</option>
-                {% endfor %}
-            </select>
+        <div class="form-section">
+            <label for="itemSearch">Investor Origin Country</label>
+            {% include 'helpers/multipledropdown.html' %}
         </div>
         <input type="submit" value="Save profile"/>
         <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>

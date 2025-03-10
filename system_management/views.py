@@ -8,6 +8,7 @@ from .models import (User, Role, UserRole, Module, RolePermission, IndustrialZon
                      EconomicSector, EconomicSubSector, AdministrativeUnit)
 from .utils import (generate_random_code, build_default_password_email_template,
                     bulk_saving_administrative, bulk_saving_zoning, send_mails)
+from industry.utils import load_countries
 
 
 def login_user(request):

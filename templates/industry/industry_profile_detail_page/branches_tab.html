@@ -3,21 +3,20 @@
     <div class="upper-detail-div">
         <div  class="current_price_list table-data">
             <h4>List of Parks/Economic Zones Where {{ industry.name|title }} Operates</h4>		
-            {% comment %} <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add industry</button>		 {% endcomment %}
             <table class="table-data">
                 <thead>
                     <th>#</th>
                     <th>INDUSTRY TIN</th>
                     <th>INDUSTRY NAME</th>
-                    <th>CATEGORY</th>
-                    <th>SIZE</th>
-                    <th>PARK/ECONOMIC ZONE</th>
-                    <th>OCCUPIED SPACE</th>
-                    <th>PROVINCE</th>
-                    <th>DISTRICT</th>
-                    <th>INVESTMENT AMOUNT</th>
                     <th>CONSTRUCTION STATUS</th>
                     <th>OPERATIONAL STATUS</th>
+                    <th>PARK/ECONOMIC ZONE</th>
+                    <th>LOCATION</th>
+                    <th>PROVINCE</th>
+                    <th>DISTRICT</th>
+                    <th>CATEGORY</th>
+                    <th>SIZE</th>
+                    <th>INVESTMENT AMOUNT</th>
                     <th colspan="5">ACTION</th>
                 </thead>
                 <tbody>
@@ -26,20 +25,25 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ industry.company.tin_number }}</td>
                             <td>{{ industry.company.name|title }}</td>
-                            <td>{{ industry.company.category|upper }}</td>
-                            <td>{{ industry.company.company_size|upper }}</td>
+                            <td>{{ industry.construction_status|title }}</td>
+                            <td>{{ industry.operational_status|title }}</td>
                             <td>{{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}</td>
                             <td>
-                                {% with value=industry.occupied_space|floatformat:5 %}
-                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
-                                {% endwith %}
-                                <b>m<sup>2</sup></b>
+                                {% if not industry.is_in_park %}
+                                        <a class="delete_button" style="background-color: #090030;color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">Out of industrial zones</a>
+                                    {% else %}
+                                        <a href="" class="delete_button" style="background-color: green; color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">In {{ industry.allocated_plot.park.category|lower }}</a>
+                                    {% endif %}
                             </td>
                             <td>{{ industry.province|title }}</td>
                             <td>{{ industry.district|title }}</td>
-                            <td>{{ industry.investment_amount}} {{ industry.investment_currency }}</td>
-                            <td>{{ industry.construction_status|title }}</td>
-                            <td>{{ industry.operational_status|title }}</td>
+                            <td>{{ industry.company.category|upper }}</td>
+                            <td>{{ industry.company.company_size|upper }}</td>
+                            {%  if industry.investment_amount %}
+                                <td>{{ industry.investment_amount}} {{ industry.investment_currency }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                             <td><a href="{% url 'industry:industry-info-details' industry.id %}" class="view_button">view details</a></td>
                             <td><a href="" class="update_button">update</a></td>
                             <td><a href="" class="delete_button">delete</a></td>

@@ -350,3 +350,92 @@ function fillInCells(data){
     }
 }
 
+// multi selection
+function handleSelection(selectedValue, hiddenFieldId, tagsContainerId) {
+    const hiddenInput = document.getElementById(hiddenFieldId);
+    const selectedItems = hiddenInput.value ? hiddenInput.value.split(',') : [];
+    
+    if (!selectedItems.includes(selectedValue)) {
+        selectedItems.push(selectedValue);
+        hiddenInput.value = selectedItems.join(',');
+        
+        const tag = document.createElement('div');
+        tag.className = 'item-tag';
+        tag.innerHTML = `
+            ${selectedValue}
+            <span class="remove-btn" 
+                  onclick="removeItem('${selectedValue}', '${hiddenFieldId}', '${tagsContainerId}')">
+                ×
+            </span>
+        `;
+        document.getElementById(tagsContainerId).appendChild(tag);
+    }
+}
+
+function showDropdown(dropdownId, passedItems, hiddenFieldId, tagsContainerId, parentId) {
+    const searchInput = document.getElementById(dropdownId.replace('Dropdown', 'Search'));
+    filterDropdown(dropdownId, passedItems, hiddenFieldId, tagsContainerId, searchInput.value, parentId);
+}
+
+function filterDropdown(dropdownId, passedItems, hiddenFieldId, tagsContainerId, searchTerm, parentId) {
+    let items = JSON.parse(passedItems);
+
+    if (parentId !== "none") {
+        let parentSelection = document.getElementById(parentId);
+        let selectedIndex = parentSelection.selectedIndex;
+        let selectedIndexValue = parentSelection.options[selectedIndex].value;
+
+        items = items.filter((item) => {
+            const [id, itemName, parent] = item.split("|"); // Corrected destructuring
+            return parent.toString() === selectedIndexValue;
+        });
+    }
+
+    
+    const hiddenInput = document.getElementById(hiddenFieldId);
+    const selectedItems = hiddenInput.value ? hiddenInput.value.split(',') : [];
+    
+    const filteredItems = items.filter(item => 
+        !selectedItems.includes(item) &&
+        item.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = '';
+    
+    filteredItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.textContent = item;
+        div.onclick = () => {
+            handleSelection(item, hiddenFieldId, tagsContainerId);
+            dropdown.style.display = 'none';
+        };
+        dropdown.appendChild(div);
+    });
+    
+    dropdown.style.display = filteredItems.length > 0 ? 'block' : 'none';
+}
+
+function removeItem(item, hiddenFieldId, tagsContainerId) {
+    const hiddenInput = document.getElementById(hiddenFieldId);
+    const selectedItems = hiddenInput.value.split(',')
+        .filter(i => i !== item);
+    
+    hiddenInput.value = selectedItems.join(',');
+    
+    const tagsContainer = document.getElementById(tagsContainerId);
+    Array.from(tagsContainer.children).forEach(tag => {
+        if (tag.textContent.includes(item)) {
+            tag.remove();
+        }
+    });
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.select-container')) {
+        document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+    }
+});
+

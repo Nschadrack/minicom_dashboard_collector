@@ -3,11 +3,11 @@ from pytz import all_timezones
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from system_management.models import User, AdministrativeUnit
+from system_management.models import User, AdministrativeUnit, EconomicSector, EconomicSubSector
 from system_management.utils import generate_random_code
 from .models import (IndustryEconomicZone, PartitionedPlot, CompanyProfile, 
                      CompanySite, LandRequestInformation,
-                     AllocatedPlot, IndustryAttachment)
+                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector)
 from system_management.models import IndustrialZone
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
@@ -115,7 +115,7 @@ def companies_industries_list(request):
             phone_contact = request.POST.get("phone_contact", "").strip()
             email_contact = request.POST.get("email_contact", "").strip().lower()
             registeration_date = request.POST.get("registeration_date", None).strip()
-            investor_origin_country = request.POST.getlist("investor_origin_country[]", [])
+            investor_origin_country = request.POST.get("selected_items")
             company_size = request.POST.get("company_size", "").strip()
 
             if len(registeration_date.strip()) < 6:
@@ -157,7 +157,8 @@ def companies_industries_list(request):
     context = {
         "companies_industries_profiles": companies_industries_profiles,
         "park_industries": park_industries,
-        "countries": load_countries(),
+        "search_items": json.dumps(load_countries()),
+        "parent": "none",
         "provinces": provinces,
         "districts": json.dumps(list(districts.values())),
         "sectors": json.dumps(list(sectors.values())),
@@ -233,11 +234,43 @@ def add_industry_not_in_park(request):
 def industry_details(request, industry_id):
     industry = CompanySite.objects.filter(id=industry_id).first()
     attachments = IndustryAttachment.objects.filter(industry=industry).order_by("category","-uploaded_date", "name")
+    industry_economic_sub_sectors = IndustryEconomicSector.objects.filter(industry=industry).order_by("sector__economic_sector__name", "sector__name")
+    economic_sectors = EconomicSector.objects.all()
+    sub_sectors = EconomicSubSector.objects.exclude(id__in=[sector.id for sector in industry_economic_sub_sectors])
+    search_items = []
+    for sector in sub_sectors:
+        search_items.append(f"{sector.id}|{sector.name.strip().replace(',', "-")}|{sector.economic_sector.id}")
+
     context = {
         "industry": industry,
+        "parent": "economic-sector",
+        "industry_economic_sub_sectors": industry_economic_sub_sectors,
+        "search_items": json.dumps(search_items),
+        "economic_sectors": economic_sectors,
         "attachments": attachments,
     }
     return render(request, "industry/industry_detail_page/industry_details.html", context)
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def add_industry_economic_sectors(request, industry_id):
+    try:
+        industry = CompanySite.objects.get(id=industry_id)
+        if request.method == "POST":
+            selected_sectors = request.POST.get("selected_items")
+            sectors_splits = selected_sectors.split(",")
+            for split in sectors_splits:
+                sector_id = split.split("|")[0]
+                sector = EconomicSubSector.objects.filter(id=sector_id).first()
+                if sector is not None:
+                    IndustryEconomicSector.objects.create(industry=industry, sector=sector)
+                else:
+                    print("Sector with id {sector_id} not found\n")
+
+            redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
+            return redirect(f"{redirect_url}#industry-detail")
+    except:
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")

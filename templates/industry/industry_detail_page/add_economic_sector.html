@@ -1,0 +1,21 @@
+<form class="car_new_form" method="post" action="{% url 'industry:add-industry-economic-sector' industry.id %}">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Add Economic Sectors and Sub-sectors for This Industry</legend>	
+        <div class="form-group">
+            <label>Select the economic sector to add <b>[required]</b></label>
+            <select name="economic_sector" id="economic-sector" required>
+                <option selected disabled>Choose the economic sector</option>
+                {% for economic_sector in economic_sectors %}
+                    <option value="{{ economic_sector.id }}">{{ economic_sector.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-section">
+            <label for="itemSearch">Choose economic sub-sectors <b>[required]</b></label>
+            {% include 'helpers/multipledropdown.html' %}
+        </div>
+        <input type="submit" value="Save"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

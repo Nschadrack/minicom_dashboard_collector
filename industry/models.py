@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from system_management.models import IndustrialZone, User
+from system_management.models import IndustrialZone, User, EconomicSubSector
 
 
 class IndustryEconomicZone(models.Model):
@@ -164,5 +164,12 @@ class IndustryAttachment(models.Model):
 
     class Meta:
         db_table = "IndustryAttachments"
+
+class IndustryEconomicSector(models.Model):
+    industry = models.ForeignKey(CompanySite, on_delete=models.CASCADE)
+    sector = models.ForeignKey(EconomicSubSector, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "IndustryEconomicSectors"
 
 

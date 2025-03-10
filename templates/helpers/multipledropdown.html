@@ -1,0 +1,13 @@
+<div class="select-container">
+    <input type="text" 
+           class="search-input" 
+           id="itemSearch" 
+           placeholder="Search..."
+           onfocus="showDropdown('itemDropdown', '{{ search_items|escapejs }}', 'selectedItems', 'itemTags', '{{parent}}')"
+           oninput="filterDropdown('itemDropdown', '{{ search_items|escapejs }}', 'selectedItems', 'itemTags', this.value, '{{parent}}')"
+           autocomplete="off">
+    
+    <div class="selected-items" id="itemTags"></div>
+    <div class="dropdown" id="itemDropdown"></div>
+    <input type="hidden" name="selected_items" id="selectedItems">
+</div>
