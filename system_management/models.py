@@ -116,8 +116,11 @@ class EconomicSector(models.Model):
         return f"Economic sector: {self.name}"
       
 
-class EconomicSubSector(EconomicSector):
+class EconomicSubSector(models.Model):
+    isic_code = models.CharField(max_length=10, null=False, blank=False)
     economic_sector = models.ForeignKey(EconomicSector, on_delete=models.CASCADE, related_name="sub_sectors")
+    name = models.CharField(max_length=200, null=False, blank=False)
+    recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'EconomicSubSectors'

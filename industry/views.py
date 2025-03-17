@@ -141,7 +141,7 @@ def companies_industries_list(request):
                 phone_contact=phone_contact,
                 email_contact=email_contact,
                 registeration_date=registeration_date,
-                investor_origin_country=",".join(investor_origin_country),
+                investor_origin_country=investor_origin_country,
                 company_size=company_size
             )
             profile.save()

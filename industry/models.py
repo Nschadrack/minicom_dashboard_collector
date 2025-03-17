@@ -59,6 +59,7 @@ class LandRequestInformation(models.Model):
     park = models.ForeignKey(IndustryEconomicZone, on_delete=models.CASCADE, related_name="park_land_requests", blank=False, null=False)
     zone = models.ForeignKey(IndustrialZone, on_delete=models.CASCADE, related_name="zone_land_requets")
     recorded_date = models.DateTimeField(auto_now_add=True)
+    irembo_application_number = models.CharField(max_length=40, null=True, blank=True)
 
     class Meta:
         db_table = "LandRequestInformations"
@@ -171,5 +172,90 @@ class IndustryEconomicSector(models.Model):
 
     class Meta:
         db_table = "IndustryEconomicSectors"
+
+class IndustryContract(models.Model):
+    CONTRACT_TYPES = (
+        ("INITIAL", "INITIAL"),
+        ("AMENDMENT", "AMENDMENT"),
+    )
+    industry = models.ForeignKey(CompanySite, related_name="industry_contracts", 
+                                 on_delete=models.SET_NULL, null=True, blank=True)
+    parent_contract = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
+    signing_date = models.DateField(blank=True, null=True)
+    contract_type = models.CharField(choices=CONTRACT_TYPES, blank=False, null=False, max_length=35)
+    contract_amount = models.DecimalField(decimal_places=2, max_digits=13, null=True, blank=True)
+    operational_years = models.PositiveIntegerField(blank=True, null=True)
+    contract_document = models.FileField(null=True, blank=True, upload_to="Contract_documents/contracts/")
+    recorded_date = models.DateTimeField(auto_now_add=True)
+    closure_comment = models.TextField(blank=True, null=True)
+    is_contract_closed = models.BooleanField(default=False)
+    irembo_application_number = models.CharField(max_length=40, null=True, blank=True)
+
+    class Meta:
+        db_table = "IndustryContracts"
+
+class IndustryContractPayment(models.Model):
+    PAYMENT_MODALITIES = (
+        ("SINGLE FULL PAYMENT", "SINGLE FULL PAYMENT"),
+        ("INSTALLMENTS", "INSTALLMENTS"),
+    )
+    PAYMENT_STATUSES = (
+        ("FULLY PAID", "FULLY PAID"),
+        ("IN PROGRESS", "IN PROGRESS"),
+        ("NO PAYMENT MADE", "NO PAYMENT MADE"),
+    )
+    CURRENCIES = (
+        ("USD", "USD"),
+        ("RWF", "RWF"),
+    )
+    contract = models.ForeignKey(IndustryContract, on_delete=models.SET_NULL, null=True, blank=True)
+    total_amount_to_pay = models.DecimalField(decimal_places=2, max_digits=13, null=False, blank=False)
+    payment_currency = models.CharField(max_length=6, null=False, blank=False, choices=CURRENCIES)
+    payment_modality = models.CharField(max_length=30, choices=PAYMENT_MODALITIES, null=False, blank=False)
+    payment_status = models.CharField(max_length=40, null=False, blank=False, editable=False, default="NO PAYMENT MADE")
+    number_of_installments = models.PositiveBigIntegerField(null=False, blank=False)
+    total_amount_paid = models.DecimalField(max_digits=13, decimal_places=2, editable=False, null=True, blank=True)
+    total_amount_unpaid = models.DecimalField(max_digits=13, decimal_places=2, editable=False, null=True, blank=True)
+    accrued_penalties = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, default=0)
+    paid_penalties = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, editable=False, default=0)
+    amount_overdued = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, editable=False, default=0)
+    days_in_arrears = models.PositiveBigIntegerField(default=0, blank=True, null=True, editable=False)
+    next_payment_date = models.DateField(null=True, blank=True)
+    recorded_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(null=True, blank=True)
+    irembo_application_number = models.CharField(max_length=40, null=True, blank=True)
+
+    class Meta:
+        db_table = "IndustryContractPayments"
+
+class ContractPaymentInstallment(models.Model):
+    PAYMENT_STATUSES = (
+        ("FULLY PAID", "FULLY PAID"),
+        ("PARTIALLY PAID", "PARTIALLY PAID"),
+        ("NOT PAID", "NOT PAID"),
+    )
+    contract_payment = models.ForeignKey(IndustryContractPayment, on_delete=models.SET_NULL, null=True, blank=True)
+    expected_payment_date = models.DateField(null=False, blank=False)
+    actual_payment_date = models.DateField(blank=True, null=True)
+    expected_payment_amount = models.DecimalField(max_digits=13, decimal_places=2, null=False, blank=False)
+    actual_paid_amount = models.DecimalField(max_digits=13, decimal_places=2, null=True, blank=True)
+    payment_status = models.CharField(choices=PAYMENT_STATUSES, default="NOT PAID", max_length=30)
+    recorded_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "ContractPaymentInstallments"
+
+class PaymentInstallmentTransaction(models.Model):
+    installment = models.ForeignKey(ContractPaymentInstallment, on_delete=models.CASCADE)
+    payment_date = models.DateField(blank=False, null=False)
+    payment_amount = models.DecimalField(max_digits=13, decimal_places=2)
+    payment_proof = models.FileField(null=True, blank=True, upload_to="Contract_documents/payment_proofs/")
+
+    class Meta:
+        db_table = "PaymentInstallmentTransactions"
+
+
+
 
 
