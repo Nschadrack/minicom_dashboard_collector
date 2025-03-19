@@ -1,0 +1,43 @@
+<form class="car_new_form" method="post" action="{% url 'industry:contract-list' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Add Industry Initial Contract</legend>	
+        <input type="hidden" name="contract_type" value="INITIAL"/>
+        <input type="hidden" name="industry" value="{{ industry.id }}"/>
+        <div class="form-group">
+            <label>Contract Signing date <b>[required]</b></label>
+            <input type="date" name="signing_date" id="industry-contract-signing-date" required/>
+        </div>
+        <div class="form-group">
+            <label>Contract amount <b>[required]</b></label>
+            <input type="number" name="contract_amount" step="0.01" id="industry-contract-amount" required/>
+        </div>
+        <div class="form-group">
+            <label>Select the currency of the contract <b>[required]</b></label>
+            <select name="contract_currency" id="industry-contract-currency" required>
+                <option value="USD">USD</option>
+                <option value="RWF">RWF</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Operational years <b>[required]</b></label>
+            <input type="number" name="operational_years" min="1" id="industry-operational-years" required/>
+        </div>
+        <div class="form-group">
+            <label class="custom-file-upload">
+                <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required/>
+                <div class="upload-container">
+                    <div class="upload-content">
+                        <div class="upload-content">
+                            <span class="upload-title">Click to upload contract document <b>[required]</b></span>
+                            <span class="file-name"></span>
+                        </div>
+                    </div>
+                </div>
+            </label>
+            <small>Supported formats: PDF, DOC/DOCX, JPG/JPEG, PNG</small>
+        </div>
+        <input type="submit" value="Save contract"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

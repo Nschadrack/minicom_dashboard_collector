@@ -1,0 +1,66 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">#INDUSTRY CONTRACT WITH <b>{{ contract.industry.company.tin_number }} - {{ contract.industry.company.name }}</b></p>
+        <a href="{% url 'industry:industry-info-details' contract.industry.id %}#contract-industry" id="price_back_to_car_list">Back to the list</a>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="contract-detail">Contract Basic Information</li>
+            <li class="tab-link" data-tab="contract-payments">Payment Basic Information</li>
+            <li class="tab-link" data-tab="contract-payment-installments">Payment Installments</li>
+            <li class="tab-link" data-tab="installments-transactions">Installments Transactions</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        <!-- Role users Tab -->
+        <div id="contract-detail" class="tab-content active">
+            <div class="upper-detail-div">
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                    <div>
+                        <p><strong>Industry TIN: </strong>{{ contract.industry.company.tin_number }}</p>   
+                        <p><strong>Industry Name: </strong>{{ contract.industry.company.name|title }}</p>   
+                        <p><strong>Category: </strong>{{ contract.industry.company.category|upper }}</p>    
+                        <p><strong>Industry size: </strong>{{ contract.industry.company.company_size|upper }}</p>   
+                        <p><strong>Phone Contact: </strong>{{ contract.industry.company.phone_contact }}</p> 
+                        <p><strong>E-mail Contact: </strong>{{ contract.industry.company.email_contact|upper }}</p> 
+                        <p><strong>Investor(s) Origin Countries: </strong>{{ contract.industry.company.investor_origin_country|upper }}</p> 
+                        <p><strong>RDB Registration Date: </strong>{{ contract.industry.company.registeration_date|date:'d-m-Y' }}</p>
+                    </div>
+                    <div>
+                        <p><strong>Contract Type: </strong>{{ contract.contract_type|upper }}</p> 
+                        <p><strong>Contract Signing Date: </strong>{{ contract.signing_date|date:'d-m-Y' }}</p>
+                        <p><strong>Contract Amount: </strong>{{ contract.contract_amount }} {{ contract.contract_currency }}</p> 
+                        <p><strong>Operational Year(s): </strong>{{ contract.operational_years }}</p> 
+                        <p><strong><a href="{{ contract.contract_document_url }}" target="_blank">View Contract Document</a></strong></p>
+                        <p><strong>Contract Document Link: </strong><i>{{ contract.contract_document_url }}</i></p> 
+                        {% if contract.is_contract_closed %}
+                            <p><strong>Contract is closed</strong></p>
+                            <p><strong>Contract closure comment: </strong><i>{{ contract.closure_comment }}</i></p>  
+                        {% endif %}
+                        {% if contract.parent_contract %}
+                            <p><strong><a href="{% url 'industry:contracts-detail' contract.parent_contract.id %}">View Linked Contract</a></strong></p>
+                        {% endif %}
+                        <p><strong>Contract recorded date: </strong>{{ contract.recorded_date|date:'d-m-Y H:i:S' }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- New Assignment Form -->
+            <div class="new-assignment car_new_form_div">
+                <!-- form for recording an allocated plot-->
+                {% comment %} {% include 'industry/allocate_plot_form.html' %} {% endcomment %}
+            </div>
+        </div>
+        <!-- contract payments Tab -->
+        {% comment %} {% include 'industry/industry_profile_detail_page/branches_tab.html' %} {% endcomment %}
+
+        <!-- Contract Payment Installments Tab -->
+        {% comment %} {% include 'industry/industry_profile_detail_page/attachments_tab.html' %} {% endcomment %}
+        
+    </div>
+{% endblock %}

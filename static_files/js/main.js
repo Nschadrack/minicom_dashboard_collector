@@ -48,19 +48,21 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     // uplaoding documents
-    const fileInput = document.querySelector('input[type="file"]');
-    const fileNameSpan = document.querySelector('.file-name');
-    const uploadContainer = document.querySelector('.upload-container');
-
-    fileInput.addEventListener('change', function(e) {
-        if (this.files.length > 0) {
-            fileNameSpan.textContent = this.files[0].name;
-            uploadContainer.classList.add('file-selected');
-            uploadContainer.style.borderColor = '#0066cc';
-        } else {
-            fileNameSpan.textContent = '';
-            uploadContainer.classList.remove('file-selected');
-            uploadContainer.style.borderColor = '#ccc';
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('input[type="file"]')) {
+            const tabContainer = e.target.closest('.tab-content');
+            const fileNameSpan = tabContainer.querySelector('.file-name');
+            const uploadContainer = tabContainer.querySelector('.upload-container');
+    
+            if (e.target.files.length > 0) {
+                fileNameSpan.textContent = e.target.files[0].name;
+                uploadContainer.classList.add('file-selected');
+                uploadContainer.style.borderColor = '#0066cc';
+            } else {
+                fileNameSpan.textContent = '';
+                uploadContainer.classList.remove('file-selected');
+                uploadContainer.style.borderColor = '#ccc';
+            }
         }
     });
 
@@ -93,6 +95,7 @@ function showNewGroupCarRegiseterForm(e){
     car_title_header_button_clicked.style.display="none";
     car_title_header_paragraph.style.display="none";
 }
+
 function hideNewGroupCarRegiseterForm(e){
     var form_div_to_shows = document.getElementsByClassName("car_new_form_div");
     var car_list_to_hide = document.getElementById("car_table_data");

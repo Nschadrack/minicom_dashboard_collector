@@ -1,0 +1,62 @@
+<div id="contract-industry" class="tab-content">
+    <div class="upper-detail-div">
+        <div class="current_price_list table-data">
+            <h4>List of Contracts</h4>
+            {% if contracts|length < 1 %}
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new contract</button>
+            {% endif %}
+            <table class="table-data">
+                <thead>
+                    <th>#</th>
+                    <th>CONTRACT TYPE</th>
+                    <th>CONTRACT AMOUNT</th>
+                    <th>CONTRACT SIGNING DATE</th>
+                    <th>OPERATIONAL YEARS</th>
+                    <th>LINKED CONTRACT</th>
+                    <th>CONTRACT CLOSED</th>
+                    <th colspan="3">ACTION</th>
+                </thead>
+                <tbody>
+                    {% for contract in contracts %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ contract.contract_type|title }}</td>
+                            {% if contract.contract_amount %}
+                                <td>{{ contract.contract_amount }} {{ contract.contract_currency }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if contract.signing_date %}
+                                <td>{{ contract.signing_date|date:'d-m-Y' }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if contract.operational_years %}
+                                <td>{{ contract.operational_years }} years</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if contract.parent_contract %}
+                                <td><a href="{% url 'industry:contracts-detail' contract.parent_contract.id %}" class="view_button">view linked contract</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if contract.is_contract_closed %}
+                                <td>Yes</td>
+                            {% else %}
+                                <td>NO</td>
+                            {% endif %}
+                            <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td>
+                            <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view details</a></td>
+                            <td><a href="" class="delete_button">remove</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- New Attachment Form -->
+    <div class="new-assignment car_new_form_div">
+        {% include 'industry/industry_detail_page/new_contract_form.html' %}
+    </div>
+</div>

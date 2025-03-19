@@ -178,14 +178,20 @@ class IndustryContract(models.Model):
         ("INITIAL", "INITIAL"),
         ("AMENDMENT", "AMENDMENT"),
     )
+    CURRENCIES = (
+        ("USD", "USD"),
+        ("RWF", "RWF"),
+    )
     industry = models.ForeignKey(CompanySite, related_name="industry_contracts", 
                                  on_delete=models.SET_NULL, null=True, blank=True)
     parent_contract = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
     signing_date = models.DateField(blank=True, null=True)
     contract_type = models.CharField(choices=CONTRACT_TYPES, blank=False, null=False, max_length=35)
     contract_amount = models.DecimalField(decimal_places=2, max_digits=13, null=True, blank=True)
+    contract_currency = models.CharField(max_length=10, blank=False, null=False, choices=CURRENCIES)
     operational_years = models.PositiveIntegerField(blank=True, null=True)
     contract_document = models.FileField(null=True, blank=True, upload_to="Contract_documents/contracts/")
+    contract_document_url = models.URLField(blank=True, null=True)
     recorded_date = models.DateTimeField(auto_now_add=True)
     closure_comment = models.TextField(blank=True, null=True)
     is_contract_closed = models.BooleanField(default=False)
@@ -251,6 +257,7 @@ class PaymentInstallmentTransaction(models.Model):
     payment_date = models.DateField(blank=False, null=False)
     payment_amount = models.DecimalField(max_digits=13, decimal_places=2)
     payment_proof = models.FileField(null=True, blank=True, upload_to="Contract_documents/payment_proofs/")
+    payment_proof_url = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = "PaymentInstallmentTransactions"

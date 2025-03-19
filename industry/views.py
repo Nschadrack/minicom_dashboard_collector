@@ -7,7 +7,8 @@ from system_management.models import User, AdministrativeUnit, EconomicSector, E
 from system_management.utils import generate_random_code
 from .models import (IndustryEconomicZone, PartitionedPlot, CompanyProfile, 
                      CompanySite, LandRequestInformation,
-                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector)
+                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector,
+                     IndustryContract)
 from system_management.models import IndustrialZone
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
@@ -237,6 +238,7 @@ def industry_details(request, industry_id):
     industry_economic_sub_sectors = IndustryEconomicSector.objects.filter(industry=industry).order_by("sector__economic_sector__name", "sector__name")
     economic_sectors = EconomicSector.objects.all()
     sub_sectors = EconomicSubSector.objects.exclude(id__in=[sector.id for sector in industry_economic_sub_sectors])
+    contracts = IndustryContract.objects.filter(industry=industry).order_by("signing_date")
     search_items = []
     for sector in sub_sectors:
         search_items.append(f"{sector.id}|{sector.name.strip().replace(',', "-")}|{sector.economic_sector.id}")
@@ -248,6 +250,7 @@ def industry_details(request, industry_id):
         "search_items": json.dumps(search_items),
         "economic_sectors": economic_sectors,
         "attachments": attachments,
+        "contracts": contracts
     }
     return render(request, "industry/industry_detail_page/industry_details.html", context)
 
@@ -388,3 +391,53 @@ def land_request_detail(request, land_request_id, flag=None):
         "partitioned_plots": json.dumps(partitioned_plots)
     }
     return render(request, "industry/land_request_details.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def contracts_list(request):
+    if request.method == "POST":
+        industry_id = request.POST.get("industry")
+        contract_type = request.POST.get("contract_type")
+        signing_date = request.POST.get("signing_date")
+        contract_amount = request.POST.get("contract_amount")
+        contract_currency = request.POST.get("contract_currency")
+        operational_years = request.POST.get("operational_years")
+        contract_document = request.FILES.get("document")
+
+        industry = CompanySite.objects.filter(id=industry_id).first()
+
+        if industry is not None:
+            base_domain = get_base_domain(request)
+            contract = IndustryContract(
+                industry=industry,
+                contract_type=contract_type,
+                signing_date=signing_date,
+                contract_amount=contract_amount,
+                contract_currency=contract_currency,
+                operational_years=operational_years,
+                contract_document=contract_document
+            )
+
+            contract.save()
+            contract.contract_document_url = f"{base_domain}/{contract.contract_document.url}"
+            contract.save()
+            print(f"\nSave contract with ID: {contract.id}\n")
+
+            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+            return redirect(f"{redirect_url}#contract-detail")
+        return redirect("industry:companies-industries-list")
+    
+    return redirect("industry:companies-industries-list")
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def contracts_detail(request, contract_id):
+    contract = IndustryContract.objects.filter(id=contract_id).first()
+    if contract is None:
+        return redirect("industry:companies-industries-list")
+    
+    context = {
+        "contract": contract,
+    }
+
+    return render(request, "industry/contract/contract_details.html", context)
+
