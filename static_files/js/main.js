@@ -442,3 +442,22 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// copying the text
+function copyText() {
+    let text = document.getElementById("myInputToCopy").value;
+    let alertP = document.getElementById("copyAlertMessage");
+    navigator.clipboard.writeText(text).then(() => {
+        alertP.innerHTML = "Copied to clipboard! <button onclick='closeCopyTextAlert();' id='closebtnCopyText'>X</button>";
+        alertP.style.display = "block";
+    }).catch(err => {
+        alertP.innerHTML = "Failed to copy! <button onclick='closeCopyTextAlert();' id='closebtnCopyText'>X</button>";
+        alertP.style.display = "block";
+    });
+}
+
+function closeCopyTextAlert(){
+    let alertP = document.getElementById("copyAlertMessage");
+    alertP.style.display="none";
+
+}
+

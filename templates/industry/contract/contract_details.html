@@ -9,9 +9,8 @@
     <!-- Tabs Navigation -->
     <div id="tabs-container">
         <ul class="tabs">
-            <li class="tab-link active" data-tab="contract-detail">Contract Basic Information</li>
-            <li class="tab-link" data-tab="contract-payments">Payment Basic Information</li>
-            <li class="tab-link" data-tab="contract-payment-installments">Payment Installments</li>
+            <li class="tab-link active" data-tab="contract-detail">Contract Information</li>
+            <li class="tab-link" data-tab="contract-payments">Payment Information</li>
             <li class="tab-link" data-tab="installments-transactions">Installments Transactions</li>
         </ul>
     </div>
@@ -31,14 +30,22 @@
                         <p><strong>E-mail Contact: </strong>{{ contract.industry.company.email_contact|upper }}</p> 
                         <p><strong>Investor(s) Origin Countries: </strong>{{ contract.industry.company.investor_origin_country|upper }}</p> 
                         <p><strong>RDB Registration Date: </strong>{{ contract.industry.company.registeration_date|date:'d-m-Y' }}</p>
+                        {% if payment %}
+                            <a class="tab-link industry-action-btns" data-tab="contract-payments"> View Payment</a>
+                        {% else %}
+                            <p><button id="view_price_archive_button view_price_archive_button_override" onclick='showAssignmentTable("block")' class="industry-action-btns">+ add payment</button></p>
+                        {% endif %}
                     </div>
                     <div>
                         <p><strong>Contract Type: </strong>{{ contract.contract_type|upper }}</p> 
                         <p><strong>Contract Signing Date: </strong>{{ contract.signing_date|date:'d-m-Y' }}</p>
                         <p><strong>Contract Amount: </strong>{{ contract.contract_amount }} {{ contract.contract_currency }}</p> 
                         <p><strong>Operational Year(s): </strong>{{ contract.operational_years }}</p> 
-                        <p><strong><a href="{{ contract.contract_document_url }}" target="_blank">View Contract Document</a></strong></p>
-                        <p><strong>Contract Document Link: </strong><i>{{ contract.contract_document_url }}</i></p> 
+                        <p><strong>Contract Document Link:
+                            <input type="text" id="myInputToCopy" value="{{ contract.contract_document_url }}" readonly>
+                            <button onclick="copyText();" id="copy-text-button">Copy</button>
+                        </p>
+                        <p id="copyAlertMessage"></p>
                         {% if contract.is_contract_closed %}
                             <p><strong>Contract is closed</strong></p>
                             <p><strong>Contract closure comment: </strong><i>{{ contract.closure_comment }}</i></p>  
@@ -47,17 +54,18 @@
                             <p><strong><a href="{% url 'industry:contracts-detail' contract.parent_contract.id %}">View Linked Contract</a></strong></p>
                         {% endif %}
                         <p><strong>Contract recorded date: </strong>{{ contract.recorded_date|date:'d-m-Y H:i:S' }}</p>
+                        <a href="{{ contract.contract_document_url }}" target="_blank" class="industry-action-btns">View Contract Document</a><br/>
                     </div>
                 </div>
             </div>
             <!-- New Assignment Form -->
             <div class="new-assignment car_new_form_div">
-                <!-- form for recording an allocated plot-->
-                {% comment %} {% include 'industry/allocate_plot_form.html' %} {% endcomment %}
+                <!-- form for recording an payment-->
+                {% include 'industry/contract/new_payment_form.html' %}
             </div>
         </div>
         <!-- contract payments Tab -->
-        {% comment %} {% include 'industry/industry_profile_detail_page/branches_tab.html' %} {% endcomment %}
+        {% include 'industry/contract/payment_information_tab.html' %}
 
         <!-- Contract Payment Installments Tab -->
         {% comment %} {% include 'industry/industry_profile_detail_page/attachments_tab.html' %} {% endcomment %}

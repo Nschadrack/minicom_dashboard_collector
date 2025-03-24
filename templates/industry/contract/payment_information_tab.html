@@ -1,0 +1,65 @@
+<div id="contract-payments" class="tab-content">
+    <div class="upper-detail-div">
+        {% if payment  %}
+            <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                <div>
+                    <p><strong>Payment Modality: </strong>{{ payment.payment_modality }}</p>   
+                    <p><strong>Total Amount To Be Paid: </strong>{{ payment.total_amount_to_pay }} {{ payment.payment_currency }}</p>   
+                    <p><strong>Payment Status: </strong>{{ payment.payment_status|upper }}</p>    
+                    <p><strong>Number of Installments: </strong>{{ payment.number_of_installments }}</p>   
+                    <p><strong>Total Amount Paid: </strong>{% if payment.total_amount_paid %}{{ payment.total_amount_paid }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
+                    <p><strong>Total Amount Unpaid: </strong>{% if payment.total_amount_unpaid %}{{ payment.total_amount_unpaid }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
+                    <p><strong>Irembo Application Number: </strong>{{ payment.irembo_application_number }}</p>
+                </div>
+                <div>
+                    <p><strong>Accrued Penalities: </strong>{% if payment.accrued_penalties %}{{ payment.accrued_penalties }} {{ payment.payment_currency }} {% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
+                    <p><strong>Paid Penalities: </strong>{% if payment.paid_penalties %}{{ payment.paid_penalties }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p>
+                    <p><strong>Amount Overdued: </strong>{% if payment.amount_overdued %}{{ payment.amount_overdued }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
+                    <p><strong>Days In Arreas: </strong>{% if payment.days_in_arrears %}{{ payment.days_in_arrears }}{% else %} 0 {% endif %}</p> 
+                    <p><strong>Next Payment Date: </strong>{% if payment.next_payment_date %}{{ payment.next_payment_date|date:'Y-i-d' }}{% endif %}</p> 
+                    <p><strong>Last Updated On: </strong>{% if payment.updated_date %}{{ payment.updated_date|date:'Y-i-d' }}{% endif %}</p> 
+                    <p><strong>System Recorded Date: </strong>{{ payment.recorded_date|date:'Y-i-d H:m:s' }}</p> 
+                </div>
+            </div>
+        {% endif %}
+        {% if payment_installments|length > 0 %}
+            <div id="car_table_data" class="table-data">
+                <h4 style="border-bottom: 2px double black; text-align:center;">List of Installments For This Payment</h4>
+                <table>
+                    <thead>
+                        <th>#</th>
+                        <th>EXPECTED PAYMENT DATE</th>
+                        <th>ACTUAL PAYMENT DATE</th>
+                        <th>EXPECTED PAYMENT AMOUNT</th>
+                        <th>ACTUAL PAID AMOUNT</th>
+                        <th>ACCRUED PENALITIES</th>
+                        <th>PAID PENALITIES</th>
+                        <th>AMOUNT OVERDUED</th>
+                        <th>DAYS IN ARREAS</th>
+                        <th>PAYMENT STATUS</th>
+                        <th>UPDATED DATE</th>
+                        <th>RECORDED DATE</th>
+                    </thead>
+                    <tbody>
+                        {% for installment in payment_installments %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ installment.expected_payment_date|date:'Y-m-d' }}</td>
+                                <td>{{ installment.actual_payment_date|date:'Y-m-d' }}</td>
+                                <td>{{ installment.expected_payment_amount }} {{ payment.payment_currency }}</td>
+                                <td>{% if installment.actual_paid_amount %}{{ installment.actual_paid_amount }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.accrued_penalties %}{{ installment.accrued_penalties }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.paid_penalties %}{{ installment.paid_penalties }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.amount_overdued %}{{ installment.amount_overdued }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.days_in_arrears %}{{ installment.days_in_arrears }} {% else %} 0 {% endif %}</td>
+                                <td>{{ installment.payment_status|upper }}</td>
+                                <td>{{ installment.updated_date|date:'Y-m-d' }}</td>
+                                <td>{{ installment.recorded_date|date:'Y-m-d' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>  
+            </div>
+        {% endif %}
+    </div>
+</div>

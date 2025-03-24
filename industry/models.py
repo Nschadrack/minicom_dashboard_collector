@@ -214,7 +214,7 @@ class IndustryContractPayment(models.Model):
         ("USD", "USD"),
         ("RWF", "RWF"),
     )
-    contract = models.ForeignKey(IndustryContract, on_delete=models.SET_NULL, null=True, blank=True)
+    contract = models.ForeignKey(IndustryContract, on_delete=models.SET_NULL, null=True, blank=True, related_name="contract_payments")
     total_amount_to_pay = models.DecimalField(decimal_places=2, max_digits=13, null=False, blank=False)
     payment_currency = models.CharField(max_length=6, null=False, blank=False, choices=CURRENCIES)
     payment_modality = models.CharField(max_length=30, choices=PAYMENT_MODALITIES, null=False, blank=False)
@@ -240,11 +240,15 @@ class ContractPaymentInstallment(models.Model):
         ("PARTIALLY PAID", "PARTIALLY PAID"),
         ("NOT PAID", "NOT PAID"),
     )
-    contract_payment = models.ForeignKey(IndustryContractPayment, on_delete=models.SET_NULL, null=True, blank=True)
+    contract_payment = models.ForeignKey(IndustryContractPayment, on_delete=models.SET_NULL, null=True, blank=True, related_name="payment_installments")
     expected_payment_date = models.DateField(null=False, blank=False)
     actual_payment_date = models.DateField(blank=True, null=True)
     expected_payment_amount = models.DecimalField(max_digits=13, decimal_places=2, null=False, blank=False)
     actual_paid_amount = models.DecimalField(max_digits=13, decimal_places=2, null=True, blank=True)
+    accrued_penalties = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, default=0)
+    paid_penalties = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, editable=False, default=0)
+    amount_overdued = models.DecimalField(max_digits=13, decimal_places=2, blank=True, null=True, editable=False, default=0)
+    days_in_arrears = models.PositiveBigIntegerField(default=0, blank=True, null=True, editable=False)
     payment_status = models.CharField(choices=PAYMENT_STATUSES, default="NOT PAID", max_length=30)
     recorded_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(null=True, blank=True)

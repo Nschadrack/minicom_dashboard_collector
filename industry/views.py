@@ -1,18 +1,21 @@
 import json
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from pytz import all_timezones
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.db.models import Prefetch
 from django.contrib.auth.decorators import login_required
 from system_management.models import User, AdministrativeUnit, EconomicSector, EconomicSubSector
 from system_management.utils import generate_random_code
 from .models import (IndustryEconomicZone, PartitionedPlot, CompanyProfile, 
                      CompanySite, LandRequestInformation,
                      AllocatedPlot, IndustryAttachment, IndustryEconomicSector,
-                     IndustryContract)
+                     IndustryContract, IndustryContractPayment)
 from system_management.models import IndustrialZone
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
-                    get_base_domain)
+                    get_base_domain, create_payment_installment, convert_datetime_timezone)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -429,14 +432,65 @@ def contracts_list(request):
     
     return redirect("industry:companies-industries-list")
 
+
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def contracts_detail(request, contract_id):
-    contract = IndustryContract.objects.filter(id=contract_id).first()
+    # contract = IndustryContract.objects.prefetch_related(id=contract_id).prefetch_related("contract_payments").first()
+    contract = IndustryContract.objects.filter(id=contract_id).prefetch_related(
+        Prefetch("contract_payments", queryset=IndustryContractPayment.objects.prefetch_related("payment_installments"))
+    ).first()
+
+    payment = contract.contract_payments.first()
+    payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else []
+
     if contract is None:
         return redirect("industry:companies-industries-list")
     
+    if request.method == "POST":
+        payment_modality = request.POST.get("payment_modality")
+        payment_start_date = request.POST.get("payment_start_date")
+        irembo_application_number = request.POST.get("irembo_application_number", None)
+        contract_payment = IndustryContractPayment(
+            contract=contract,
+            total_amount_to_pay=contract.contract_amount,
+            payment_currency=contract.contract_currency,
+            payment_modality=payment_modality,
+            number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
+            irembo_application_number=irembo_application_number
+        )
+        contract_payment.save()
+        payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
+        payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
+
+        payment_dates = []
+        if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
+            payment_dates.append(payment_start_date)
+        elif payment_modality == "INSTALLMENTS": # create six payment installments
+            payment_dates.append(payment_start_date)
+            for i in range(5): # creating 6 installments dates
+                payment_dates.append(
+                    payment_dates[i] + relativedelta(years=1)
+                )
+        else:
+            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+            return redirect(f"{redirect_url}#contract-detail")
+        
+        succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
+        if not succeeded:
+            contract_payment.delete()
+        else:
+            if total_amount !=  contract_payment.total_amount_to_pay:
+                contract_payment.total_amount_to_pay = total_amount
+                contract_payment.save() 
+        
+        redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+        return redirect(f"{redirect_url}#contract-payments")
+        
+        # redirect to payment information
     context = {
         "contract": contract,
+        "payment": payment,
+        "payment_installments": payment_installments
     }
 
     return render(request, "industry/contract/contract_details.html", context)

@@ -10,7 +10,7 @@
 	--main_header_bg: white;
 	--scroll_bar_color: #888;
 	--aside-navigation-span-bg: #55f;
-	--navy_car: #000080;
+	--navy_blue: #000080;
 	--peru_car: #cd853f;
 	--darkGreen: #0a290a;
 	--darkBlue: #090030;
@@ -163,21 +163,32 @@ vertical-align: middle; /* Align checkbox vertically with text */
 vertical-align: middle; /* Align label text with checkbox */
 }
 
-.industry-action-btns{
-	color: var(--darkBlue);
+.industry-action-btns, #view_price_archive_button_override{
+	color: black;
 	background-color: white;
-	border: 1px solid var(--darkBlue);
+	border: 2px dotted var(--navy_blue);
 	padding: 10px;
 	text-decoration:none;
+	text-align: center;
 	display: block;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 	width: 90%;
 	text-wrap: no-wrap;
+	border-radius: 10px;
+	font-weight: bold;
+}
+.industry-action-btns a{
+	color: black;
+	width: 100%;
+	display: block;
+}
+.industry-action-btns a:hover{
+	color: white;
 }
 .industry-action-btns:hover{
-	background-color: var(--darkBlue);
+	background-color: var(--navy_blue);
 	color: white;
-	border: 1px solid var(--darkBlue);
+	border: 2px dotted white;
 	padding: 10px;
 }
 
@@ -375,7 +386,7 @@ body{
 }
 
 .tabs .tab-link.active {
-    background-color: var(--navy_car);
+    background-color: var(--navy_blue);
 	color: white;
     border-bottom: 1px solid #fff;
 }
@@ -431,7 +442,7 @@ body{
 	float: right;
 	width: auto;
 	height: 100%;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	border: none;
 	color: var(--aside_fg);
 	font-weight: bold;
@@ -477,9 +488,9 @@ body{
 	/* border-bottom: 1px solid var(--aside_bg); */
 }
 .table-data table tr .view_button{
-	border: 1px solid var(--navy_car);
+	border: 1px solid var(--navy_blue);
 	background-color: inherit;
-	color: var(--navy_car);
+	color: var(--navy_blue);
 }
 .table-data .view_button_selected{
 	background-color: var(--darkRed);
@@ -493,7 +504,7 @@ body{
 	display: none;
 }
 .table-data table tr .view_button:hover {
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_bg_hover_a);
 }
 .table-data table tr button, .table-data table tr a{
@@ -633,7 +644,7 @@ body{
 	width: auto;
 	padding: 8px;
 	border: none;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	margin-top: 15px;
 	margin-left: 10px;
@@ -694,7 +705,7 @@ body{
 	font-weight: normal;
 	border: none;
 	border-radius: 0px;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -706,7 +717,7 @@ body{
 	font-weight: normal;
 	border: none;
 	border-radius: 0px;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -834,7 +845,7 @@ body{
 	font-weight: bold;
 	border: none;
 	border-radius: 3px;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -931,7 +942,7 @@ body{
 #add_new_car_location{
 	padding: 10px 25px;
 	font-weight: bold;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	border: none;
 	outline: none;
@@ -967,7 +978,7 @@ body{
 	border-radius: 3px;
 	outline: none;
 	border: none;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	font-size: 12px;
 	padding: 10px;
@@ -989,7 +1000,7 @@ body{
 	border-radius: 3px;
 	outline: none;
 	border: none;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	color: var(--aside_fg);
 	font-size: 12px;
 	padding: 10px;
@@ -1034,7 +1045,7 @@ main:hover{
 }
 .section-two{
 	background-color: var(--darkBlue);
-	height: 100vh;
+	height: 90vh;
 	width: 100vw;
 	padding-left: 100px;
 	padding-top: 20px;
@@ -1102,7 +1113,7 @@ main:hover{
 	padding: 10px;
 	border-radius: 5px;
 	border: none;
-	background-color: var(--navy_car);
+	background-color: var(--navy_blue);
 	width: 100%;
 	margin: auto;
 	margin-top: 20px;
@@ -1244,5 +1255,33 @@ main:hover{
 	}
 }
 
+#myInputToCopy{
+	border: none;
+	outline: none;
+	padding: 5px;
+	border-bottom: 1px dashed black;
+}
+#copy-text-button{
+	border: none;
+	background-color: var(--darkBlue);
+	border-radius: 5px;
+	padding: 5px;
+	color: white;
+}
+#copyAlertMessage{
+	padding: 10px;
+	background-color: var(--darkBlue);
+	color: white;
+	font-style: italic;
+	text-align: center;
+	display: none;
+}
+#closebtnCopyText{
+	float: right;
+	font-weight: bold;
+	border: none;
+	background-color: var(--main_bg);
+	padding: 0 5px;
+}
 
 

@@ -2,7 +2,9 @@ import csv
 import os
 from .models import (IndustrialZone, PartitionedPlot, 
                      IndustryEconomicZone, AllocatedPlot,
-                     CompanyProfile, CompanySite)
+                     CompanyProfile, CompanySite, IndustryContractPayment,
+                     ContractPaymentInstallment)
+from django.utils import timezone
 
 
 def get_base_domain(request):
@@ -164,6 +166,63 @@ def record_industry_in_plot_from_request(request):
     except Exception as e: 
         print(f"\n[ERROR]: {str(e)}\n")
         return False
+
+def convert_datetime_timezone(naive_datetime):
+    # Make it timezone-aware using Django's timezone
+    aware_datetime = timezone.make_aware(naive_datetime, timezone.get_current_timezone()) 
+    return aware_datetime
+
+def create_payment_installment(contract_payment: IndustryContractPayment, installments_dates: list):
+    """
+    The function for creating payment installments
+    params:
+        - installments_dates: list of dates for the payment of installments in order from the initial payment
+        - contract_payment: the payment of contract instance
+    """
+    if len(installments_dates) < 1:
+        raise ValueError("You should provide the list of dates for payment installments")
+    
+    created_installments = []
+    total_amount = 0
+    try:
+        if len(installments_dates) == 1:
+            created_installments.append(
+                ContractPaymentInstallment.objects.create(
+                    contract_payment=contract_payment,
+                    expected_payment_date=installments_dates[0],
+                    expected_payment_amount=contract_payment.total_amount_to_pay
+                )
+            )
+            total_amount += contract_payment.total_amount_to_pay
+        else:
+            thirty_perc = round(contract_payment.total_amount_to_pay * 30/100, 2)
+            remaining = contract_payment.total_amount_to_pay - thirty_perc
+            created_installments.append(
+                ContractPaymentInstallment.objects.create(
+                    contract_payment=contract_payment,
+                    expected_payment_date=installments_dates[0],
+                    expected_payment_amount=thirty_perc
+                )
+            )
+            total_amount += thirty_perc
+            remaining_split = remaining / len(installments_dates[1:]) # splitting equally the remaining amount into remaining installments
+            for next_date in installments_dates[1:]:
+                remaining_split = round(remaining_split + remaining_split * 5/100, 2)
+                total_amount += remaining_split
+                created_installments.append(
+                    ContractPaymentInstallment.objects.create(
+                        contract_payment=contract_payment,
+                        expected_payment_date=next_date,
+                        expected_payment_amount=remaining_split
+                        )
+                )
+                remaining_split = created_installments[-1].expected_payment_amount
+
+        return True, total_amount, "Payment installments created successfully"
+    except Exception as e:
+        for installment in created_installments:
+            installment.delete()
+        return False, total_amount, f"{str(e)}"
 
 
 

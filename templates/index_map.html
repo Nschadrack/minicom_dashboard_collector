@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+	  <script src="{% static 'js/main.js' %}"></script>
+      <!-- Add script to the <head> of your page to load the embeddable map component -->
+    {% comment %} <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script> {% endcomment %}
+    <!-- Add script to the <head> of your page to load the embeddable map component -->
+    <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script>
+
+    <title>MINICOM</title>
+  </head>
+  <body>
+	<main class="index">
+    <div class="sections section-one">
+        <img src="{% static 'images/minicom_logo.png' %}" class="index-logo"/>
+        <p class="index-logo">Ministry of Trade and Industry (MINICOM)</p>
+        {% comment %} <h4>You're welcome to Equity Bank Rwanda Enterprise Asset Management</h4> {% endcomment %}
+    </div>
+    <div class="sections section-two">
+      {% comment %} <iframe  width="100vw" height="90vh" style="border:1px solid black;"> {% endcomment %}
+        {% comment %} <arcgis-embedded-map style="height:100%%;width:100%%;" item-id="6c188f7a4ab84578858dbe96201c56b9" theme="light" portal-url="https://ur-cgis.maps.arcgis.com" >
+
+        </arcgis-embedded-map> {% endcomment %}
+      {% comment %} </iframe> {% endcomment %}
+  <!-- Add custom element to <body> of your page -->
+    <arcgis-embedded-map style="height:100%%;width:100%%;" item-id="6c188f7a4ab84578858dbe96201c56b9" theme="light" bookmarks-enabled heading-enabled legend-enabled information-enabled share-enabled portal-url="https://ur-cgis.maps.arcgis.com" ></arcgis-embedded-map>
+
+    </div>
+	</main>
+  </body>
+</html>
