@@ -1,0 +1,52 @@
+<div id="transactions" class="tab-content">
+    <div class="upper-detail-div">
+        <div class="current_price_list table-data">     
+            {% if payment_installments|length > 0 %}
+                <div id="car_table_data" class="table-data">
+                    <h4 style="border-bottom: 2px double black; text-align:center;">List Of Payment Transactions</h4>
+                    <table>
+                        <thead>
+                            <th>#</th>
+                            <th>INSTALLMENT</th>
+                            <th>TRANSACTION DATE</th>
+                            <th>PAID AMOUNT</th>
+                            <th>LINKED PAYMENT</th>
+                            <th colspan="2">ACTION</th>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ transaction.installment.expected_payment_date|date:'d-m-Y' }}</td>
+                                    <td>{{ transaction.payment_date|date:'d-m-Y' }}</td>
+                                    <td>{{ transaction.payment_amount }} {{ transaction.installment.contract_payment.payment_currency }}</td>
+                                    {% if transaction.installment.contract_payment.contract %}
+                                        <td><a href="{% url 'industry:contracts-detail' transaction.installment.contract_payment.contract.id %}#contract-payments" class="view_button">view linked payment</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                    <td>
+                                        {% if transaction.payment_proof_url %}
+                                            <a style="background-color:#cd853f;" href="{{ transaction.payment_proof_url }}" target="_blank">view payment proof</a>
+                                        {% else %}
+                                            Payment proof is missing
+                                        {% endif %}
+                                        </td>
+                                    <td>
+                                        {% if transaction.payment_proof_url %}
+                                            <input type="text" id="myInputToCopy2" value="{{ transaction.payment_proof_url }}" readonly>
+                                            <button onclick="copyText2();" id="copy-text-button2">Copy proof link</button>
+                                            <p id="copyAlertMessage2"></p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>   
+                </div>
+            {% else %}
+                <h4>There are no recorded payment transactions</h4>	
+            {% endif %}						
+        </div>
+    </div>
+</div>

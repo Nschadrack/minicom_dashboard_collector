@@ -1,56 +1,94 @@
 <div id="payments" class="tab-content">
     <div class="upper-detail-div">
-        <div  class="current_price_list table-data">
-            <h4>List of Industries In Parks, Zones and Other</h4>		
-            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add an industry not in park and industrial zone</button>		
-            <table class="table-data">
-                <thead>
-                    <th>#</th>
-                    <th>INDUSTRY TIN</th>
-                    <th>INDUSTRY NAME</th>
-                    <th>CONSTRUCTION STATUS</th>
-                    <th>OPERATIONAL STATUS</th>
-                    <th>PARK/ECONOMIC ZONE</th>
-                    <th>LOCATION</th>
-                    <th>PROVINCE</th>
-                    <th>DISTRICT</th>
-                    <th>CATEGORY</th>
-                    <th>SIZE</th>
-                    <th>INVESTMENT AMOUNT</th>
-                    <th colspan="5">ACTION</th>
-                </thead>
-                <tbody>
-                    {% for industry in park_industries %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ industry.company.tin_number }}</td>
-                            <td>{{ industry.company.name|title }}</td>
-                            <td>{{ industry.construction_status|title }}</td>
-                            <td>{{ industry.operational_status|title }}</td>
-                            <td>{{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}</td>
-                            <td>
-                                {% if not industry.is_in_park %}
-                                        <a class="delete_button" style="background-color: #090030;color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">Out of industrial zones</a>
-                                    {% else %}
-                                        <a href="" class="delete_button" style="background-color: green; color: white; width: 100%; display:block; text-align:center; border: none; border-radius:0;">In {{ industry.allocated_plot.park.category|lower }}</a>
-                                    {% endif %}
-                            </td>
-                            <td>{{ industry.province|title }}</td>
-                            <td>{{ industry.district|title }}</td>
-                            <td>{{ industry.company.category|upper }}</td>
-                            <td>{{ industry.company.company_size|upper }}</td>
-                            {%  if industry.investment_amount %}
-                                <td>{{ industry.investment_amount}} {{ industry.investment_currency }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                            <td><a href="{% url 'industry:industry-info-details' industry.id %}" class="view_button">view details</a></td>
-                            <td><a href="" class="update_button">update</a></td>
-                            <td><a href="" class="delete_button">delete</a></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="current_price_list table-data">     
+            {% if payments|length > 0 %}	
+                <h4>List of All Contracts Payments</h4>		
+                <table class="table-data">
+                    <thead>
+                        <th>#</th>
+                        <th>PAYMENT MODALITY</th>
+                        <th>CONTRACT AMOUNT</th>
+                        <th>TOTAL PAID AMOUNT</th>
+                        <th>TOTAL UNPAID AMOUNT</th>
+                        <th>ACCRUED PENALITIES</th>
+                        <th>PAID PENALITIES</th>
+                        <th>AMOUNT OVERDUED</th>
+                        <th>DAY IN ARREAS</th>
+                        <th>PAYMENT STATUS</th>
+                        <th>NBR OF INSTALLMENTS</th>
+                        <th>NEXT PAYMENT DATE</th>
+                        <th>LINKED CONTRACT</th>
+                        <th>UPDATE DATE</th>
+                        <th>INDUSTRY SIGNED</th>
+                        <th colspan="2">ACTION</th>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ payment.payment_modality|title }}</td>
+                                {% if payment.total_amount_to_pay %}
+                                    <td>{{ payment.total_amount_to_pay }} {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if payment.total_amount_paid %}
+                                    <td>{{ payment.total_amount_paid }}  {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if payment.total_amount_unpaid %}
+                                    <td>{{ payment.total_amount_unpaid }} {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if payment.accrued_penalties %}
+                                    <td>{{ contract.accrued_penalties }} {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td>0 {{ payment.payment_currency }}</td>
+                                {% endif %}
+                                {% if payment.paid_penalties %}
+                                    <td>{{ payment.paid_penalties }}  {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td>0 {{ payment.payment_currency }}</td>
+                                {% endif %}
+                                {% if payment.amount_overdued %}
+                                    <td>{{ payment.amount_overdued }} {{ payment.payment_currency }}</td>
+                                {% else %}
+                                    <td>0 {{ payment.payment_currency }}</td>
+                                {% endif %}
+                                {% if payment.days_in_arrears %}
+                                    <td>{{ payment.days_in_arrears }} days</td>
+                                {% else %}
+                                    <td>0 days</td>
+                                {% endif %}
+                                <td>{{ payment.payment_status|upper }}</td>
+                                <td>{{ payment.number_of_installments }}</td>
+                                {% if payment.next_payment_date %}
+                                    <td>{{ payment.next_payment_date|date:'d-m-Y' }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if payment.contract %}
+                                    <td><a href="{% url 'industry:contracts-detail' payment.contract.id %}" class="view_button">view linked contract</a></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if payment.updated_date %}
+                                    <td>{{ payment.updated_date|date:'d-m-Y H:i:s' }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}                
+                                <td><a href="{% url 'industry:industry-info-details' payment.contract.industry.id %}#industry-detail" class="view_button">view industry details</a></td>
+                                <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td>
+                                <td><a href="{% url 'industry:contracts-detail' payment.contract.id %}#contract-payments" class="view_button">view details</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <h4>There are no recorded payments</h4>	
+            {% endif %}						
         </div>
     </div>
 </div>

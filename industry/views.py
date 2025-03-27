@@ -547,9 +547,15 @@ def make_payment_transaction(request):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def main_indstry_contracts(request):
     contracts = list(IndustryContract.objects.all().order_by("signing_date"))
+    payments = list(IndustryContractPayment.objects.all().order_by("next_payment_date"))
+    payment_installments = list(ContractPaymentInstallment.objects.all().order_by("expected_payment_date"))
+    transactions = list(PaymentInstallmentTransaction.objects.all().order_by("payment_date"))
 
     context = {
-        "contracts": contracts
+        "contracts": contracts,
+        "payments": payments,
+        "payment_installments": payment_installments,
+        "transactions": transactions
     }
 
     return render(request, "industry/contract/main_contracts_information.html", context)
