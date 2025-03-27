@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pytz import all_timezones
@@ -10,12 +11,13 @@ from system_management.models import User, AdministrativeUnit, EconomicSector, E
 from system_management.utils import generate_random_code
 from .models import (IndustryEconomicZone, PartitionedPlot, CompanyProfile, 
                      CompanySite, LandRequestInformation,
-                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector,
-                     IndustryContract, IndustryContractPayment)
+                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector, ContractPaymentInstallment,
+                     IndustryContract, IndustryContractPayment, PaymentInstallmentTransaction)
 from system_management.models import IndustrialZone
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
-                    get_base_domain, create_payment_installment, convert_datetime_timezone)
+                    get_base_domain, create_payment_installment, convert_datetime_timezone,
+                    record_payment_transaction)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -67,7 +69,6 @@ def industrial_park_detail(request, park_id):
     
     allocated_plots = AllocatedPlot.objects.filter(park=industrial_park).order_by("-recorded_date")
     park_industries = CompanySite.objects.filter(allocated_plot__in=allocated_plots).order_by("company__name")
-
 
     context = {
         "industrial_park": industrial_park,
@@ -424,7 +425,6 @@ def contracts_list(request):
             contract.save()
             contract.contract_document_url = f"{base_domain}/{contract.contract_document.url}"
             contract.save()
-            print(f"\nSave contract with ID: {contract.id}\n")
 
             redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
             return redirect(f"{redirect_url}#contract-detail")
@@ -435,13 +435,16 @@ def contracts_list(request):
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def contracts_detail(request, contract_id):
-    # contract = IndustryContract.objects.prefetch_related(id=contract_id).prefetch_related("contract_payments").first()
     contract = IndustryContract.objects.filter(id=contract_id).prefetch_related(
         Prefetch("contract_payments", queryset=IndustryContractPayment.objects.prefetch_related("payment_installments"))
     ).first()
 
     payment = contract.contract_payments.first()
-    payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else []
+    payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else ContractPaymentInstallment.objects.none()
+    transactions = PaymentInstallmentTransaction.objects.filter(
+        installment__contract_payment=payment).select_related("installment").order_by("installment__expected_payment_date")
+    installment_payment_amount = None
+    unpaid_installments = None
 
     if contract is None:
         return redirect("industry:companies-industries-list")
@@ -453,6 +456,7 @@ def contracts_detail(request, contract_id):
         contract_payment = IndustryContractPayment(
             contract=contract,
             total_amount_to_pay=contract.contract_amount,
+            total_amount_unpaid=contract.contract_amount,
             payment_currency=contract.contract_currency,
             payment_modality=payment_modality,
             number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
@@ -481,17 +485,73 @@ def contracts_detail(request, contract_id):
         else:
             if total_amount !=  contract_payment.total_amount_to_pay:
                 contract_payment.total_amount_to_pay = total_amount
+                contract_payment.total_amount_unpaid = total_amount
+                contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
                 contract_payment.save() 
+                contract_payment.contract.save() # update the contract as well
         
         redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
         return redirect(f"{redirect_url}#contract-payments")
         
-        # redirect to payment information
+    unpaid_installment = payment_installments.filter(payment_status__in=("PARTIALLY PAID", "NOT PAID")).first()
+    if unpaid_installment is None:
+        unpaid_installments = list(payment_installments.filter(accrued_penalties__gt=0))
+        for install_ in unpaid_installments:
+            if install_.accrued_penalties != install_.paid_penalties:
+                unpaid_installment = install_
+                break
+    
+    if unpaid_installment:
+        if unpaid_installment.actual_paid_amount:
+            installment_payment_amount = unpaid_installment.expected_payment_amount - unpaid_installment.actual_paid_amount
+        else:
+            installment_payment_amount = unpaid_installment.expected_payment_amount
+        
+        if installment_payment_amount is None:
+            if unpaid_installment.accrued_penalties and unpaid_installment.accrued_penalties > 0:
+                if unpaid_installment.paid_penalties and unpaid_installment.paid_penalties > 0:
+                    installment_payment_amount = unpaid_installment.accrued_penalties - unpaid_installment.paid_penalties
+                else:
+                    installment_payment_amount = unpaid_installment.accrued_penalties
+            else:
+                installment_payment_amount = 0
+
     context = {
         "contract": contract,
         "payment": payment,
-        "payment_installments": payment_installments
+        "payment_installments": payment_installments,
+        "unpaid_installment": unpaid_installment,
+        "installment_payment_amount": installment_payment_amount,
+        "transactions": transactions
     }
 
     return render(request, "industry/contract/contract_details.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def make_payment_transaction(request):
+    if request.method == "POST":
+        data = {
+            "installment": request.POST.get("installment"),
+            "payment_date": request.POST.get("payment_date"),
+            "payment_amount": request.POST.get("payment_amount"),
+            "document": request.FILES.get("document")
+        }
+        base_domain = get_base_domain(request=request)
+        succeeded, message, contract_id = record_payment_transaction(data=data, base_domain=base_domain)
+        redirect_url = reverse('industry:contracts-detail', args=(contract_id, ))
+        return redirect(f"{redirect_url}#installments-transactions") 
+    return redirect("industry:companies-industries-list")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def main_indstry_contracts(request):
+    contracts = list(IndustryContract.objects.all().order_by("signing_date"))
+
+    context = {
+        "contracts": contracts
+    }
+
+    return render(request, "industry/contract/main_contracts_information.html", context)
+
 

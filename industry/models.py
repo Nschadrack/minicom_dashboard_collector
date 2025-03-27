@@ -257,11 +257,12 @@ class ContractPaymentInstallment(models.Model):
         db_table = "ContractPaymentInstallments"
 
 class PaymentInstallmentTransaction(models.Model):
-    installment = models.ForeignKey(ContractPaymentInstallment, on_delete=models.CASCADE)
+    installment = models.ForeignKey(ContractPaymentInstallment, on_delete=models.CASCADE, related_name="installment_transactions")
     payment_date = models.DateField(blank=False, null=False)
     payment_amount = models.DecimalField(max_digits=13, decimal_places=2)
     payment_proof = models.FileField(null=True, blank=True, upload_to="Contract_documents/payment_proofs/")
     payment_proof_url = models.URLField(blank=True, null=True)
+    recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "PaymentInstallmentTransactions"

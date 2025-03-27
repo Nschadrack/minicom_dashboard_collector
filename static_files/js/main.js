@@ -455,8 +455,27 @@ function copyText() {
     });
 }
 
+function copyText2() {
+    let textInput = document.getElementById("myInputToCopy2");
+    let text = textInput.value
+    let alertP = document.getElementById("copyAlertMessage2");
+    navigator.clipboard.writeText(text).then(() => {
+        alertP.innerHTML = "Copied to clipboard! <button onclick='closeCopyTextAlert2();' id='closebtnCopyText2'>X</button>";
+        alertP.style.display = "block";
+    }).catch(err => {
+        alertP.innerHTML = "Failed to copy! <button onclick='closeCopyTextAlert2();' id='closebtnCopyText2'>X</button>";
+        alertP.style.display = "block";
+    });
+}
+
 function closeCopyTextAlert(){
     let alertP = document.getElementById("copyAlertMessage");
+    alertP.style.display="none";
+
+}
+
+function closeCopyTextAlert2(){
+    let alertP = document.getElementById("copyAlertMessage2");
     alertP.style.display="none";
 
 }

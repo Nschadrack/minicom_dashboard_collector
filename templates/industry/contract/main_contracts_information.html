@@ -1,0 +1,22 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% block main_data_load %}
+    <br/>
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="contracts" id="tab-companies-industries-profiles">Contracts</li>
+            <li class="tab-link" data-tab="payments" id="tab-companies-industries-in-parks">Payments</li>
+            <li class="tab-link" data-tab="installments" id="tab-companies-industries-in-parks">Installments</li>
+            <li class="tab-link" data-tab="transactions" id="tab-companies-industries-in-parks">Transactions</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        <!-- contracts Tab -->
+        {% include 'industry/contract/main_contracts_tab.html' %}
+        <!-- payments tab -->
+        
+    </div>
+{% endblock %}

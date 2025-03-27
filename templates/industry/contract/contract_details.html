@@ -11,7 +11,7 @@
         <ul class="tabs">
             <li class="tab-link active" data-tab="contract-detail">Contract Information</li>
             <li class="tab-link" data-tab="contract-payments">Payment Information</li>
-            <li class="tab-link" data-tab="installments-transactions">Installments Transactions</li>
+            <li class="tab-link" data-tab="installments-transactions">Installment Transaction</li>
         </ul>
     </div>
 
@@ -67,8 +67,7 @@
         <!-- contract payments Tab -->
         {% include 'industry/contract/payment_information_tab.html' %}
 
-        <!-- Contract Payment Installments Tab -->
-        {% comment %} {% include 'industry/industry_profile_detail_page/attachments_tab.html' %} {% endcomment %}
-        
+        <!-- ContraPayment Transactions Tab -->
+        {% include 'industry/contract/installments_transactions_tab.html' %}
     </div>
 {% endblock %}

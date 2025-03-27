@@ -1,8 +1,11 @@
 import csv
 import os
+from decimal import Decimal
+from django.http import HttpRequest
 from .models import (IndustrialZone, PartitionedPlot, 
                      IndustryEconomicZone, AllocatedPlot,
                      CompanyProfile, CompanySite, IndustryContractPayment,
+                     PaymentInstallmentTransaction,
                      ContractPaymentInstallment)
 from django.utils import timezone
 
@@ -223,6 +226,166 @@ def create_payment_installment(contract_payment: IndustryContractPayment, instal
         for installment in created_installments:
             installment.delete()
         return False, total_amount, f"{str(e)}"
+
+def use_sulpus_paid_amount_for_other_installments(installment: ContractPaymentInstallment, sulpus_amount, transaction: PaymentInstallmentTransaction):
+    updated = False
+    if installment.actual_paid_amount is None:
+        installment.actual_paid_amount = 0
+    amount_to_pay = installment.expected_payment_amount - installment.actual_paid_amount
+
+    if amount_to_pay >= sulpus_amount:
+        installment.actual_paid_amount += sulpus_amount
+        installment.actual_payment_date = transaction.payment_date
+        installment.updated_date = timezone.now()
+        updated = True
+        sulpus_amount = 0
+    elif amount_to_pay > 0:
+        sulpus_amount = sulpus_amount - amount_to_pay
+        installment.actual_paid_amount += amount_to_pay
+        installment.actual_payment_date = transaction.payment_date
+        installment.updated_date = timezone.now()
+        updated = True
+    
+    if updated:
+        if (installment.expected_payment_amount - installment.actual_paid_amount) == 0:
+            installment.payment_status = "FULLY PAID"
+        else:
+            installment.payment_status = "PARTIALLY PAID"
+        installment.save()
+    
+    return updated, sulpus_amount, installment
+
+
+def clear_installment_and_payment(transaction: PaymentInstallmentTransaction, installment: ContractPaymentInstallment):
+    try:
+        updated = False
+        if installment.actual_paid_amount is None:
+            installment.actual_paid_amount = 0
+        
+        amount_to_pay = installment.expected_payment_amount - installment.actual_paid_amount
+
+        suplus_amount = 0
+        if amount_to_pay >= Decimal(transaction.payment_amount):
+            installment.actual_paid_amount += Decimal(transaction.payment_amount)
+            installment.actual_payment_date = transaction.payment_date
+            installment.updated_date = timezone.now()
+            updated = True
+        elif amount_to_pay > 0:
+            suplus_amount = Decimal(transaction.payment_amount) - amount_to_pay
+            installment.actual_paid_amount += amount_to_pay
+            installment.actual_payment_date = transaction.payment_date
+            installment.updated_date = timezone.now()
+            updated = True
+        
+        if updated:
+            if (installment.expected_payment_amount - installment.actual_paid_amount) == 0:
+                installment.payment_status = "FULLY PAID"
+            else:
+                installment.payment_status = "PARTIALLY PAID"
+            installment.save()
+
+            next_payment_date = None
+            paid_penalties = 0
+            if suplus_amount > 0:
+                other_installments = list(ContractPaymentInstallment.objects.filter(
+                    contract_payment=installment.contract_payment,
+                    payment_status__in=("PARTIALLY PAID", "NOT PAID")).exclude(id=installment.id).order_by("expected_payment_date"))
+                
+                for index, other_installment in enumerate(other_installments):
+                    _, suplus_amount, installment_returned = use_sulpus_paid_amount_for_other_installments(other_installment, suplus_amount, transaction)
+                    if installment_returned.payment_status == "PARTIALLY PAID":
+                        next_payment_date = installment_returned.expected_payment_date
+                        break
+                    elif suplus_amount == 0 and installment_returned.payment_status == "FULLY PAID":
+                        if index < len(other_installments) - 1:
+                            next_payment_date = other_installments[index + 1].expected_payment_date
+                        break
+                
+                if suplus_amount > 0: # clear the penalaties if there are some using the remaining amount
+                    installment_with_penalties = ContractPaymentInstallment.objects.filter(contract_payment=installment.contract_payment, accrued_penalties__gt=0)
+                    for penalty in installment_with_penalties:
+                        if penalty.paid_penalties is None:
+                            penalty.paid_penalties = 0
+                        amount_to_pay = penalty.accrued_penalties - penalty.paid_penalties
+                        if amount_to_pay >= suplus_amount:
+                            paid_penalties += suplus_amount
+                            penalty.paid_penalties += suplus_amount 
+                            suplus_amount = 0
+                        else:
+                            paid_penalties += amount_to_pay
+                            penalty.paid_penalties += amount_to_pay
+                            suplus_amount = suplus_amount - amount_to_pay
+                        penalty.save()
+
+                        if suplus_amount == 0:
+                            break
+
+            elif suplus_amount == 0 and installment.payment_status == "FULLY PAID":
+                other_installment = ContractPaymentInstallment.objects.filter(
+                    contract_payment=installment.contract_payment,
+                    payment_status__in=("PARTIALLY PAID", "NOT PAID")).exclude(id=installment.id).order_by("expected_payment_date").first()
+                next_payment_date = other_installment.expected_payment_date if other_installment else None
+            elif installment.payment_status == "PARTIALLY PAID":
+                next_payment_date = installment.expected_payment_date
+            
+            payment = installment.contract_payment
+            payment.next_payment_date = next_payment_date
+            if payment.total_amount_paid is None:
+                payment.total_amount_paid = 0
+            payment.total_amount_paid += (Decimal(transaction.payment_amount) - suplus_amount)
+            if payment.paid_penalties is None:
+                payment.paid_penalties = 0
+            payment.paid_penalties += paid_penalties 
+            payment.updated_date = timezone.now()
+            if payment.total_amount_unpaid is None:
+                payment.total_amount_unpaid = 0
+            payment.total_amount_unpaid = payment.total_amount_to_pay - payment.total_amount_paid
+
+            if payment.total_amount_to_pay == payment.total_amount_paid:
+                payment.payment_status = "FULLY PAID"
+            elif payment.total_amount_to_pay - payment.total_amount_paid != 0:
+                payment.payment_status = "IN PROGRESS"
+
+            payment.save()   
+        return True, "payment has been to applied to installments successfully"        
+    except Exception as e:
+        print(f"\n\nError: {str(e)}\n\n")
+        return False, f"[Error]: {str(e)}"
+
+
+def record_payment_transaction(data:dict, base_domain: str):
+    """
+    This function is for applying payment to installments
+    data
+    """
+    transaction = None
+    contract_id = None
+    try:
+        installment = data.get("installment")
+        payment_date = data.get("payment_date")
+        payment_amount = data.get("payment_amount")
+        payment_proof = data.get("document")
+        installment = ContractPaymentInstallment.objects.filter(id=installment).select_related("contract_payment").first()
+        if installment is None:
+            raise ContractPaymentInstallment.DoesNotExist
+        
+        transaction = PaymentInstallmentTransaction(
+            installment=installment,
+            payment_date=payment_date,
+            payment_amount=payment_amount,
+            payment_proof=payment_proof
+        )
+        transaction.save()
+        transaction.payment_proof_url = f"{base_domain}/{transaction.payment_proof.url}"
+        transaction.save()
+
+        succeed, message = clear_installment_and_payment(transaction=transaction, installment=installment)
+        contract_id = installment.contract_payment.contract.id
+        return succeed, message, contract_id
+    except Exception as e:
+        print("\nError: ", str(e), "\n")
+        return False, f"[Error]: {str(e)}", contract_id
+
 
 
 

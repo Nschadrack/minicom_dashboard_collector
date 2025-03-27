@@ -4,7 +4,8 @@ from .views import (industrial_parks_list, industrial_park_detail,
                     industry_details, industry_profile_details,
                     land_request, land_request_detail,add_industry_not_in_park,
                     record_industry_attachment, add_industry_economic_sectors,
-                    contracts_list, contracts_detail)
+                    contracts_list, contracts_detail, make_payment_transaction,
+                    main_indstry_contracts)
 
 
 app_name = "industry"
@@ -32,4 +33,6 @@ urlpatterns = [
     # contracts
     path("contracts/", contracts_list, name="contract-list"),
     path("contracts/<str:contract_id>/", contracts_detail, name="contracts-detail"),
+    path("contracts/make-transaction/payment/", make_payment_transaction, name="transaction-payment"),
+    path("contracts/all/industries/", main_indstry_contracts, name="all-contracts"),
 ]

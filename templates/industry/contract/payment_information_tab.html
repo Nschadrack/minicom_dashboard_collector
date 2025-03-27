@@ -16,9 +16,9 @@
                     <p><strong>Paid Penalities: </strong>{% if payment.paid_penalties %}{{ payment.paid_penalties }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p>
                     <p><strong>Amount Overdued: </strong>{% if payment.amount_overdued %}{{ payment.amount_overdued }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
                     <p><strong>Days In Arreas: </strong>{% if payment.days_in_arrears %}{{ payment.days_in_arrears }}{% else %} 0 {% endif %}</p> 
-                    <p><strong>Next Payment Date: </strong>{% if payment.next_payment_date %}{{ payment.next_payment_date|date:'Y-i-d' }}{% endif %}</p> 
-                    <p><strong>Last Updated On: </strong>{% if payment.updated_date %}{{ payment.updated_date|date:'Y-i-d' }}{% endif %}</p> 
-                    <p><strong>System Recorded Date: </strong>{{ payment.recorded_date|date:'Y-i-d H:m:s' }}</p> 
+                    <p><strong>Next Payment Date: </strong>{% if payment.next_payment_date %}{{ payment.next_payment_date|date:'d-m-Y' }}{% endif %}</p> 
+                    <p><strong>Last Updated On: </strong>{% if payment.updated_date %}{{ payment.updated_date|date:'d-m-Y' }}{% endif %}</p> 
+                    <p><strong>System Recorded Date: </strong>{{ payment.recorded_date|date:'d-m-Y H:i:s' }}</p> 
                 </div>
             </div>
         {% endif %}
@@ -44,8 +44,8 @@
                         {% for installment in payment_installments %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td>{{ installment.expected_payment_date|date:'Y-m-d' }}</td>
-                                <td>{{ installment.actual_payment_date|date:'Y-m-d' }}</td>
+                                <td>{{ installment.expected_payment_date|date:'d-m-Y' }}</td>
+                                <td>{{ installment.actual_payment_date|date:'d-m-Y' }}</td>
                                 <td>{{ installment.expected_payment_amount }} {{ payment.payment_currency }}</td>
                                 <td>{% if installment.actual_paid_amount %}{{ installment.actual_paid_amount }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
                                 <td>{% if installment.accrued_penalties %}{{ installment.accrued_penalties }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
@@ -53,8 +53,8 @@
                                 <td>{% if installment.amount_overdued %}{{ installment.amount_overdued }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
                                 <td>{% if installment.days_in_arrears %}{{ installment.days_in_arrears }} {% else %} 0 {% endif %}</td>
                                 <td>{{ installment.payment_status|upper }}</td>
-                                <td>{{ installment.updated_date|date:'Y-m-d' }}</td>
-                                <td>{{ installment.recorded_date|date:'Y-m-d' }}</td>
+                                <td>{{ installment.updated_date|date:'d-m-Y' }}</td>
+                                <td>{{ installment.recorded_date|date:'d-m-Y' }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
