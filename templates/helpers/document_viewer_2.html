@@ -1,0 +1,120 @@
+<div class="container-document-viewer-2" id="container-document-viewer-id-2">
+    <div class=".document-viewer-input-section">
+        {% comment %} <input type="url" id="document-viewer-documentUrl" placeholder="Enter document URL..."> {% endcomment %}
+        <button onclick="DocumentViewerTwo.closeDocument()"  style="float: left;">close viewer</button>
+    </div>
+    <div class="error-message" id="errorMessage-2"></div>
+
+    <div class="viewer-container-2">
+        <!-- PDF Viewer -->
+        <div id="pdf-container-2" style="display: none;">
+            <canvas id="pdf-viewer-2"></canvas>
+            <div class="pdf-controls">
+                <button onclick="DocumentViewerTwo.previousPage()">Previous</button>
+                <span id="currentPage-2">Page 1</span>
+                <button onclick="DocumentViewerTwo.nextPage()">Next</button>
+            </div>
+        </div>
+
+        <!-- Image Viewer -->
+        <img id="image-viewer-2" style="display: none;">
+    </div>
+</div>
+
+<!-- Include PDF.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+    const DocumentViewerTwo = (() => {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let currentPdf = null;
+        let currentPageNum = 1;
+        let totalPages = 1;
+
+        function closeDocument() {
+            document.getElementById('container-document-viewer-id-2').style.display = "none";
+        }
+
+        async function loadDocument(itemId) {
+            const urlInput = document.getElementById(`document-viewer-documentUrl-${itemId}`);
+            const errorMessage = document.getElementById('errorMessage-2');
+            const pdfContainer = document.getElementById('pdf-container-2');
+            const imageViewer = document.getElementById('image-viewer-2');
+            const container = document.getElementById('container-document-viewer-id-2');
+
+            container.style.display = "block";
+            errorMessage.style.display = 'none';
+            pdfContainer.style.display = 'none';
+            imageViewer.style.display = 'none';
+
+            if (!urlInput.value) {
+                showError('Please enter a document URL');
+                return;
+            }
+
+            const fileExtension = getFileExtension(urlInput.value);
+
+            try {
+                if (fileExtension === 'pdf') {
+                    currentPdf = await pdfjsLib.getDocument(urlInput.value).promise;
+                    totalPages = currentPdf.numPages;
+                    currentPageNum = 1;
+                    pdfContainer.style.display = 'block';
+                    renderPage(currentPageNum);
+                } else if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
+                    imageViewer.src = urlInput.value;
+                    imageViewer.style.display = 'block';
+                } else {
+                    showError('Unsupported file format');
+                }
+            } catch (error) {
+                showError('Error loading document: ' + error.message);
+            }
+        }
+
+        async function renderPage(pageNum) {
+            const page = await currentPdf.getPage(pageNum);
+            const canvas = document.getElementById('pdf-viewer-2');
+            const viewport = page.getViewport({ scale: 1.5 });
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+            });
+
+            document.getElementById('currentPage-2').textContent = `Page ${pageNum} of ${totalPages}`;
+        }
+
+        function nextPage() {
+            if (currentPageNum < totalPages) {
+                currentPageNum++;
+                renderPage(currentPageNum);
+            }
+        }
+
+        function previousPage() {
+            if (currentPageNum > 1) {
+                currentPageNum--;
+                renderPage(currentPageNum);
+            }
+        }
+
+        function getFileExtension(url) {
+            return url.split('.').pop().toLowerCase().split(/#|\?/)[0];
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage-2');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        return { loadDocument, closeDocument, nextPage, previousPage };
+    })();
+</script>
+

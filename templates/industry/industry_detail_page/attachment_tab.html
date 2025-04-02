@@ -19,10 +19,19 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ attachment.name }}</td>
                             <td>{{ attachment.category|title }}</td>
-                            <td>{{ attachment.uploaded_date|date:'d-m-Y H:i:s' }}</td>
+                            <td>{{ attachment.uploaded_date|date:'d-m-Y H:i:s A' }}</td>
                             {% comment %} <td>{{ attachment.comment|lower }}</td> {% endcomment %}
-                            <td>{{ attachment.document_url }}</td>
-                            <td><a href="{{ attachment.document_url }}" class="view_button" target="_blank">view</a></td>
+                            <td>
+                                {% if attachment.document_url %}
+                                    <input type="text" id="myInputToCopy2" value="{{ attachment.document_url }}" readonly>
+                                    <button onclick="copyText2();" id="copy-text-button2">Copy attachment link</button>
+                                    <p id="copyAlertMessage2"></p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <input type="hidden" id="document-viewer-documentUrl-{{attachment.id}}" value="{{ attachment.document_url }}"/>
+                                <button onclick="DocumentViewerOne.loadDocument('{{ attachment.id }}')"  class="view_button">View Attachment</button>
+                            </td>
                             <td><a href="" class="delete_button">remove</a></td>
                         </tr>
                     {% endfor %}
@@ -34,4 +43,5 @@
     <div class="new-assignment car_new_form_div">
         {% include 'industry/industry_detail_page/new_attachment_form.html' %}
     </div>
+    {% include 'helpers/document_viewer.html' %}
 </div>

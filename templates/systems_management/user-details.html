@@ -22,10 +22,10 @@
                     <p><strong>Firstname: </strong>{{ user.first_name|upper }}</p>
                     <p><strong>Lastname: </strong>{{ user.last_name|upper }}</p>                 
                     <p><strong>E-mail(username): </strong>{{ user.email|upper }}</p>
-                    <p><strong>Time Joined: </strong>{{ user.date_joined|date:'d-m-Y H:i:s' }}</p>
+                    <p><strong>Time Joined: </strong>{{ user.date_joined|date:'d-m-Y H:i:s A' }}</p>
                 </div>
                 <div>
-                    <p><strong>Last Login: </strong>{{ user.last_login|date:'d-m-Y H:i:s' }}</p>
+                    <p><strong>Last Login: </strong>{{ user.last_login|date:'d-m-Y H:i:s A' }}</p>
                     <p><strong>Account Status: </strong>{% if user.is_active %}ACTIVE{% else %}INACTIVE{% endif %}</p>
                     <p><strong>User Category: </strong>{{ user.user_category}}
                 </div>
@@ -51,7 +51,7 @@
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ user_role.role.name }}</td>
-                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s A" }}</td>
                                         <td>{{ user_role.assigned_by.email }}</td>
                                         <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
                                         <td><a href="" class="delete_button">remove</a></td>

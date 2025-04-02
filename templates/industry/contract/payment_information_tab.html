@@ -17,9 +17,17 @@
                     <p><strong>Amount Overdued: </strong>{% if payment.amount_overdued %}{{ payment.amount_overdued }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</p> 
                     <p><strong>Days In Arreas: </strong>{% if payment.days_in_arrears %}{{ payment.days_in_arrears }}{% else %} 0 {% endif %}</p> 
                     <p><strong>Next Payment Date: </strong>{% if payment.next_payment_date %}{{ payment.next_payment_date|date:'d-m-Y' }}{% endif %}</p> 
-                    <p><strong>Last Updated On: </strong>{% if payment.updated_date %}{{ payment.updated_date|date:'d-m-Y' }}{% endif %}</p> 
-                    <p><strong>System Recorded Date: </strong>{{ payment.recorded_date|date:'d-m-Y H:i:s' }}</p> 
+                    <p><strong>Last Updated On: </strong>{% if payment.updated_date %}{{ payment.updated_date|date:'d-m-Y H:i:s A' }}{% endif %}</p> 
+                    <p><strong>System Recorded Date: </strong>{{ payment.recorded_date|date:'d-m-Y H:i:s A' }}</p> 
                 </div>
+            </div>
+        {% endif %}
+        {% if transaction_to_refund and not transaction_to_refund.is_refunded %}
+            <div id="refund-warning-div">
+                <p style="font-size: 1.2rem;">There is a refund of <b style="background-color: rgb(29, 38, 153); padding: 5px;">{{ transaction_to_refund.refund_amount }} {{ payment.payment_currency }}</b> needed from <b>transaction made on {{ transaction_to_refund.payment_date|date:'d-m-Y' }}</b> which exceeded the payment which was required to clear unpaid installments
+                    {% if payment.accrued_penalties %} and <b>penalities accrued with amount of {{ payment.accrued_penalties }} {{ payment.payment_currency }}</b> {% endif %}</p>
+                <p style="font-size: 1.2rem;">If you have already refunded, click below button to confirm refund in the system</p>
+                <button style="padding: 10px; background-color: rgb(116, 24, 4); border: none; font-size: 1.1rem; color: white;" onclick="showPaymentRefund();">Click to record refund</button>
             </div>
         {% endif %}
         {% if payment_installments|length > 0 %}
@@ -37,8 +45,8 @@
                         <th>AMOUNT OVERDUED</th>
                         <th>DAYS IN ARREAS</th>
                         <th>PAYMENT STATUS</th>
-                        <th>UPDATED DATE</th>
-                        <th>RECORDED DATE</th>
+                        <th>SYSTEM UPDATED DATE</th>
+                        <th>SYSTEM RECORDED DATE</th>
                     </thead>
                     <tbody>
                         {% for installment in payment_installments %}
@@ -47,14 +55,14 @@
                                 <td>{{ installment.expected_payment_date|date:'d-m-Y' }}</td>
                                 <td>{{ installment.actual_payment_date|date:'d-m-Y' }}</td>
                                 <td>{{ installment.expected_payment_amount }} {{ payment.payment_currency }}</td>
-                                <td>{% if installment.actual_paid_amount %}{{ installment.actual_paid_amount }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
-                                <td>{% if installment.accrued_penalties %}{{ installment.accrued_penalties }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
-                                <td>{% if installment.paid_penalties %}{{ installment.paid_penalties }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
-                                <td>{% if installment.amount_overdued %}{{ installment.amount_overdued }} {{ installment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.actual_paid_amount %}{{ installment.actual_paid_amount }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.accrued_penalties %}{{ installment.accrued_penalties }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.paid_penalties %}{{ installment.paid_penalties }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
+                                <td>{% if installment.amount_overdued %}{{ installment.amount_overdued }} {{ payment.payment_currency }}{% else %} 0 {{ payment.payment_currency }}{% endif %}</td>
                                 <td>{% if installment.days_in_arrears %}{{ installment.days_in_arrears }} {% else %} 0 {% endif %}</td>
                                 <td>{{ installment.payment_status|upper }}</td>
-                                <td>{{ installment.updated_date|date:'d-m-Y' }}</td>
-                                <td>{{ installment.recorded_date|date:'d-m-Y' }}</td>
+                                <td>{{ installment.updated_date|date:'d-m-Y H:i:s A' }}</td>
+                                <td>{{ installment.recorded_date|date:'d-m-Y H:i:s A' }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -62,4 +70,42 @@
             </div>
         {% endif %}
     </div>
+    {% if transaction_to_refund %}
+        <div id="refund-form-payment">
+            <form class="car_new_form" method="post" action="{% url 'industry:record_refund' transaction_to_refund.id %}" style="font-weight: normal;" enctype="multipart/form-data">
+                {% csrf_token %}
+                <br/>
+                <div class="form-group">
+                    <label>
+                        Amount to be refunded is <b>{{ transaction_to_refund.refund_amount }} {{ payment.payment_currency }}</b> to the industry 
+                        <b>{{ transaction_to_refund.installment.contract_payment.contract.industry.company.name }}</b> with <b>TIN: {{ transaction_to_refund.installment.contract_payment.contract.industry.company.tin_number }}</b></label>
+                </div><br/>
+                <div class="form-group">
+                    <label>When was the refund happened? <b>[required]</b></label>
+                    <input type="date" name="refunded_date" required/>
+                </div><br>
+                <div class="form-group">
+                    <label class="custom-file-upload">
+                        <input type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" required/>
+                        <div class="upload-container">
+                            <div class="upload-content">
+                                <div class="upload-content">
+                                    <span class="upload-title">Click to upload refund proof <b>[required]</b></span>
+                                    <span class="file-name"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <small>Supported formats: PDF, JPG/JPEG, PNG</small>
+                </div><br><br/>
+                <div class="form-group">
+                    <label>
+                        <b>NOTE: </b> Once you confirm the refund, this action can no longer be cancelled.
+                    </label>
+                </div><br/>
+                <input type="submit" value="Confirm the Refund"/>
+                <button type="button" onclick="hidePaymentRefund();">Cancel this action</button>
+            </form>
+        </div>
+    {% endif %}
 </div>

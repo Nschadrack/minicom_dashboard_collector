@@ -13,7 +13,7 @@
                         <th>LINKED CONTRACT</th>
                         <th>CONTRACT CLOSED</th>
                         <th>INDUSTRY SIGNED</th>
-                        <th colspan="2">ACTION</th>
+                        <th colspan="3">ACTION</th>
                     </thead>
                     <tbody>
                         {% for contract in contracts %}
@@ -46,8 +46,22 @@
                                     <td>NO</td>
                                 {% endif %}
                                 <td><a href="{% url 'industry:industry-info-details' contract.industry.id %}#industry-detail" class="view_button">view industry details</a></td>
-                                <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td>
-                                <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view details</a></td>
+                                <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view contract details</a></td>
+                                <td>
+                                    {% if contract.contract_document_url %}
+                                        <input type="hidden" id="document-viewer-documentUrl-contract-{{contract.id}}" value="{{ contract.contract_document_url }}"/>
+                                        <button onclick="DocumentViewerTwo.loadDocument('contract-{{ contract.id }}')"  class="view_button">View contract document</button>
+                                    {% else %}
+                                        contract document is missing
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if contract.contract_document_url %}
+                                        <input type="text" id="myInputToCopy2" value="{{ contract.contract_document_url }}" readonly>
+                                        <button onclick="copyText2();" id="copy-text-button2">Copy contract document link</button>
+                                        <p id="copyAlertMessage2"></p>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -57,4 +71,5 @@
             {% endif %}						
         </div>
     </div>
+    {% include 'helpers/document_viewer_2.html' %}
 </div>

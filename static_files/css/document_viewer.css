@@ -1,0 +1,66 @@
+/* CSS Styles */
+.container-document-viewer, .container-document-viewer-2{
+    width: 80vw;
+    height: 92vh;
+    overflow-y: hidden;
+    margin: 0 auto;
+    padding: 10px;
+    z-index: 5000;
+    position: fixed;
+    top: 7vh;
+    right: 0;
+    background-color: #eae5e5;
+}
+.viewer-container, .viewer-container-2{
+    margin-top: 40px;
+    width: 100%;
+    height: 93%;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.container-document-viewer  button, .container-document-viewer-2  button{
+    padding: 5px;
+    background-color: #000080;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.container-document-viewer  button:hover {
+    background-color: #213d5e;
+}
+
+#pdf-viewer, #pdf-viewer-2 {
+    width: 100%;
+    height: 100%;
+}
+
+#image-viewer, #image-viewer-2{
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.pdf-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 20px;
+    text-align: center;
+    display: none;
+}

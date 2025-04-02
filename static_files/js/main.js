@@ -479,4 +479,18 @@ function closeCopyTextAlert2(){
     alertP.style.display="none";
 
 }
+function showPaymentRefund(){
+    let refundDiv = document.getElementById("refund-form-payment");
+    let refundWarningDiv = document.getElementById("refund-warning-div");
+
+    refundWarningDiv.style.display="none";
+    refundDiv.style.display="block";
+}
+function hidePaymentRefund(){
+    let refundDiv = document.getElementById("refund-form-payment");
+    let refundWarningDiv = document.getElementById("refund-warning-div");
+
+    refundWarningDiv.style.display="block";
+    refundDiv.style.display="none";
+}
 

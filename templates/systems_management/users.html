@@ -25,7 +25,7 @@
                             <td>{{user.last_name}}</td>
                             <td>{{user.email}}</td>
                             <td>{{user.user_category}}</td>
-                            <td>{{ user.date_joined|date:"d-m-Y H:i:s"}}</td>
+                            <td>{{ user.date_joined|date:"d-m-Y H:i:s A"}}</td>
                             {% if user.is_active %}
                                 <td>Active</td>
                             {% else %}

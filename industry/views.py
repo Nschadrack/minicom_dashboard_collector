@@ -445,6 +445,7 @@ def contracts_detail(request, contract_id):
         installment__contract_payment=payment).select_related("installment").order_by("installment__expected_payment_date")
     installment_payment_amount = None
     unpaid_installments = None
+    transaction_to_refund = PaymentInstallmentTransaction.objects.filter(id=payment.transaction_to_refund).first()
 
     if contract is None:
         return redirect("industry:companies-industries-list")
@@ -522,7 +523,8 @@ def contracts_detail(request, contract_id):
         "payment_installments": payment_installments,
         "unpaid_installment": unpaid_installment,
         "installment_payment_amount": installment_payment_amount,
-        "transactions": transactions
+        "transactions": transactions,
+        "transaction_to_refund": transaction_to_refund
     }
 
     return render(request, "industry/contract/contract_details.html", context)
@@ -559,5 +561,28 @@ def main_indstry_contracts(request):
     }
 
     return render(request, "industry/contract/main_contracts_information.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def record_refund(request, transaction_id):
+    if request.method == "POST":
+        transaction = PaymentInstallmentTransaction.objects.filter(id=transaction_id).first()
+        if transaction is not None:
+            refunded_date = request.POST.get("refunded_date")
+            document = request.FILES.get("document")
+            transaction.refund_amount = transaction.refund_amount
+            transaction.refunded_date = refunded_date
+            transaction.is_refunded = True
+            transaction.refund_proof = document
+            transaction.recorded_by = request.user
+            transaction.save()
+            base_domain = get_base_domain(request=request)
+            transaction.refund_proof_url = f"{base_domain}/{transaction.refund_proof.url}"
+            transaction.save()
+            
+            redirect_url = reverse('industry:contracts-detail', args=(transaction.installment.contract_payment.contract.id, ))
+            return redirect(f"{redirect_url}#installments-transactions") 
+    return redirect("industry:companies-industries-list")
+
 
 

@@ -229,6 +229,7 @@ class IndustryContractPayment(models.Model):
     next_payment_date = models.DateField(null=True, blank=True)
     recorded_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(null=True, blank=True)
+    transaction_to_refund = models.PositiveBigIntegerField(null=True, blank=True)
     irembo_application_number = models.CharField(max_length=40, null=True, blank=True)
 
     class Meta:
@@ -263,6 +264,12 @@ class PaymentInstallmentTransaction(models.Model):
     payment_proof = models.FileField(null=True, blank=True, upload_to="Contract_documents/payment_proofs/")
     payment_proof_url = models.URLField(blank=True, null=True)
     recorded_date = models.DateTimeField(auto_now_add=True)
+    refund_amount = models.DecimalField(max_digits=13, decimal_places=2, null=True, blank=True, default=0)
+    is_refunded = models.BooleanField(default=False)
+    refunded_date = models.DateField(null=True, blank=True)
+    refund_proof = models.FileField(null=True, blank=True, upload_to="Contract_documents/refund_payment_proofs/")
+    refund_proof_url = models.URLField(blank=True, null=True)
+    recorded_by = models.ForeignKey(User, related_name="user_records", on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = "PaymentInstallmentTransactions"

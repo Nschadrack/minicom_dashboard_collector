@@ -38,7 +38,7 @@
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
                                         <td>{{ role_user.user.get_full_name }}</td>
-                                        <td>{{ role_user.assigned_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ role_user.assigned_date|date:"d-m-Y H:i:s A" }}</td>
                                         <td>{{ role_user.assigned_by.email }}</td>
                                         <td>{{ role_user.user.user_category }}</td>
                                         <td><a href="{% url 'system_management:user-details' role_user.user.id %}" class="view_button">view details</a></td>

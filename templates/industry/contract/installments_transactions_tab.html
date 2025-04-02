@@ -8,30 +8,67 @@
             <table>
                 <thead>
                     <th>#</th>
+                    <th>SYSTEM RECORDED DATE</th>
                     <th>INSTALLMENT</th>
                     <th>TRANSACTION DATE</th>
                     <th>PAID AMOUNT</th>
-                    <th colspan="2">ACTION</th>
+                    <th>AMOUNT TO REFUND</th>
+                    <th>REFUNDED DATE</th>
+                    <th>WAS AMOUNT REFUNDED?</th>
+                    <th>REFUND RECORDED BY</th>
+                    <th colspan="3">ACTION</th>
                 </thead>
                 <tbody>
                     {% for transaction in transactions %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
+                            <td>{{ transaction.recorded_date|date:'d-m-Y H:i:s A' }}</td>
                             <td>{{ transaction.installment.expected_payment_date|date:'d-m-Y' }}</td>
                             <td>{{ transaction.payment_date|date:'d-m-Y' }}</td>
                             <td>{{ transaction.payment_amount }} {{ transaction.installment.contract_payment.payment_currency }}</td>
                             <td>
+                                {% if transaction.refund_amount > 0 %}
+                                    {{ transaction.refund_amount }} {{ transaction.installment.contract_payment.payment_currency }}
+                                {% else %}
+                                    0 {{ transaction.installment.contract_payment.payment_currency }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.refunded_date %}
+                                    {{ transaction.refunded_date|date:'d-m-Y' }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.is_refunded %}
+                                    YES
+                                {% else %}
+                                    NO
+                                {% endif %}
+                            </td>
+                            <td>
+                                {%  if transaction.recorded_by  %}
+                                    {{ transaction.recorded_by.first_name|title }} {{ transaction.recorded_by.last_name|title }}
+                                {% endif %}
+                            </td>
+                            <td>
                                 {% if transaction.payment_proof_url %}
-                                    <a style="background-color:#cd853f;" href="{{ transaction.payment_proof_url }}" target="_blank">view payment proof</a>
+                                    <input type="hidden" id="document-viewer-documentUrl-{{transaction.id}}" value="{{ transaction.payment_proof_url }}"/>
+                                    <button onclick="DocumentViewerOne.loadDocument('{{ transaction.id }}')"  class="view_button">View payment proof</button>
                                 {% else %}
                                     Payment proof is missing
                                 {% endif %}
-                                </td>
+                            </td>
                             <td>
                                 {% if transaction.payment_proof_url %}
                                     <input type="text" id="myInputToCopy2" value="{{ transaction.payment_proof_url }}" readonly>
-                                    <button onclick="copyText2();" id="copy-text-button2">Copy proof link</button>
+                                    <button onclick="copyText2();" id="copy-text-button2">Copy payment proof link</button>
                                     <p id="copyAlertMessage2"></p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.refund_proof_url %}
+                                    <input type="hidden" id="document-viewer-documentUrl-refund-{{transaction.id}}" value="{{ transaction.refund_proof_url }}"/>
+                                    <button onclick="DocumentViewerOne.loadDocument('refund-{{ transaction.id }}')"  class="view_button">View refund proof</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -46,4 +83,5 @@
         <!-- form for recording payment transaction-->
         {% include 'industry/contract/transaction_form.html' %}
     </div>
+    {% include 'helpers/document_viewer.html' %}
 </div>

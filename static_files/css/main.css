@@ -8,7 +8,7 @@
 	--main_bg: #e8e8e8;
 	--main_fg: black;
 	--main_header_bg: white;
-	--scroll_bar_color: #888;
+	--scroll_bar_color: #c5c1c1;
 	--aside-navigation-span-bg: #55f;
 	--navy_blue: #000080;
 	--peru_car: #cd853f;
@@ -1260,6 +1260,7 @@ main:hover{
 	outline: none;
 	padding: 5px;
 	border-bottom: 1px dashed black;
+	width: 100px;
 }
 #copy-text-button, #copy-text-button2{
 	border: none;
@@ -1284,4 +1285,30 @@ main:hover{
 	padding: 0 5px;
 }
 
+#refund-form-payment{
+	background-color: var(--scroll_bar_color);
+	position: fixed;
+	top: 5rem;
+	right: 20rem;
+	height: 35rem;
+	width: 50rem;
+	z-index: 1500;
+	margin: 0 auto;
+	border-radius: 10px;
+	display: none;
+}
+
+#refund-warning-div{
+	background-color: var(--peru_car); 
+	min-height: 100px; 
+	padding: 10px; 
+	text-align: left; 
+	color: white; 
+	font-weight: normal; 
+}
+
+/* document viewer */
+.container-document-viewer, .container-document-viewer-2{
+	display: none;
+}
 

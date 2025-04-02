@@ -14,7 +14,7 @@
                     <th>OPERATIONAL YEARS</th>
                     <th>LINKED CONTRACT</th>
                     <th>CONTRACT CLOSED</th>
-                    <th colspan="3">ACTION</th>
+                    <th colspan="4">ACTION</th>
                 </thead>
                 <tbody>
                     {% for contract in contracts %}
@@ -46,8 +46,23 @@
                             {% else %}
                                 <td>NO</td>
                             {% endif %}
-                            <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td>
-                            <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view details</a></td>
+                            <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view contract details</a></td>
+                            <td>
+                                {% if contract.contract_document_url %}
+                                    <input type="hidden" id="document-viewer-documentUrl-contract-{{contract.id}}" value="{{ contract.contract_document_url }}"/>
+                                    <button onclick="DocumentViewerTwo.loadDocument('contract-{{ contract.id }}')"  class="view_button">View contract document</button>
+                                {% else %}
+                                    contract document is missing
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if contract.contract_document_url %}
+                                    <input type="text" id="myInputToCopy2" value="{{ contract.contract_document_url }}" readonly>
+                                    <button onclick="copyText2();" id="copy-text-button2">Copy contract document link</button>
+                                    <p id="copyAlertMessage2"></p>
+                                {% endif %}
+                            </td>
+                            {% comment %} <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td> {% endcomment %}
                             <td><a href="" class="delete_button">remove</a></td>
                         </tr>
                     {% endfor %}
@@ -59,4 +74,5 @@
     <div class="new-assignment car_new_form_div">
         {% include 'industry/industry_detail_page/new_contract_form.html' %}
     </div>
+    {% include 'helpers/document_viewer_2.html' %}
 </div>

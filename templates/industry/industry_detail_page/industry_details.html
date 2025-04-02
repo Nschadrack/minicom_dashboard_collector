@@ -81,7 +81,7 @@
                         <p><strong>Investor(s) Origin Countries: </strong>{{ industry.company.investor_origin_country|upper }}</p> 
                         <p><strong>Plot Zoning: </strong>{{ industry.allocated_plot.zone.name|title }}</p>  
                         <p><strong>RDB Registration Date: </strong>{{ industry.company.registeration_date|date:'d-m-Y' }}</p>
-                        <p><strong>System Recorded Date: </strong>{{ industry.recorded_date|date:'d-m-Y H:i:s' }}</p><br/><br/>
+                        <p><strong>System Recorded Date: </strong>{{ industry.recorded_date|date:'d-m-Y H:i:s A' }}</p><br/><br/>
 
                         <p><button id="view_price_archive_button" onclick='showAssignmentTable("block")' style="background-color: #000080; display:block; float: left; font-weight: normal; margin-top: 13px; padding:10px; margin-left: 5px; width: 100%;">+ add economic sector & sub-sector</button></p>
                         {% if industry_economic_sub_sectors|length > 0 %}

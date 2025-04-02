@@ -257,6 +257,7 @@ def use_sulpus_paid_amount_for_other_installments(installment: ContractPaymentIn
 
 
 def clear_installment_and_payment(transaction: PaymentInstallmentTransaction, installment: ContractPaymentInstallment):
+    refund_transaction = None
     try:
         updated = False
         if installment.actual_paid_amount is None:
@@ -319,6 +320,10 @@ def clear_installment_and_payment(transaction: PaymentInstallmentTransaction, in
 
                         if suplus_amount == 0:
                             break
+                    if suplus_amount > 0: # this amount must be refunded
+                        transaction.refund_amount = suplus_amount
+                        refund_transaction = transaction.id
+                        transaction.save()
 
             elif suplus_amount == 0 and installment.payment_status == "FULLY PAID":
                 other_installment = ContractPaymentInstallment.objects.filter(
@@ -346,6 +351,8 @@ def clear_installment_and_payment(transaction: PaymentInstallmentTransaction, in
             elif payment.total_amount_to_pay - payment.total_amount_paid != 0:
                 payment.payment_status = "IN PROGRESS"
 
+            if refund_transaction is not None:
+                payment.transaction_to_refund = refund_transaction
             payment.save()   
         return True, "payment has been to applied to installments successfully"        
     except Exception as e:

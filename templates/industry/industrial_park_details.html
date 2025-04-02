@@ -37,7 +37,7 @@
                     <p><strong>Cell: </strong>{{ industrial_park.cell|title}}
                 </div>
                 <div>
-                    <p><strong>System Recorded Date: </strong>{{ industrial_park.recorded_date|date:'d-m-Y H:i:s' }}</p>
+                    <p><strong>System Recorded Date: </strong>{{ industrial_park.recorded_date|date:'d-m-Y H:i:s A' }}</p>
                     <p><strong>Total Leasable Land Area: </strong>
                         {% with value=industrial_park.leasable_land|floatformat:5 %}
                             {{ value|floatformat:5|intcomma|cut:".00000" }}
@@ -87,7 +87,7 @@
                                         </td>
                                         <td>{{ park_partitioned_plot.upi_status|title }}</td>                               
                                         <td>{{ park_partitioned_plot.partitioned_plot_upi }}</td>
-                                        <td>{{ park_partitioned_plot.recorded_date|date:"d-m-Y H:i:s" }}</td>                                     
+                                        <td>{{ park_partitioned_plot.recorded_date|date:"d-m-Y H:i:s A" }}</td>                                     
                                         <td><a href="" class="delete_button">remove</a></td>
                                     </tr>
                                 {% endfor %}
@@ -138,7 +138,7 @@
                                         </td>
                                         <td>{{ allocated_plot.zone.name|title }}</td>
                                         <td>{{ allocated_plot.land_title_status|title }}</td>
-                                        <td>{{ allocated_plot.recorded_date|date:"d-m-Y H:i:s" }}</td>
+                                        <td>{{ allocated_plot.recorded_date|date:"d-m-Y H:i:s A" }}</td>
                                         <td><a href="{% url 'industry:land-request-detail' allocated_plot.land_request.id %}#land-request-allocated-plot" class="view_button">view</a></td>
                                     </tr>
                                 {% endfor %}
