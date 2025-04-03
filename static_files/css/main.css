@@ -564,7 +564,7 @@ body{
 	
 }
 /* styling new form car */
-.car_new_form_div{
+.car_new_form_div, .car_new_form_div_edit{
 	height: 100%;
 	width: 100%;
 	margin: auto;
@@ -574,8 +574,11 @@ body{
 	justify-content: center; /* Center horizontally */
 	align-items: center;     /* Center vertically */
 }
+.car_new_form_div_edit{
+	display: block;
+}
 
-.car_new_form_div div{
+.car_new_form_div div, .car_new_form_div_edit div{
 	width:100%;
 	height: auto;
 	overflow: auto;
@@ -615,14 +618,14 @@ body{
 	outline: none;
 	padding: 5px;
 }
-.car_new_form_div legend{
+.car_new_form_div legend, .car_new_form_div_edit legend{
 	font-weight: bold;
 	margin-bottom: 0px;
 	font-size: 14px;
 	margin-left: 5px;
 	text-align: center;
 }
-.car_new_form_div label, #computer_update_form_div label{
+.car_new_form_div label, .car_new_form_div_edit label{
 	font-weight: normal;
 	font-size: 12px;
 }
@@ -630,12 +633,12 @@ body{
 	margin-bottom: 0px;
 	width: 100%;
 }
-.car_new_form_div fieldset{
+.car_new_form_div fieldset, .car_new_form_div_edit fieldset{
 	border-radius: 5px;
 	border: none;
 	width: 100%;
 }
-.car_new_form_div legend{
+.car_new_form_div legend, .car_new_form_div_edit legend{
 	border-bottom: 2px double var(--darkBlue);
 	font-size: 12px;
 }

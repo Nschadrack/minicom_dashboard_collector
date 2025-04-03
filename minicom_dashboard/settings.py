@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "dashboard",
     "system_management",
     "industry",
+    "minicom_dashboards",
 ]
 
 MIDDLEWARE = [

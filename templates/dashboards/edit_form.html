@@ -1,0 +1,28 @@
+{% extends 'base_layout.html' %}
+{% block main_data_load %}
+    <div id="card_body_data">
+        <div class="car_new_form_div_edit">
+            <form class="car_new_form" method="post" action="{% url 'minicom_dashboards:dashboard-detail' dashboard.id %}">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Editing dashboard information</legend>	
+                    <div class="form-group">
+                        <label>The name of dashboard</label>
+                        <input type="text" maxlength="60" name="name" required autocomplete="off" value="{{ dashboard.name }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>The Link to the dashboard</label>
+                        <textarea rows="3" required name="dashboard_link">{{ dashboard.dashboard_link }}</textarea>
+                    </div>
+                    <input type="submit" value="Save"/>
+
+                    {% if dashboard.category == "INDUSTRY" %}
+                        <button type="button"><a href="{% url 'minicom_dashboards:industry-dashboards' %}" style="text-decoration: none; color: white">Cancel this action</a></button>
+                    {% else %}
+                        <button type="button"><a href="{% url 'minicom_dashboards:trade-dashboards' %}" style="text-decoration: none; color: white">Cancel this action</a></button>
+                    {% endif %}
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}

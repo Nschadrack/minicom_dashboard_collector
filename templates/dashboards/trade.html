@@ -1,0 +1,63 @@
+{% extends 'base_layout.html' %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">List of industry dashboards</p>
+        <button id="car_title_header_and_new_btn_button">+ new dashboard</button>
+    </div>
+    <div id="card_body_data">
+        <div id="car_table_data" class="table-data">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>DASHBOARD NAME</th>
+                    <th>CREATED DATE</th>
+                    <th>UPDATED ON</th>
+                    <th>CREATED BY</th>
+                    <th>UPDATED BY</th>
+                    <th colspan="3">ACTIONS</th>
+                </thead>
+                <tbody>
+                    {% for dashboard in dashboards %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{dashboard.name}}</td>
+                            <td>{{ dashboard.created_at|date:"d-m-Y H:i:s A"}}</td>
+                            <td>
+                                {% if dashboard.updated_at %}
+                                    {{ dashboard.updated_at|date:"d-m-Y H:i:s A"}}
+                                {% endif %}
+                            </td>
+                            <td>{{dashboard.created_by.get_full_name}}</td>
+                            <td>
+                                {% if dashboard.updated_by %}
+                                    {{dashboard.updated_by.get_full_name}}
+                                {% endif %}
+                            </td>
+                            <td><a href="{% url 'minicom_dashboards:dashboard-detail' dashboard.id  %}" class="view_button">view dashboard</a></td>
+                            <td><a href="{% url 'minicom_dashboards:edit-dashboard-detail' dashboard.id %}" class="update_button">edit</a></td>
+                            <td><a href="{% url 'minicom_dashboards:delete-dashboard' dashboard.id  %}" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="car_new_form_div">
+            <form class="car_new_form" method="post" action="{% url 'minicom_dashboards:trade-dashboards' %}">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Adding a new dashboard</legend>	
+                    <div class="form-group">
+                        <label>The name of dashboard</label>
+                        <input type="text" maxlength="60" name="name" required autocomplete="off"/>
+                    </div>
+                    <div class="form-group">
+                        <label>The Link to the dashboard</label>
+                        <textarea rows="3" required name="dashboard_link"></textarea>
+                    </div>
+                    <input type="submit" value="Save"/>
+                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}

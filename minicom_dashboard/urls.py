@@ -27,6 +27,7 @@ urlpatterns = [
     path("dashboard/", include("dashboard.urls", namespace="dashboard")),
     path("system-management/", include("system_management.urls", namespace="system_management")),
     path("industry/", include("industry.urls", namespace="industry")),
+    path("minicom-dashboards/", include("minicom_dashboards.urls", namespace="minicom_dashboards")),
 ]
 
 if settings.DEBUG:

@@ -16,13 +16,18 @@
 			<p class="aside-header-data">Ministry of Trade and Industry</p>
 		</div>
 		<div id="aside_navigations">
-			<a href="">Dashboard</a>
+			<a href="">Overview</a>
 			<button onclick="toggleAssetRegistrySection()">Industry management</button>
 			<section id="assets-registry-section">
 				<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
 				<a href="{% url 'industry:companies-industries-list' %}">Industries</a>
 				<a href="{% url 'industry:all-contracts' %}">Contracts Information</a>
 				<a href="{% url 'industry:land-requests' %}">Land Information</a>
+			</section>
+			<button onclick="toggleDashboardsSection()">Dashboards management</button>
+			<section id="dashboards-section">
+				<a href="{% url 'minicom_dashboards:industry-dashboards' %}">Industry dashboards</a>
+				<a href="{% url 'minicom_dashboards:trade-dashboards' %}">Trade dashboards</a>
 			</section>
 			<button onclick="toggleUsersManagementAssetSection()">Administration</button>
 			<section id="users-management-section">

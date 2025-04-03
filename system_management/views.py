@@ -23,6 +23,7 @@ def login_user(request):
             print(f"\n\n:username: {username}\nINVALID CREDENTIALS\n\n")
     
     return render(request, "index.html")
+    # return render(request, "index_map.html")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")

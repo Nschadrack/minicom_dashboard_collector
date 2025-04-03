@@ -1,0 +1,15 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <div id="card_body_data">
+        <iframe style=" margin: 0;
+                        padding: 0;
+                        width: 100%;
+                        height: 100vh;
+                        overflow: hidden;
+                        box-sizing: border-box;" 
+            frameborder="0" allowfullscreen
+            src="{{ dashboard.dashboard_link }}">
+        
+        </iframe>
+    </div>
+{% endblock %}

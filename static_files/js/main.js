@@ -160,14 +160,14 @@ function toggleAssetRegistrySection(e){
     
 }
 
-function toggleAssetsConsolidationSection(e){
-    var assets_consolidation_section = document.getElementById("assets-consolidation-section");
-    var style = window.getComputedStyle(assets_consolidation_section);
+function toggleDashboardsSection(e){
+    var dashboardsSection = document.getElementById("dashboards-section");
+    var style = window.getComputedStyle(dashboardsSection);
     var displayCss = style.getPropertyValue("display")
     if (displayCss === "none"){
-        assets_consolidation_section.style.display = "block";
+        dashboardsSection.style.display = "block";
     }else{
-        assets_consolidation_section.style.display = "none";
+        dashboardsSection.style.display = "none";
     }
 }
 
