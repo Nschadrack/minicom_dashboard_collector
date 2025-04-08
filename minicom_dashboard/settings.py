@@ -28,7 +28,7 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG"))
+DEBUG = bool(int(os.getenv('DEBUG')))
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
@@ -91,7 +91,7 @@ WSGI_APPLICATION = "minicom_dashboard.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if bool(os.getenv("DEVELOPMENT")):
+if bool(int(os.getenv('DEVELOPMENT'))):
     DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
