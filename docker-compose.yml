@@ -2,7 +2,7 @@ services:
     db:
         image: postgres:latest
         volumes:
-            - postgres_data:/var/lib/postgresql/data  # Container data
+            - postgres_data:/var/lib/postgresql/data:Z  # Container data
             - ../postgres_data:/var/lib/postgresql/data/external  # Host-accessible data
         environment:
             - POSTGRES_DB=${DB_NAME}
