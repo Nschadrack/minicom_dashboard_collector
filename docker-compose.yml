@@ -22,12 +22,7 @@ services:
         # Add initialization wait
         command: >
             sh -c '
-                if [ ! -f /var/lib/postgresql/data/.initialized ]; then
-                su postgres -c "initdb -D /var/lib/postgresql/data" &&
-                touch /var/lib/postgresql/data/.initialized &&
-                echo "Initialization complete";
-                fi
-                exec docker-entrypoint.sh postgres
+                rm -rf /var/lib/postgresql/data/*
             '
 
     minicom_main_system:
