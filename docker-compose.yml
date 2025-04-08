@@ -1,24 +1,23 @@
 services:
-    db:
+    postgres_db:
         image: postgres:latest
         volumes:
             - postgres_data:/var/lib/postgresql/data:Z  # Container data (persisting data)
             - ../postgres_data:/var/lib/postgresql/data  # Host-accessible data
+            - ./postgres/initdb:/docker-entrypoint-initdb.d  # Init scripts
         environment:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
-
-            # For enabling remote access with password auth
-            - POSTGRES_HOST_AUTH_METHOD=md5
-            - POSTGRES_INITDB_ARGS=--auth-host=md5
         ports:
-            - "5433:5432"
+            - "5432:5432"
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
             interval: 5s
             timeout: 5s
             retries: 5
+        networks:
+            - postgres_network
 
     minicom_main_system:
         build:
@@ -39,8 +38,11 @@ services:
         env_file:
             - .env
         depends_on:
-            db:
+            postgres_db:
                 condition: service_healthy
+        networks:
+            - postgres_network
+            - minicom_main_system_network
 
     nginx:
         build: ./nginx
@@ -52,8 +54,14 @@ services:
             - "80:80"
         depends_on:
             - minicom_main_system
+        networks:
+            - minicom_main_system_network
 
 volumes:
     static_volume:
     root_volume:
     postgres_data:
+
+networks:
+  postgres_network: 
+  minicom_main_system_network:
