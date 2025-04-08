@@ -21,13 +21,14 @@ services:
             retries: 5
         # Add initialization wait
         command: >
-            sh -c 'while [ ! -f /var/lib/postgresql/data/.initialized ]; 
-            do
-                initdb -D /var/lib/postgresql/data && 
-                touch /var/lib/postgresql/data/.initialized && 
+            sh -c '
+                if [ ! -f /var/lib/postgresql/data/.initialized ]; then
+                su postgres -c "initdb -D /var/lib/postgresql/data" &&
+                touch /var/lib/postgresql/data/.initialized &&
                 echo "Initialization complete";
-            done || true
-            && exec docker-entrypoint.sh postgres'
+                fi
+                exec docker-entrypoint.sh postgres
+            '
 
     minicom_main_system:
         build:
