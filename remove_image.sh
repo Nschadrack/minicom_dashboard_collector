@@ -1,5 +1,11 @@
+# Remove existing database files
+sudo rm -rf ../postgres_data
+
+# Recreate the directory with proper permissions
+mkdir ../postgres_data && sudo chown -R 1001:1001 ../postgres_data
+
 # Stop and remove ALL containers/volumes from previous setups
-docker-compose down --remove-orphans --volumes --rmi all
+docker compose down --remove-orphans --volumes --rmi all
 
 # Function to kill process running on a given port
 kill_port_process() {

@@ -3,7 +3,7 @@ services:
         image: postgres:latest
         volumes:
             - postgres_data:/var/lib/postgresql/data  # Container data
-            - ./postgres_data:/var/lib/postgresql/data/external  # Host-accessible data
+            - ../postgres_data:/var/lib/postgresql/data/external  # Host-accessible data
         environment:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
@@ -15,6 +15,15 @@ services:
             interval: 5s
             timeout: 5s
             retries: 5
+        # Add initialization wait
+        command: >
+            sh -c 'while [ ! -f /var/lib/postgresql/data/.initialized ]; 
+            do
+                initdb -D /var/lib/postgresql/data && 
+                touch /var/lib/postgresql/data/.initialized && 
+                echo "Initialization complete";
+            done || true
+            && exec docker-entrypoint.sh postgres'
 
     minicom_main_system:
         build:
