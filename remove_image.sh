@@ -1,6 +1,3 @@
-# Remove existing database files
-sudo rm -rf ../postgres_data
-
 # Recreate the directory with proper permissions
 mkdir ../postgres_data && sudo chown -R 1001:1001 ../postgres_data
 sudo chown 999:999 ../postgres_data
