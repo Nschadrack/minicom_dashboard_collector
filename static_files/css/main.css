@@ -1258,21 +1258,21 @@ main:hover{
 	}
 }
 
-#myInputToCopy, #myInputToCopy2{
+.myInputToCopy-cls{
 	border: none;
 	outline: none;
 	padding: 5px;
 	border-bottom: 1px dashed black;
 	width: 100px;
 }
-#copy-text-button, #copy-text-button2{
+.copy-text-button-cls{
 	border: none;
 	background-color: var(--darkBlue);
 	border-radius: 5px;
 	padding: 5px;
 	color: white;
 }
-#copyAlertMessage, #copyAlertMessage2{
+.copyAlertMessage-cls{
 	padding: 10px;
 	background-color: var(--darkBlue);
 	color: white;
@@ -1280,7 +1280,7 @@ main:hover{
 	text-align: center;
 	display: none;
 }
-#closebtnCopyText, #closebtnCopyText2{
+.closebtnCopyText-cls{
 	float: right;
 	font-weight: bold;
 	border: none;

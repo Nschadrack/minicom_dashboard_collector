@@ -42,10 +42,10 @@
                         <p><strong>Contract Amount: </strong>{{ contract.contract_amount }} {{ contract.contract_currency }}</p> 
                         <p><strong>Operational Year(s): </strong>{{ contract.operational_years }}</p> 
                         <p><strong>Contract Document Link:
-                            <input type="text" id="myInputToCopy" value="{{ contract.contract_document_url }}" readonly>
-                            <button onclick="copyText();" id="copy-text-button">Copy</button>
+                            <input type="text" id="myInputToCopy-{{contract.id}}" class="myInputToCopy-cls" value="{{ contract.contract_document_url }}" readonly>
+                            <button onclick="copyText('{{contract.id}}');" id="copy-text-button-{{contract.id}}" class="copy-text-button-cls">Copy</button>
                         </p>
-                        <p id="copyAlertMessage"></p>
+                        <p id="copyAlertMessage-{{contract.id}}" class="copyAlertMessage-cls"></p>
                         {% if contract.is_contract_closed %}
                             <p><strong>Contract is closed</strong></p>
                             <p><strong>Contract closure comment: </strong><i>{{ contract.closure_comment }}</i></p>  

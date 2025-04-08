@@ -443,39 +443,39 @@ document.addEventListener('click', (e) => {
 });
 
 // copying the text
-function copyText() {
-    let text = document.getElementById("myInputToCopy").value;
-    let alertP = document.getElementById("copyAlertMessage");
+function copyText(itemId) {
+    let text = document.getElementById(`myInputToCopy-${itemId}`).value;
+    let alertP = document.getElementById(`copyAlertMessage-${itemId}`);
     navigator.clipboard.writeText(text).then(() => {
-        alertP.innerHTML = "Copied to clipboard! <button onclick='closeCopyTextAlert();' id='closebtnCopyText'>X</button>";
+        alertP.innerHTML = `Copied to clipboard! <button onclick='closeCopyTextAlert(${itemId});' id='closebtnCopyText-${itemId}' class='closebtnCopyText-cls'>X</button>`;
         alertP.style.display = "block";
     }).catch(err => {
-        alertP.innerHTML = "Failed to copy! <button onclick='closeCopyTextAlert();' id='closebtnCopyText'>X</button>";
+        alertP.innerHTML = `Failed to copy! <button onclick='closeCopyTextAlert(${itemId});' id='closebtnCopyText-${itemId}' class='closebtnCopyText-cls'>X</button>`;
         alertP.style.display = "block";
     });
 }
 
-function copyText2() {
-    let textInput = document.getElementById("myInputToCopy2");
+function copyText2(itemId) {
+    let textInput = document.getElementById(`myInputToCopy2-${itemId}`);
     let text = textInput.value
-    let alertP = document.getElementById("copyAlertMessage2");
+    let alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
     navigator.clipboard.writeText(text).then(() => {
-        alertP.innerHTML = "Copied to clipboard! <button onclick='closeCopyTextAlert2();' id='closebtnCopyText2'>X</button>";
+        alertP.innerHTML = `Copied to clipboard! <button onclick='closeCopyTextAlert2(${itemId});' id='closebtnCopyText2-${itemId}' class='closebtnCopyText-cls'>X</button>`;
         alertP.style.display = "block";
     }).catch(err => {
-        alertP.innerHTML = "Failed to copy! <button onclick='closeCopyTextAlert2();' id='closebtnCopyText2'>X</button>";
+        alertP.innerHTML = `Failed to copy! <button onclick='closeCopyTextAlert2(${itemId});' id='closebtnCopyText2-${itemId}' class='closebtnCopyText-cls'>X</button>`;
         alertP.style.display = "block";
     });
 }
 
-function closeCopyTextAlert(){
-    let alertP = document.getElementById("copyAlertMessage");
+function closeCopyTextAlert(itemId){
+    let alertP = document.getElementById(`copyAlertMessage-${itemId}`);
     alertP.style.display="none";
 
 }
 
-function closeCopyTextAlert2(){
-    let alertP = document.getElementById("copyAlertMessage2");
+function closeCopyTextAlert2(itemId){
+    let alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
     alertP.style.display="none";
 
 }

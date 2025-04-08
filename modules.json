@@ -32,5 +32,45 @@
     "module_id": "0007",
     "name": "System Setting",
     "parent_id": "0001"
+},
+{
+    "module_id": "0008",
+    "name": "Dashboard management",
+    "parent_id": null
+},
+{
+    "module_id": "0009",
+    "name": "Industry dashboards",
+    "parent_id": "0008"
+},
+{
+    "module_id": "0010",
+    "name": "Trade dashboards",
+    "parent_id": "0008"
+},
+{
+    "module_id": "0011",
+    "name": "Industry management",
+    "parent_id": null
+},
+{
+    "module_id": "0012",
+    "name": "Industrial Parks",
+    "parent_id": "0011"
+},
+{
+    "module_id": "0013",
+    "name": "Industries",
+    "parent_id": "0011"
+},
+{
+    "module_id": "0014",
+    "name": "Contracts Information",
+    "parent_id": "0011"
+},
+{
+    "module_id": "0015",
+    "name": "Land Information",
+    "parent_id": "0011"
 }
 ]

@@ -57,12 +57,11 @@
                             </td>
                             <td>
                                 {% if contract.contract_document_url %}
-                                    <input type="text" id="myInputToCopy2" value="{{ contract.contract_document_url }}" readonly>
-                                    <button onclick="copyText2();" id="copy-text-button2">Copy contract document link</button>
-                                    <p id="copyAlertMessage2"></p>
+                                    <input type="text" id="myInputToCopy-{{ contract.id }}" class="myInputToCopy-cls" value="{{ contract.contract_document_url }}" readonly>
+                                    <button onclick="copyText('{{ contract.id }}');" id="copy-text-button" class="copy-text-button-cls">Copy contract document link</button>
+                                    <p id="copyAlertMessage-{{ contract.id }}" class="copyAlertMessage-cls"></p>
                                 {% endif %}
                             </td>
-                            {% comment %} <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td> {% endcomment %}
                             <td><a href="" class="delete_button">remove</a></td>
                         </tr>
                     {% endfor %}

@@ -60,9 +60,9 @@
                             </td>
                             <td>
                                 {% if transaction.payment_proof_url %}
-                                    <input type="text" id="myInputToCopy2" value="{{ transaction.payment_proof_url }}" readonly>
-                                    <button onclick="copyText2();" id="copy-text-button2">Copy payment proof link</button>
-                                    <p id="copyAlertMessage2"></p>
+                                    <input type="text" id="myInputToCopy2-{{transaction.id}}" class="myInputToCopy-cls" value="{{ transaction.payment_proof_url }}" readonly>
+                                    <button onclick="copyText2('{{transaction.id}}');" id="copy-text-button2-{{transaction.id}}" class="copy-text-button-cls">Copy payment proof link</button>
+                                    <p id="copyAlertMessage2-{{transaction.id}}" class="copyAlertMessage-cls"></p>
                                 {% endif %}
                             </td>
                             <td>

@@ -23,9 +23,9 @@
                             {% comment %} <td>{{ attachment.comment|lower }}</td> {% endcomment %}
                             <td>
                                 {% if attachment.document_url %}
-                                    <input type="text" id="myInputToCopy2" value="{{ attachment.document_url }}" readonly>
-                                    <button onclick="copyText2();" id="copy-text-button2">Copy attachment link</button>
-                                    <p id="copyAlertMessage2"></p>
+                                    <input type="text" id="myInputToCopy2-{{ attachment.id }}" class="myInputToCopy-cls" value="{{ attachment.document_url }}" readonly>
+                                    <button onclick="copyText2('{{ attachment.id }}');" id="copy-text-button2-{{ attachment.id }}" class="copy-text-button-cls">Copy attachment link</button>
+                                    <p id="copyAlertMessage2-{{ attachment.id }}" class="copyAlertMessage-cls"></p>
                                 {% endif %}
                             </td>
                             <td>
