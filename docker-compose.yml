@@ -3,7 +3,7 @@ services:
         image: postgres:latest
         volumes:
             - postgres_data:/var/lib/postgresql/data:Z  # Container data (persisting data)
-            - ../postgres_data:/var/lib/postgresql/data/external  # Host-accessible data
+            - ../postgres_data:/var/lib/postgresql/data  # Host-accessible data
         environment:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
@@ -19,11 +19,6 @@ services:
             interval: 5s
             timeout: 5s
             retries: 5
-        # Add initialization wait
-        command: >
-            sh -c '
-                rm -rf /var/lib/postgresql/data/*
-            '
 
     minicom_main_system:
         build:
