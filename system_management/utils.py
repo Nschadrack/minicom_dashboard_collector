@@ -24,16 +24,27 @@ def generate_random_code(length=10):
 def bulk_saving_zoning(filestream):
     try:
         lines = filestream.readlines()
+        zones = []
+        cache_zones = defaultdict()
         for line in lines:
             name = line.split(",")[0]
             name= name.strip().title()
-            zoning = IndustrialZone.objects.filter(name=name).first()
-            if zoning is None:
-                IndustrialZone.objects.create(name=name)
+            zone = cache_zones.get(name, None)
+            if zone is None:
+                zone = IndustrialZone(name=name)
+                cache_zones[name] = zone
+                zones.append(zone)
+
+        # Save them in bulk
+        with transaction.atomic():
+            IndustrialZone.objects.bulk_save(zones)
+        return f"Processed {len(zones)} data instances"
     except Exception as e:
         zonings = IndustrialZone.objects.all()
         zonings.delete()
         print(f"\n[ERROR]: {str(e)}\n")
+        return f"\n[ERROR]: {str(e)}\n"
+    
 
 def bulk_saving_administrative(filestream):
     provinces = []

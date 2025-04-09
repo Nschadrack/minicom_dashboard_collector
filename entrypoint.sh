@@ -1,9 +1,10 @@
 #!/bin/sh
 
-# Load the .env file
-set -a  # Automatically export all variables
-source .env
-set +a
+# Get the number of CPUs
+NUM_CPUS=$(nproc)
+
+# Calculate the number of workers (2 * CPUs + 1)
+NUM_WORKERS=$((NUM_CPUS + 4))
 
 python manage.py makemigrations --no-input
 
@@ -14,5 +15,5 @@ python manage.py showmigrations
 
 python manage.py collectstatic --no-input
 
-gunicorn minicom_dashboard.wsgi:application --bind 0.0.0.0:8000 --timeout "$GUNICORN_TIMEOUT"
+gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8000 --timeout 300 mminicom_dashboard.wsgi:application
 # python manage.py runserver 0.0.0.0:8000
