@@ -1,6 +1,6 @@
 import random
 import string
-from dotenv import load_dotenv
+from collections import defaultdict
 import csv
 import traceback
 import smtplib
@@ -9,6 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.conf import settings
 from .models import AdministrativeUnit, IndustrialZone
+from django.db import transaction
 
 
 def generate_random_code(length=10):
@@ -35,9 +36,15 @@ def bulk_saving_zoning(filestream):
         print(f"\n[ERROR]: {str(e)}\n")
 
 def bulk_saving_administrative(filestream):
+    provinces = []
+    districts = []
+    sectors = []
+    cells = []
+    villages = []
     try:
         reader = csv.reader(filestream)
         count = 0  
+        objects_cache = defaultdict(dict)
         for row in reader:
             count += 1
             if len(row) != 5:
@@ -52,26 +59,50 @@ def bulk_saving_administrative(filestream):
             cell_name = cell_name.strip().upper()
             village_name = village_name.strip().upper()
 
-            province, _ = AdministrativeUnit.objects.get_or_create(name=province_name, category="PROVINCE", parent=None)
-            district, _ = AdministrativeUnit.objects.get_or_create(name=district_name, category="DISTRICT", parent=province)
-            sector, _ = AdministrativeUnit.objects.get_or_create( name=sector_name, category="SECTOR", parent=district)
-            cell, _ = AdministrativeUnit.objects.get_or_create(name=cell_name, category="CELL", parent=sector)
-            village, _ = AdministrativeUnit.objects.get_or_create(name=village_name, category="VILLAGE", parent=cell)
+            province = objects_cache.get(f"province_{province_name}", None)
+            if province is None:
+                province = AdministrativeUnit(name=province_name, category="PROVINCE", parent=None)
+                objects_cache[f"province_{province_name}"] = province
+                provinces.append(province)
+            
+            district = objects_cache.get(f"province_district_{district_name}", None)
+            if district is None:
+                district = AdministrativeUnit(name=district_name, category="DISTRICT", parent=province)
+                objects_cache[f"province_district_{district_name}"] = district
+                districts.append(district)
 
-        return f"Processed {count} data instances"
+            sector = objects_cache.get(f"province_district_sector_{sector_name}", None)
+            if sector is None:
+                sector = AdministrativeUnit( name=sector_name, category="SECTOR", parent=district)
+                objects_cache[f"province_district_sector_{sector_name}"] = sector
+                sectors.append(sector)
+            
+            cell = objects_cache.get(f"province_district_sector_cell_{cell_name}", None)
+            if cell is None:
+                cell = AdministrativeUnit(name=cell_name, category="CELL", parent=sector)
+                objects_cache[f"province_district_sector_cell_{cell_name}"] = cell
+                cells.append(cell)
+
+            village = objects_cache.get(f"province_district_sector_cell_village_{village_name}", None)
+            if village is None:
+                village = AdministrativeUnit(name=village_name, category="VILLAGE", parent=cell)
+                objects_cache[f"province_district_sector_cell_village_{village_name}"] = village
+                villages.append(village)
+        
+        provinces.extend(districts)
+        provinces.extend(sectors)
+        provinces.extend(cells)
+        provinces.extend(villages)
+
+        # Save them in bulk
+        with transaction.atomic():
+            AdministrativeUnit.objects.bulk_save(provinces)
+
+        return f"Processed {len(provinces)} data instances"
     except Exception as e:
         print(f"\n[ERROR]: {str(e)}\n")
         print(traceback.format_exc())
-        villages = AdministrativeUnit.objects.filter(category="VILLAGE")
-        villages.delete()
-        cells = AdministrativeUnit.objects.filter(category="CELL")
-        cells.delete()
-        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
-        sectors.delete()
-        districts = AdministrativeUnit.objects.filter(category="DISTRICT")
-        districts.delete()
-        provinces = AdministrativeUnit.objects.filter(category="PROVINCE")
-        provinces.delete()
+        AdministrativeUnit.objects.all().delete()
         return f"{str(e)}<br/><br/><b>Data have been rolled back</b>"
 
 def send_mails(receiver_email, subject, body):
