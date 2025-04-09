@@ -1,7 +1,7 @@
 import random
 import string
 from dotenv import load_dotenv
-import os
+import csv
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
@@ -35,13 +35,18 @@ def bulk_saving_zoning(filestream):
 
 def bulk_saving_administrative(filestream):
     try:
-        lines = filestream.readlines()
-        count = 0
-        for line in lines:
+        reader = csv.reader(filestream)
+        count = 0  
+        for row in reader:
             count += 1
-            province_name, district_name, sector_name, cell_name, village_name = line.split(",")
-            province_name, district_name, sector_name, cell_name, village_name = (province_name.upper(), district_name.upper(), 
-                                                                                  sector_name.upper(), cell_name.upper(), village_name.upper())
+            # row is already split into fields, respecting quotes
+            province_name, district_name, sector_name, cell_name, village_name = row
+            # Uppercase processing
+            province_name = province_name.strip().upper()
+            district_name = district_name.strip().upper()
+            sector_name = sector_name.strip().upper()
+            cell_name = cell_name.strip().upper()
+            village_name = village_name.strip().upper()
 
             province = AdministrativeUnit.objects.filter(name=province_name.strip(), category="PROVINCE").first()
             if not province:
