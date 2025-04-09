@@ -2,6 +2,7 @@ import random
 import string
 from dotenv import load_dotenv
 import csv
+import traceback
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
@@ -39,7 +40,10 @@ def bulk_saving_administrative(filestream):
         count = 0  
         for row in reader:
             count += 1
-            # row is already split into fields, respecting quotes
+            if len(row) != 5:
+                print("\nSkipped the row: {row}\nBecause it has more/less than 5 expected columns")
+                continue
+           
             province_name, district_name, sector_name, cell_name, village_name = row
             # Uppercase processing
             province_name = province_name.strip().upper()
@@ -48,34 +52,16 @@ def bulk_saving_administrative(filestream):
             cell_name = cell_name.strip().upper()
             village_name = village_name.strip().upper()
 
-            province = AdministrativeUnit.objects.filter(name=province_name.strip(), category="PROVINCE").first()
-            if not province:
-                province = AdministrativeUnit(name=province_name.strip(), category="PROVINCE")
-                province.save()
-
-            district = AdministrativeUnit.objects.filter(name=district_name.strip(), category="DISTRICT", parent=province).first()
-            if not district:
-                district = AdministrativeUnit(name=district_name.strip(), category="DISTRICT", parent=province)
-                district.save()
-
-            sector = AdministrativeUnit.objects.filter(name=sector_name.strip(), category="SECTOR", parent=district).first()
-            if not sector:
-                sector = AdministrativeUnit(name=sector_name.strip(), category="SECTOR", parent=district)
-                sector.save()
-
-            cell = AdministrativeUnit.objects.filter(name=cell_name.strip(), category="CELL", parent=sector).first()
-            if not cell:
-                cell = AdministrativeUnit(name=cell_name.strip(), category="CELL", parent=sector)
-                cell.save()
-
-            village = AdministrativeUnit.objects.filter(name=village_name.strip(),category="VILLAGE", parent=cell).first()
-            if not village:
-                village = AdministrativeUnit(name=village_name.strip(),category="VILLAGE", parent=cell)
-                village.save()
+            province, _ = AdministrativeUnit.objects.get_or_create(name=province_name, category="PROVINCE", parent=None)
+            district, _ = AdministrativeUnit.objects.get_or_create(name=district_name, category="DISTRICT", parent=province)
+            sector, _ = AdministrativeUnit.objects.get_or_create( name=sector_name, category="SECTOR", parent=district)
+            cell, _ = AdministrativeUnit.objects.get_or_create(name=cell_name, category="CELL", parent=sector)
+            village, _ = AdministrativeUnit.objects.get_or_create(name=village_name, category="VILLAGE", parent=cell)
 
         return f"Processed {count} data instances"
     except Exception as e:
         print(f"\n[ERROR]: {str(e)}\n")
+        print(traceback.format_exc())
         villages = AdministrativeUnit.objects.filter(category="VILLAGE")
         villages.delete()
         cells = AdministrativeUnit.objects.filter(category="CELL")
