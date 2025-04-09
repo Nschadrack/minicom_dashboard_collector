@@ -1,5 +1,6 @@
 import json
 import os
+from django_q.tasks import async_task
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, logout, login
@@ -231,10 +232,10 @@ def system_settings(request, flag=None):
                     )
     elif flag == "administrative_divisions":
         with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as f:
-            result = bulk_saving_administrative(f)
+            async_task(bulk_saving_administrative, f) # execute in the background
     elif flag == "zoning":
         with open(os.path.join(os.getcwd(), "zoning.csv")) as f:
-            bulk_saving_zoning(f)
+            async_task(bulk_saving_zoning, f) # execute in the background
         
     
     modules = len(Module.objects.all())
