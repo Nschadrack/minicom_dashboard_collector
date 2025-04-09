@@ -23,27 +23,24 @@ def generate_random_code(length=10):
 
 def bulk_saving_zoning(filestream):
     try:
-        lines = filestream.readlines()
         zones = []
-        cache_zones = defaultdict()
-        for line in lines:
-            name = line.split(",")[0]
-            name= name.strip().title()
-            zone = cache_zones.get(name, None)
-            if zone is None:
-                zone = IndustrialZone(name=name)
-                cache_zones[name] = zone
-                zones.append(zone)
-
         # Save them in bulk
         with transaction.atomic():
+            lines = filestream.readlines()
+            cache_zones = defaultdict()
+            for line in lines:
+                name = line.split(",")[0]
+                name= name.strip().title()
+                zone = cache_zones.get(name, None)
+                if zone is None:
+                    zone = IndustrialZone(name=name)
+                    cache_zones[name] = zone
+                    zones.append(zone)
+
             IndustrialZone.objects.bulk_save(zones)
-        return f"Processed {len(zones)} data instances"
+        print(f"Processed {len(zones)} data instances")
     except Exception as e:
-        zonings = IndustrialZone.objects.all()
-        zonings.delete()
-        print(f"\n[ERROR]: {str(e)}\n")
-        return f"\n[ERROR]: {str(e)}\n"
+        print(f"\n[ERROR]: {str(e)}: Data rolled back with {len(zones)} records\n")
     
 
 def bulk_saving_administrative(filestream):
@@ -53,68 +50,67 @@ def bulk_saving_administrative(filestream):
     cells = []
     villages = []
     try:
-        reader = csv.reader(filestream)
-        count = 0  
-        objects_cache = defaultdict(dict)
-        for row in reader:
-            count += 1
-            if len(row) != 5:
-                print("\nSkipped the row: {row}\nBecause it has more/less than 5 expected columns")
-                continue
-           
-            province_name, district_name, sector_name, cell_name, village_name = row
-            # Uppercase processing
-            province_name = province_name.strip().upper()
-            district_name = district_name.strip().upper()
-            sector_name = sector_name.strip().upper()
-            cell_name = cell_name.strip().upper()
-            village_name = village_name.strip().upper()
-
-            province = objects_cache.get(f"province_{province_name}", None)
-            if province is None:
-                province = AdministrativeUnit(name=province_name, category="PROVINCE", parent=None)
-                objects_cache[f"province_{province_name}"] = province
-                provinces.append(province)
-            
-            district = objects_cache.get(f"province_district_{district_name}", None)
-            if district is None:
-                district = AdministrativeUnit(name=district_name, category="DISTRICT", parent=province)
-                objects_cache[f"province_district_{district_name}"] = district
-                districts.append(district)
-
-            sector = objects_cache.get(f"province_district_sector_{sector_name}", None)
-            if sector is None:
-                sector = AdministrativeUnit( name=sector_name, category="SECTOR", parent=district)
-                objects_cache[f"province_district_sector_{sector_name}"] = sector
-                sectors.append(sector)
-            
-            cell = objects_cache.get(f"province_district_sector_cell_{cell_name}", None)
-            if cell is None:
-                cell = AdministrativeUnit(name=cell_name, category="CELL", parent=sector)
-                objects_cache[f"province_district_sector_cell_{cell_name}"] = cell
-                cells.append(cell)
-
-            village = objects_cache.get(f"province_district_sector_cell_village_{village_name}", None)
-            if village is None:
-                village = AdministrativeUnit(name=village_name, category="VILLAGE", parent=cell)
-                objects_cache[f"province_district_sector_cell_village_{village_name}"] = village
-                villages.append(village)
-        
-        provinces.extend(districts)
-        provinces.extend(sectors)
-        provinces.extend(cells)
-        provinces.extend(villages)
-
         # Save them in bulk
         with transaction.atomic():
+            reader = csv.reader(filestream)
+            count = 0  
+            objects_cache = defaultdict(dict)
+            for row in reader:
+                count += 1
+                if len(row) != 5:
+                    print("\nSkipped the row: {row}\nBecause it has more/less than 5 expected columns")
+                    continue
+            
+                province_name, district_name, sector_name, cell_name, village_name = row
+                # Uppercase processing
+                province_name = province_name.strip().upper()
+                district_name = district_name.strip().upper()
+                sector_name = sector_name.strip().upper()
+                cell_name = cell_name.strip().upper()
+                village_name = village_name.strip().upper()
+
+                province = objects_cache.get(f"province_{province_name}", None)
+                if province is None:
+                    province = AdministrativeUnit(name=province_name, category="PROVINCE", parent=None)
+                    objects_cache[f"province_{province_name}"] = province
+                    provinces.append(province)
+                
+                district = objects_cache.get(f"province_district_{district_name}", None)
+                if district is None:
+                    district = AdministrativeUnit(name=district_name, category="DISTRICT", parent=province)
+                    objects_cache[f"province_district_{district_name}"] = district
+                    districts.append(district)
+
+                sector = objects_cache.get(f"province_district_sector_{sector_name}", None)
+                if sector is None:
+                    sector = AdministrativeUnit( name=sector_name, category="SECTOR", parent=district)
+                    objects_cache[f"province_district_sector_{sector_name}"] = sector
+                    sectors.append(sector)
+                
+                cell = objects_cache.get(f"province_district_sector_cell_{cell_name}", None)
+                if cell is None:
+                    cell = AdministrativeUnit(name=cell_name, category="CELL", parent=sector)
+                    objects_cache[f"province_district_sector_cell_{cell_name}"] = cell
+                    cells.append(cell)
+
+                village = objects_cache.get(f"province_district_sector_cell_village_{village_name}", None)
+                if village is None:
+                    village = AdministrativeUnit(name=village_name, category="VILLAGE", parent=cell)
+                    objects_cache[f"province_district_sector_cell_village_{village_name}"] = village
+                    villages.append(village)
+            
+            provinces.extend(districts)
+            provinces.extend(sectors)
+            provinces.extend(cells)
+            provinces.extend(villages)
+
+            
             AdministrativeUnit.objects.bulk_save(provinces)
 
-        return f"Processed {len(provinces)} data instances"
+        print(f"Processed {len(provinces)} data instances")
     except Exception as e:
-        print(f"\n[ERROR]: {str(e)}\n")
         print(traceback.format_exc())
-        AdministrativeUnit.objects.all().delete()
-        return f"{str(e)}<br/><br/><b>Data have been rolled back</b>"
+        print(f"{str(e)}\nData have been rolled back with {len(provinces)} records")
 
 def send_mails(receiver_email, subject, body):
     try:

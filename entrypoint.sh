@@ -16,4 +16,6 @@ python manage.py showmigrations
 python manage.py collectstatic --no-input
 
 gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8000 --timeout 300 mminicom_dashboard.wsgi:application
+
+python manage.py qcluster # start django task queue
 # python manage.py runserver 0.0.0.0:8000
