@@ -230,7 +230,7 @@ def system_settings(request, flag=None):
                         parent_id=parent
                     )
     elif flag == "administrative_divisions":
-        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv")) as f:
+        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as f:
             result = bulk_saving_administrative(f)
     elif flag == "zoning":
         with open(os.path.join(os.getcwd(), "zoning.csv")) as f:
