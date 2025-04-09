@@ -2,6 +2,7 @@ import random
 import string
 from dotenv import load_dotenv
 import csv
+import traceback
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
@@ -76,6 +77,7 @@ def bulk_saving_administrative(filestream):
         return f"Processed {count} data instances"
     except Exception as e:
         print(f"\n[ERROR]: {str(e)}\n")
+        print(traceback.format_exc())
         villages = AdministrativeUnit.objects.filter(category="VILLAGE")
         villages.delete()
         cells = AdministrativeUnit.objects.filter(category="CELL")
