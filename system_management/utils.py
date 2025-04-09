@@ -10,6 +10,7 @@ from email.mime.text import MIMEText
 from django.conf import settings
 from .models import AdministrativeUnit, IndustrialZone
 from django.db import transaction
+from background_task import background
 
 
 def generate_random_code(length=10):
@@ -21,6 +22,7 @@ def generate_random_code(length=10):
     
     return random_code
 
+@background()
 def bulk_saving_zoning(filestream):
     try:
         zones = []
@@ -43,6 +45,7 @@ def bulk_saving_zoning(filestream):
         print(f"\n[ERROR]: {str(e)}: Data rolled back with {len(zones)} records\n")
     
 
+@background()
 def bulk_saving_administrative(filestream):
     provinces = []
     districts = []

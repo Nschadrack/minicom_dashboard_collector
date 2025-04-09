@@ -55,8 +55,8 @@ INSTALLED_APPS = [
     "industry",
     "minicom_dashboards",
 
-    # For background task
-    "django_q",
+    # background task
+    "background_task",
 ]
 
 MIDDLEWARE = [
@@ -112,17 +112,6 @@ else:
         'PORT':  int(os.environ.get("DB_PORT")),
     }
 }
-
-Q_CLUSTER = {
-    'name': 'DjangoORM',
-    'workers': max(1, 2 * os.cpu_count() -4),  # Number of worker processes
-    'timeout': 300,  # Task execution timeout in seconds
-    'polling': 500,  # How often to check for new tasks in milliseconds
-    'max_attempts': 3,  # Maximum retries if the task fails
-    'retry': 120,  # Time between retries (in seconds)
-    'catch_up': False,  # Whether to catch up on missed tasks
-}
-
 
 
 # Password validation

@@ -1,6 +1,5 @@
 import json
 import os
-from django_q.tasks import async_task
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, logout, login
@@ -9,7 +8,6 @@ from .models import (User, Role, UserRole, Module, RolePermission, IndustrialZon
                      EconomicSector, EconomicSubSector, AdministrativeUnit)
 from .utils import (generate_random_code, build_default_password_email_template,
                     bulk_saving_administrative, bulk_saving_zoning, send_mails)
-from industry.utils import load_countries
 
 
 def login_user(request):
@@ -232,10 +230,10 @@ def system_settings(request, flag=None):
                     )
     elif flag == "administrative_divisions":
         with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as f:
-            async_task(bulk_saving_administrative, f) # execute in the background
+            bulk_saving_administrative(f) # execute the background task
     elif flag == "zoning":
         with open(os.path.join(os.getcwd(), "zoning.csv")) as f:
-            async_task(bulk_saving_zoning, f) # execute in the background
+            bulk_saving_zoning(f) # execute the background task
         
     
     modules = len(Module.objects.all())
