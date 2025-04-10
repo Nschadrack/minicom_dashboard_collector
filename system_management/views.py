@@ -229,11 +229,13 @@ def system_settings(request, flag=None):
                         parent_id=parent
                     )
     elif flag == "administrative_divisions":
-        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as f:
-            bulk_saving_administrative(f) # execute the background task
+        print(f"Going into background task")
+        bulk_saving_administrative() # execute the background task
+        print("background task started")
     elif flag == "zoning":
-        with open(os.path.join(os.getcwd(), "zoning.csv")) as f:
-            bulk_saving_zoning(f) # execute the background task
+        print(f"\nGoing to start background task\n")
+        bulk_saving_zoning() # execute the background task
+        print("\nStarted backgound task\n")
         
     
     modules = len(Module.objects.all())

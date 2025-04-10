@@ -2,6 +2,7 @@ import random
 import string
 from collections import defaultdict
 import csv
+import os
 import traceback
 import smtplib
 import ssl
@@ -23,38 +24,42 @@ def generate_random_code(length=10):
     return random_code
 
 @background()
-def bulk_saving_zoning(filestream):
-    try:
-        zones = []
-        # Save them in bulk
-        with transaction.atomic():
-            lines = filestream.readlines()
-            cache_zones = defaultdict()
-            for line in lines:
-                name = line.split(",")[0]
-                name= name.strip().title()
-                zone = cache_zones.get(name, None)
-                if zone is None:
-                    zone = IndustrialZone(name=name)
-                    cache_zones[name] = zone
-                    zones.append(zone)
+def bulk_saving_zoning():
+    with open(os.path.join(os.getcwd(), "zoning.csv")) as filestream:
+        try:
+            zones = []
+            IndustrialZone.objects.all().delete()
+            # Save them in bulk
+            with transaction.atomic():
+                lines = filestream.readlines()
+                cache_zones = defaultdict()
+                for line in lines:
+                    name = line.split(",")[0]
+                    name= name.strip().title()
+                    zone = cache_zones.get(name, None)
+                    if zone is None:
+                        zone = IndustrialZone(name=name)
+                        cache_zones[name] = zone
+                        zones.append(zone)
 
-            IndustrialZone.objects.bulk_save(zones)
-        print(f"Processed {len(zones)} data instances")
-    except Exception as e:
-        print(f"\n[ERROR]: {str(e)}: Data rolled back with {len(zones)} records\n")
+                IndustrialZone.objects.bulk_create(zones)
+            print(f"Processed {len(zones)} zonings data instances")
+            print("\nBackground task completed\n")
+        except Exception as e:
+            print(f"\n[ERROR]: {str(e)}: Data rolled back with {len(zones)} records\n")
     
 
 @background()
-def bulk_saving_administrative(filestream):
-    provinces = []
-    districts = []
-    sectors = []
-    cells = []
-    villages = []
-    try:
-        # Save them in bulk
-        with transaction.atomic():
+def bulk_saving_administrative():
+    with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
+        provinces = []
+        districts = []
+        sectors = []
+        cells = []
+        villages = []
+        try:
+            AdministrativeUnit.objects.all().delete()
+
             reader = csv.reader(filestream)
             count = 0  
             objects_cache = defaultdict(dict)
@@ -101,19 +106,31 @@ def bulk_saving_administrative(filestream):
                     village = AdministrativeUnit(name=village_name, category="VILLAGE", parent=cell)
                     objects_cache[f"province_district_sector_cell_village_{village_name}"] = village
                     villages.append(village)
-            
-            provinces.extend(districts)
-            provinces.extend(sectors)
-            provinces.extend(cells)
-            provinces.extend(villages)
 
-            
-            AdministrativeUnit.objects.bulk_save(provinces)
+            with transaction.atomic():    
+                AdministrativeUnit.objects.bulk_create(provinces)
 
-        print(f"Processed {len(provinces)} data instances")
-    except Exception as e:
-        print(traceback.format_exc())
-        print(f"{str(e)}\nData have been rolled back with {len(provinces)} records")
+            with transaction.atomic():    
+                AdministrativeUnit.objects.bulk_create(districts)
+
+            with transaction.atomic():    
+                AdministrativeUnit.objects.bulk_create(sectors)
+            
+            with transaction.atomic():    
+                AdministrativeUnit.objects.bulk_create(cells)
+            
+            with transaction.atomic():    
+                AdministrativeUnit.objects.bulk_create(villages)
+
+            print(f"Processed { count } data instances")
+            print(f"Processed { len(provinces) } provinces data instances")
+            print(f"Processed { len(districts) } districts data instances")
+            print(f"Processed { len(sectors) } sectors data instances")
+            print(f"Processed { len(cells) } cells data instances")
+            print(f"Processed { len(villages) } villages data instances")
+        except Exception as e:
+            print(traceback.format_exc())
+            print(f"{str(e)}\nData have been rolled back with { count } records")
 
 def send_mails(receiver_email, subject, body):
     try:
