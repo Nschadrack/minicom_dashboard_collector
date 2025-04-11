@@ -5,6 +5,8 @@ sudo chown 999:999 ../postgres_data
 # Stop and remove ALL containers/volumes from previous setups
 # docker compose down --remove-orphans --volumes --rmi all
 docker compose down --remove-orphans --rmi all
+docker volume rm application_static_volume
+docker volume rm application_root_volume
 
 # Function to kill process running on a given port
 kill_port_process() {
