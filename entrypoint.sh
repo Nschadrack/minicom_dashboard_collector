@@ -18,6 +18,6 @@ python manage.py collectstatic --no-input
 python manage.py process_tasks --duration 180 # background tasks queue and release database locks every 180 seconds
 
 # Then start the Gunicorn server
-gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8000 --timeout 300 mminicom_dashboard.wsgi:application
+gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8000 --timeout 300 minicom_dashboard.wsgi:application
 
 # python manage.py runserver 0.0.0.0:8000
