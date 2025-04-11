@@ -228,14 +228,17 @@ def system_settings(request, flag=None):
                         name=module["name"],
                         parent_id=parent
                     )
+        return redirect("systems_management:system-settings")
     elif flag == "administrative_divisions":
         print(f"Going into background task")
         bulk_saving_administrative() # execute the background task
         print("background task started")
+        return redirect("systems_management:system-settings")
     elif flag == "zoning":
         print(f"\nGoing to start background task\n")
         bulk_saving_zoning() # execute the background task
         print("\nStarted backgound task\n")
+        return redirect("systems_management:system-settings")
         
     
     modules = len(Module.objects.all())

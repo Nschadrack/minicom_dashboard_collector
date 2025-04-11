@@ -153,6 +153,9 @@ def companies_industries_list(request):
         except:
             pass
         
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
+        
     companies_industries_profiles = CompanyProfile.objects.all().order_by("name")
     park_industries = CompanySite.objects.all().order_by("company__name")
     provinces = AdministrativeUnit.objects.filter(category="PROVINCE").order_by("name")
