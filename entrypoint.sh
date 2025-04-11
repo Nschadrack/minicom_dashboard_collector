@@ -24,8 +24,8 @@ echo "Going to start background task processor"
 
 python manage.py process_tasks & # background tasks queue
 
-ech "===================================="
+echo "===================================="
 echo "Started background task queue"
-ech "===================================="
+echo "===================================="
 
 # python manage.py runserver 0.0.0.0:8000
