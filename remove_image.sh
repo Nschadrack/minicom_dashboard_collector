@@ -27,7 +27,7 @@ kill_port_process() {
 kill_port_process 80
 
 # Check and kill for port 8080
-kill_port_process 8080
+kill_port_process 8000
 
 
 # Check and kill for port 443

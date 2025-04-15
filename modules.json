@@ -72,5 +72,10 @@
     "module_id": "0015",
     "name": "Land Information",
     "parent_id": "0011"
+},
+{
+    "module_id": "0016",
+    "name": "Products",
+    "parent_id": "0001"
 }
 ]

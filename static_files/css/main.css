@@ -1315,3 +1315,29 @@ main:hover{
 	display: none;
 }
 
+.datalist-container {
+    position: relative;
+    width: 400px;
+}
+
+.custom-dropdown, .custom-dropdown2 {
+    position: relative;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: none;
+    border-radius: 5px;
+}
+
+.custom-dropdown div, .custom-dropdown2 div {
+    padding: 5px 8px;
+    cursor: pointer;
+}
+
+.custom-dropdown div:hover, .custom-dropdown2 div:hover {
+    background-color: #f0f0f0;
+}

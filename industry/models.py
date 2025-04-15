@@ -1,6 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from system_management.models import IndustrialZone, User, EconomicSubSector
+from system_management.models import (IndustrialZone, User, 
+                                      EconomicSubSector, Product)
+from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, 
+                       PRODUCT_PRODUCTION_CAPACITY_UNIT, PRODUCT_PACKAGING_MATERIAL, 
+                       PRODUCT_PRODUCTION_CAPACITY_PERIOD)
 
 
 class IndustryEconomicZone(models.Model):
@@ -25,6 +29,7 @@ class IndustryEconomicZone(models.Model):
     
     def __str__(self):
         return f"{self.name} {self.category.lower()}"
+
 
 class CompanyProfile(models.Model):
     CATEGORIES = (
@@ -51,6 +56,7 @@ class CompanyProfile(models.Model):
     class Meta:
         db_table = "CompanyProfiles"
 
+
 class LandRequestInformation(models.Model):
     land_owner = models.ForeignKey(CompanyProfile, on_delete=models.SET_NULL, null=True, blank=True)
     request_date = models.DateField(null=True, blank=True)
@@ -63,6 +69,7 @@ class LandRequestInformation(models.Model):
 
     class Meta:
         db_table = "LandRequestInformations"
+
 
 class AllocatedPlot(models.Model):
     UPI_STATUSES = (
@@ -91,6 +98,7 @@ class AllocatedPlot(models.Model):
     class Meta:
         db_table = "AllocatedPlots"
 
+
 class PartitionedPlot(models.Model):
     STATUSES = (
         ("Not Yet Requested", "Not Requested"),
@@ -109,6 +117,7 @@ class PartitionedPlot(models.Model):
 
     class Meta:
         db_table = "PartitionedPlots"
+
 
 class CompanySite(models.Model):
     CONSTRUCTION_STATUSES = (
@@ -150,6 +159,7 @@ class CompanySite(models.Model):
     class Meta:
         db_table = "CompanySites"
 
+
 class IndustryAttachment(models.Model):
     CATEGORIES = (
         ("Main Document", "Main Document"),
@@ -166,12 +176,32 @@ class IndustryAttachment(models.Model):
     class Meta:
         db_table = "IndustryAttachments"
 
+
 class IndustryEconomicSector(models.Model):
     industry = models.ForeignKey(CompanySite, on_delete=models.CASCADE)
     sector = models.ForeignKey(EconomicSubSector, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "IndustryEconomicSectors"
+
+
+class IndustryProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_industry_products")
+    product_brand_name = models.CharField(max_length=200, null=False, blank=False)
+    quantity = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    quantity_measure = models.CharField(max_length=20, choices=PRODUCT_QUANTITIES, null=False, blank=False)
+    quantity_measure_unit = models.CharField(max_length=10, choices=PRODUCT_QUANTITY_UNITS, blank=False, null=False)
+    packaging_material = models.CharField(max_length=60, null=False, blank=False, choices=PRODUCT_PACKAGING_MATERIAL)
+    production_installed_capacity = models.DecimalField(decimal_places=2, max_digits=16, blank=False, null=False)
+    production_installed_capacity_unit = models.CharField(max_length=25, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_UNIT)
+    production_installed_capacity_period = models.CharField(max_length=20, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_PERIOD)
+
+    class Meta:
+        db_table = "IndustryProducts"
+    
+    def __str__(self):
+        return f"{self.product.name} - {self.product_brand_name}"
+
 
 class IndustryContract(models.Model):
     CONTRACT_TYPES = (
@@ -199,6 +229,7 @@ class IndustryContract(models.Model):
 
     class Meta:
         db_table = "IndustryContracts"
+
 
 class IndustryContractPayment(models.Model):
     PAYMENT_MODALITIES = (
@@ -235,6 +266,7 @@ class IndustryContractPayment(models.Model):
     class Meta:
         db_table = "IndustryContractPayments"
 
+
 class ContractPaymentInstallment(models.Model):
     PAYMENT_STATUSES = (
         ("FULLY PAID", "FULLY PAID"),
@@ -256,6 +288,7 @@ class ContractPaymentInstallment(models.Model):
 
     class Meta:
         db_table = "ContractPaymentInstallments"
+
 
 class PaymentInstallmentTransaction(models.Model):
     installment = models.ForeignKey(ContractPaymentInstallment, on_delete=models.CASCADE, related_name="installment_transactions")
