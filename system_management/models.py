@@ -106,7 +106,7 @@ class RolePermission(models.Model):
     
     
 class EconomicSector(models.Model):
-    name = models.CharField(max_length=200, null=False, blank=False)
+    name = models.CharField(max_length=200, null=False, blank=False, unique=True)
     recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -117,9 +117,9 @@ class EconomicSector(models.Model):
       
 
 class EconomicSubSector(models.Model):
-    isic_code = models.CharField(max_length=10, null=False, blank=False)
+    isic_code = models.CharField(max_length=5, null=False, blank=False)
     economic_sector = models.ForeignKey(EconomicSector, on_delete=models.CASCADE, related_name="sub_sectors")
-    name = models.CharField(max_length=200, null=False, blank=False)
+    name = models.CharField(max_length=255, null=False, blank=False)
     recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -127,6 +127,19 @@ class EconomicSubSector(models.Model):
 
     def __str__(self):
         return f"Economic sub-sector: {self.name}"
+
+
+class Product(models.Model):
+    sub_sector = models.ForeignKey(EconomicSubSector, on_delete=models.CASCADE, related_name="sub_sector_products")
+    name = models.CharField(max_length=200, null=False, blank=False)
+    product_code = models.CharField(max_length=10, null=False, blank=False, unique=True)
+    recorded_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "Products"
+    
+    def __str__(self):
+        return f"{self.product_code} - {self.name}"
     
 
 class IndustrialZone(models.Model):

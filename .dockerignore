@@ -1,15 +1,9 @@
-system_management/migrations/*
 system_management/__pycache__
-!system_management/migrations/__init__.py
-
-industry/migrations/*
 industry/__pycache__
-!industry/migrations/__init__.py
-
 minicom_dashboard/__pycache__
 dashboard/__pycache__/
 minicom_dashboards/__pycache__/
-minicom_dashboards/migrations/*
-!minicom_dashboards/migrations/__init__.py
+automation/__pycache__/
+
 database.sqlite3
 .gitignore

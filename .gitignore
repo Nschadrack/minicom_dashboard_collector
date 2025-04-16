@@ -11,5 +11,9 @@ dashboard/__pycache__/
 minicom_dashboards/__pycache__/
 minicom_dashboards/migrations/*
 !minicom_dashboards/migrations/__init__.py
+
+automation/__pycache__/
+automation/migrations/*
+!automation/migrations/__init__.py
 database.sqlite3
 .env

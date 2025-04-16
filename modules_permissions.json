@@ -130,7 +130,7 @@
     "name": "Industry dashboards",
     "action_value": 3,
     "action": "View"
-}
+},
 {
     "permission_id": 19,
     "module_id": "0009",
@@ -296,6 +296,34 @@
     "permission_id": 42,
     "module_id": "0015",
     "name": "Land Information",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 43,
+    "module_id": "0016",
+    "name": "Products",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 44,
+    "module_id": "0016",
+    "name": "Products",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 45,
+    "module_id": "0016",
+    "name": "Products",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 46,
+    "module_id": "0016",
+    "name": "Products",
     "action_value": 2,
     "action": "Edit"
 }

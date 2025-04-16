@@ -51,86 +51,57 @@ def bulk_saving_zoning():
 
 @background()
 def bulk_saving_administrative():
-    with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
-        provinces = []
-        districts = []
-        sectors = []
-        cells = []
-        villages = []
-        try:
-            AdministrativeUnit.objects.all().delete()
+    AdministrativeUnit.objects.all().delete()
+    try:
+        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
 
-            reader = csv.reader(filestream)
-            count = 0  
-            objects_cache = defaultdict(dict)
-            for row in reader:
+            data = csv.reader(filestream)
+            count = 0
+            for line in data:
                 count += 1
-                if len(row) != 5:
-                    print("\nSkipped the row: {row}\nBecause it has more/less than 5 expected columns")
-                    continue
-            
-                province_name, district_name, sector_name, cell_name, village_name = row
-                # Uppercase processing
-                province_name = province_name.strip().upper()
-                district_name = district_name.strip().upper()
-                sector_name = sector_name.strip().upper()
-                cell_name = cell_name.strip().upper()
-                village_name = village_name.strip().upper()
+                province_name, district_name, sector_name, cell_name, village_name = line
+                if "kigali" in province_name.lower():
+                    province_name = "Kigali city"
+                if "burasirazuba" in province_name.lower():
+                    province_name = "Eastern"
+                if "burengerazuba" in province_name.lower():
+                    province_name = "Western"
+                if "ruguru" in province_name.lower():
+                    province_name = "Northern"
+                if "jyepfo" in province_name.lower():
+                    province_name = "Southern"
 
-                province = objects_cache.get(f"province_{province_name}", None)
+                province = AdministrativeUnit.objects.filter(name=province_name, category="PROVINCE").first()
                 if province is None:
                     province = AdministrativeUnit(name=province_name, category="PROVINCE", parent=None)
-                    objects_cache[f"province_{province_name}"] = province
-                    provinces.append(province)
+                    province.save()
                 
-                district = objects_cache.get(f"province_district_{district_name}", None)
+                district = AdministrativeUnit.objects.filter(name=district_name, category="DISTRICT", parent=province).first()
                 if district is None:
                     district = AdministrativeUnit(name=district_name, category="DISTRICT", parent=province)
-                    objects_cache[f"province_district_{district_name}"] = district
-                    districts.append(district)
+                    district.save()
 
-                sector = objects_cache.get(f"province_district_sector_{sector_name}", None)
+                sector = AdministrativeUnit.objects.filter(name=sector_name, category="SECTOR", parent=district).first()
                 if sector is None:
-                    sector = AdministrativeUnit( name=sector_name, category="SECTOR", parent=district)
-                    objects_cache[f"province_district_sector_{sector_name}"] = sector
-                    sectors.append(sector)
+                    sector = AdministrativeUnit(name=sector_name, category="SECTOR", parent=district)
+                    sector.save()
                 
-                cell = objects_cache.get(f"province_district_sector_cell_{cell_name}", None)
+                cell = AdministrativeUnit.objects.filter(name=cell_name, category="CELL", parent=sector).first()
                 if cell is None:
                     cell = AdministrativeUnit(name=cell_name, category="CELL", parent=sector)
-                    objects_cache[f"province_district_sector_cell_{cell_name}"] = cell
-                    cells.append(cell)
+                    cell.save()
 
-                village = objects_cache.get(f"province_district_sector_cell_village_{village_name}", None)
+                village = AdministrativeUnit.objects.filter(name=village_name, category="VILLAGE", parent=cell).first()
                 if village is None:
                     village = AdministrativeUnit(name=village_name, category="VILLAGE", parent=cell)
-                    objects_cache[f"province_district_sector_cell_village_{village_name}"] = village
-                    villages.append(village)
-
-            with transaction.atomic():    
-                AdministrativeUnit.objects.bulk_create(provinces)
-
-            with transaction.atomic():    
-                AdministrativeUnit.objects.bulk_create(districts)
-
-            with transaction.atomic():    
-                AdministrativeUnit.objects.bulk_create(sectors)
-            
-            with transaction.atomic():    
-                AdministrativeUnit.objects.bulk_create(cells)
-            
-            with transaction.atomic():    
-                AdministrativeUnit.objects.bulk_create(villages)
+                    village.save()
 
             print(f"Processed { count } data instances")
-            print(f"Processed { len(provinces) } provinces data instances")
-            print(f"Processed { len(districts) } districts data instances")
-            print(f"Processed { len(sectors) } sectors data instances")
-            print(f"Processed { len(cells) } cells data instances")
-            print(f"Processed { len(villages) } villages data instances")
-        except Exception as e:
-            print(traceback.format_exc())
-            print(f"{str(e)}\nData have been rolled back with { count } records")
+    except Exception as e:
+        print(traceback.format_exc())
+        AdministrativeUnit.objects.all().delete()
+        print(f"{str(e)}\nData have been rolled back\n")
+
 
 def send_mails(receiver_email, subject, body):
     try:

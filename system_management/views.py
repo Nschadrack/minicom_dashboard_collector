@@ -1,11 +1,14 @@
 import json
 import os
 from django.shortcuts import render, redirect
+from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
-from .models import (User, Role, UserRole, Module, RolePermission, IndustrialZone,
-                     EconomicSector, EconomicSubSector, AdministrativeUnit)
+from .models import (User, Role, UserRole, Module, 
+                     RolePermission, IndustrialZone,
+                     EconomicSector, EconomicSubSector, 
+                     AdministrativeUnit, Product)
 from .utils import (generate_random_code, build_default_password_email_template,
                     bulk_saving_administrative, bulk_saving_zoning, send_mails)
 
@@ -195,12 +198,28 @@ def economic_sectors_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_economic_sector(request, id):
+    sector = EconomicSector.objects.filter(id=id).first()
+    if sector:
+        sub_sector = EconomicSubSector.objects.filter(economic_sector=sector).first()
+        if sub_sector:
+            message = "You cannot delete this economic sector because it has sub economic sectors linked to it."
+        else:
+            sector.delete()
+            message = f"Economic sector: {sector.name} deleted successfully!"
+    else:
+        message = f"Unable to delete economic sector with ID: {id} because it does not exist."
+    return redirect("system_management:economic-sectors-list")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def economic_sub_sectors_list(request):
     if request.method == "POST":
         name = request.POST.get("name")
+        isic_code = request.POST.get("isic_code")
         economic_sector = request.POST.get("economic_sector", "-1||").split("||")[0]
         economic_sector = EconomicSector.objects.filter(id=economic_sector.strip()).first()
-        EconomicSubSector.objects.create(name=name, economic_sector=economic_sector)
+        EconomicSubSector.objects.create(isic_code=isic_code, name=name, economic_sector=economic_sector)
 
         return redirect("system_management:economic-sub-sectors-list")
 
@@ -212,6 +231,59 @@ def economic_sub_sectors_list(request):
     }
 
     return render(request, "systems_management/economic_sub_sector.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_sub_economic_sector(request, id):
+    sub_sector = EconomicSubSector.objects.filter(id=id).first()
+    if sub_sector:
+        product = Product.objects.filter(sub_sector=sub_sector).first()
+        if product:
+            message = "You cannot delete this sub economic sector because it has products linked to it."
+        else:
+            message = "Sub economic sector deleted successfully!"
+            sub_sector.delete()
+    else:
+        message = f"Unable to delete sub economic sector with ID={id} because it does not exist."
+    return redirect("system_management:economic-sub-sectors-list")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def products_list(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        economic_sector = request.POST.get("economic_sector", "-1||").split("||")[0]
+        economic_sub_sector = request.POST.get("economic_sub_sector", "-1||").split("||")[0]
+        economic_sector = EconomicSector.objects.filter(id=economic_sector.strip()).first()
+        economic_sub_sector = EconomicSubSector.objects.filter(id=economic_sub_sector.strip()).first()
+        last_product = Product.objects.filter(sub_sector=economic_sub_sector).order_by("id").last()
+
+        product_code = "0001"
+        if last_product:
+            product_code = last_product.product_code[-4:] # ignoring sub-sector code 202340002
+            code_len = len(product_code)
+            product_code = int(product_code) + 1
+            len_diff = code_len - len(str(product_code))
+            product_code = "0" * len_diff + str(product_code)
+
+        Product.objects.create(
+            sub_sector=economic_sub_sector,
+            product_code=f"{economic_sub_sector.isic_code}{product_code}",
+            name=name
+        )
+
+        return redirect("system_management:products-list")
+
+    economic_sub_sectors = EconomicSubSector.objects.all().order_by("economic_sector__name", "name")
+    economic_sectors = EconomicSector.objects.all().order_by("name")
+    products = Product.objects.all().order_by("sub_sector__economic_sector__name", "sub_sector__name", "product_code", "name")
+    context = {
+        "economic_sub_sectors": economic_sub_sectors,
+        "economic_sectors": economic_sectors,
+        "products": products
+    }
+
+    return render(request, "systems_management/products.html", context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -230,9 +302,11 @@ def system_settings(request, flag=None):
                     )
         return redirect("systems_management:system-settings")
     elif flag == "administrative_divisions":
-        print(f"Going into background task")
-        bulk_saving_administrative() # execute the background task
-        print("background task started")
+        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
+        if len(sectors) != 416:
+            print(f"Going into background task")
+            bulk_saving_administrative() # execute the background task
+            print("background task started")
         return redirect("systems_management:system-settings")
     elif flag == "zoning":
         print(f"\nGoing to start background task\n")

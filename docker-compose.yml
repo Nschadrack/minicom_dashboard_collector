@@ -38,8 +38,11 @@ services:
             - "8080:8000"
         volumes:
             - static_volume:/app/static
-            - root_volume:/app
-            - ../Documents/media:/app/media
+            - ./media:/app/media
+            - ./automation/migrations:/app/automation/migrations
+            - ./industry/migrations:/app/industry/migrations
+            - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
+            - ./system_management/migrations:/app/system_management/migrations
         env_file:
             - .env
         depends_on:
@@ -54,8 +57,11 @@ services:
         build: ./nginx
         volumes:
             - static_volume:/app/static
-            - root_volume:/app
-            - ../Documents/media:/app/media
+            - ./media:/app/media
+            - ./automation/migrations:/app/automation/migrations
+            - ./industry/migrations:/app/industry/migrations
+            - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
+            - ./system_management/migrations:/app/system_management/migrations
         expose:
             - 80
         ports:
@@ -68,7 +74,6 @@ services:
 
 volumes:
     static_volume:
-    root_volume:
     postgres_data:
 
 networks:
