@@ -1,0 +1,1 @@
+from industry.models import CompanyProfile

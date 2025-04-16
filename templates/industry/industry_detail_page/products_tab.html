@@ -1,0 +1,46 @@
+<div id="product-industry" class="tab-content">
+    <div class="upper-detail-div">
+        <div class="current_price_list table-data">
+            <h4>List of Products</h4>
+            {% if industry_economic_sub_sectors|length > 0 %}
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new product</button>
+            {% endif %}
+            <table class="table-data">
+                <thead>
+                    <th>#</th>
+                    <th>PRODUCT CODE</th>
+                    <th>PRODUCT NAME</th>
+                    <th>BRAND NAME</th>
+                    <th>MEASUREMENT</th>
+                    <th>MEASURE VALUE</th>
+                    <th>PACKAGING MATERIAL</th>
+                    <th>INSTALLED PRODUCTION CAPACITY</th>
+                    <th>RECORDED DATE</th>
+                    <th colspan="3">ACTION</th>
+                </thead>
+                <tbody>
+                    {% for product in industry_products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ product.product.product_code }}</td>
+                            <td>{{ product.product.name|title }}</td>
+                            <td>{{ product.product_brand_name|title }}</td>
+                            <td>{{ product.quantity_measure|title }}</td>
+                            <th>{{ product.quantity }} {{ product.quantity_measure_unit }}</td>
+                            <td>{{ product.packaging_material|title }}</td>
+                            <td>{{ product.production_installed_capacity }} {{ product.production_installed_capacity_unit }} / {{ product.production_installed_capacity_period }}</td>
+                            <td>{{ product.recorded_date|date:'d-m-Y H:i:s A' }}</td>
+                            <td><a href="" class="view_button">view details</a></td>
+                            <td><a href="" class="update_button">update</a></td>
+                            <td><a href="{% url 'industry:delete-industry-product' product.id %}" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- New Attachment Form -->
+    <div class="new-assignment car_new_form_div">
+        {% include 'industry/industry_detail_page/new_product_form.html' %}
+    </div>
+</div>

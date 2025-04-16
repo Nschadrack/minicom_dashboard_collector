@@ -462,6 +462,9 @@ body{
 	width: 100%;
 	height: auto;
 }
+.table-data table{
+	border: 1px solid var(--scroll_bar_color);
+}
 
 .table-data thead th{
 	background-color: var(--table_header_background_color);
@@ -475,16 +478,21 @@ body{
 }
 .table-data table th, .table-data table td{
 	padding: 10px;
-	font-size: 11px;
+	font-size: 12px;
 	white-space: nowrap;
 	text-align: left;
 }
 .table-data table tr {
 	background-color: var(--aside_bg_hover_a);
 	color: var(--aside_fg_hover_a);
+	border-bottom: 1px solid var(--scroll_bar_color);
+}
+.table-data table tr:hover{
+	background-color: var(--aside_bg);
+	color: white;
 }
 .table-data table tr:nth-child(even){
-	background-color: var(--table_tr_background_color);
+	/* background-color: var(--main_bg); */
 	/* border-bottom: 1px solid var(--aside_bg); */
 }
 .table-data table tr .view_button{

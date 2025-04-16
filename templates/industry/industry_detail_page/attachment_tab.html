@@ -32,7 +32,7 @@
                                 <input type="hidden" id="document-viewer-documentUrl-{{attachment.id}}" value="{{ attachment.document_url }}"/>
                                 <button onclick="DocumentViewerOne.loadDocument('{{ attachment.id }}')"  class="view_button">View Attachment</button>
                             </td>
-                            <td><a href="" class="delete_button">remove</a></td>
+                            <td><a href="{% url 'industry:delete-industry-attachment' attachment.id %}" class="delete_button">remove</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

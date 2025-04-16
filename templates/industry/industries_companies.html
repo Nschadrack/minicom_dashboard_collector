@@ -111,7 +111,7 @@
                                     {% endif %}
                                     <td><a href="{% url 'industry:industry-info-details' industry.id %}" class="view_button">view details</a></td>
                                     <td><a href="" class="update_button">update</a></td>
-                                    <td><a href="" class="delete_button">delete</a></td>
+                                    <td><a href="{% url 'industry:delete-industry' industry.id %}" class="delete_button">delete</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

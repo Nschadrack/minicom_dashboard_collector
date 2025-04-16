@@ -4,7 +4,8 @@ from .views import (users_list, user_detail, login_user,
                     zones_list, economic_sub_sectors_list, 
                     economic_sectors_list, assign_roles, 
                     system_settings, assign_role_permissions,
-                    delete_sub_economic_sector, products_list)
+                    delete_sub_economic_sector, products_list,
+                    delete_economic_sector)
 
 app_name = "systems_management"
 
@@ -29,6 +30,7 @@ urlpatterns = [
     # economic sector routers 
     path("economic-sector/", economic_sectors_list, name="economic-sectors-list"),
     path("economic/sub-sector/", economic_sub_sectors_list, name="economic-sub-sectors-list"),
+    path("economic/sub-sector/<str:id>/", delete_economic_sector, name="delete-economic-sector"),
     path("economic/sub-sector/<str:id>/", delete_sub_economic_sector, name="delete-sub-economic-sector"),
     path("economic/products-list/", products_list, name="products-list"),
 

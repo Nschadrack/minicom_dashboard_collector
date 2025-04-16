@@ -198,6 +198,21 @@ def economic_sectors_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_economic_sector(request, id):
+    sector = EconomicSector.objects.filter(id=id).first()
+    if sector:
+        sub_sector = EconomicSubSector.objects.filter(economic_sector=sector).first()
+        if sub_sector:
+            message = "You cannot delete this economic sector because it has sub economic sectors linked to it."
+        else:
+            sector.delete()
+            message = f"Economic sector: {sector.name} deleted successfully!"
+    else:
+        message = f"Unable to delete economic sector with ID: {id} because it does not exist."
+    return redirect("system_management:economic-sectors-list")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def economic_sub_sectors_list(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -220,9 +235,16 @@ def economic_sub_sectors_list(request):
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def delete_sub_economic_sector(request, id):
-    sector = EconomicSubSector.objects.filter(id=id).first()
-    if sector:
-        sector.delete()
+    sub_sector = EconomicSubSector.objects.filter(id=id).first()
+    if sub_sector:
+        product = Product.objects.filter(sub_sector=sub_sector).first()
+        if product:
+            message = "You cannot delete this sub economic sector because it has products linked to it."
+        else:
+            message = "Sub economic sector deleted successfully!"
+            sub_sector.delete()
+    else:
+        message = f"Unable to delete sub economic sector with ID={id} because it does not exist."
     return redirect("system_management:economic-sub-sectors-list")
 
 
@@ -280,9 +302,11 @@ def system_settings(request, flag=None):
                     )
         return redirect("systems_management:system-settings")
     elif flag == "administrative_divisions":
-        print(f"Going into background task")
-        bulk_saving_administrative() # execute the background task
-        print("background task started")
+        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
+        if len(sectors) != 416:
+            print(f"Going into background task")
+            bulk_saving_administrative() # execute the background task
+            print("background task started")
         return redirect("systems_management:system-settings")
     elif flag == "zoning":
         print(f"\nGoing to start background task\n")

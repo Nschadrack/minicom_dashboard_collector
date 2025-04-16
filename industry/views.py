@@ -7,17 +7,24 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.db.models import Prefetch
 from django.contrib.auth.decorators import login_required
-from system_management.models import User, AdministrativeUnit, EconomicSector, EconomicSubSector
+from system_management.models import (User, AdministrativeUnit, 
+                                      EconomicSector, EconomicSubSector)
 from system_management.utils import generate_random_code
-from .models import (IndustryEconomicZone, PartitionedPlot, CompanyProfile, 
-                     CompanySite, LandRequestInformation,
-                     AllocatedPlot, IndustryAttachment, IndustryEconomicSector, ContractPaymentInstallment,
-                     IndustryContract, IndustryContractPayment, PaymentInstallmentTransaction)
-from system_management.models import IndustrialZone
+from .models import (IndustryEconomicZone, PartitionedPlot, 
+                     CompanyProfile, CompanySite, 
+                     LandRequestInformation, IndustryProduct,
+                     AllocatedPlot, IndustryAttachment, 
+                     IndustryEconomicSector, ContractPaymentInstallment,
+                     IndustryContract, IndustryContractPayment, 
+                     PaymentInstallmentTransaction)
+from system_management.models import IndustrialZone, Product
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
                     get_base_domain, create_payment_installment, convert_datetime_timezone,
                     record_payment_transaction)
+from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, PRODUCT_PACKAGING_MATERIAL,
+                       PRODUCT_QUANTITIES_UNITS_MAP, PRODUCT_PRODUCTION_CAPACITY_PERIOD,
+                       PRODUCT_PRODUCTION_CAPACITY_UNIT)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -246,9 +253,12 @@ def industry_details(request, industry_id):
     economic_sectors = EconomicSector.objects.all()
     sub_sectors = EconomicSubSector.objects.exclude(id__in=[sector.id for sector in industry_economic_sub_sectors])
     contracts = IndustryContract.objects.filter(industry=industry).order_by("signing_date")
+    products = Product.objects.filter(sub_sector__in=industry_economic_sub_sectors.values_list("sector", flat=True)).order_by("name")
     search_items = []
     for sector in sub_sectors:
         search_items.append(f"{sector.id}|{sector.name.strip().replace(',', "-")}|{sector.economic_sector.id}")
+    
+    industry_products = IndustryProduct.objects.filter(industry=industry).select_related("industry", "product").order_by("product__name", "product_brand_name")
 
     context = {
         "industry": industry,
@@ -257,9 +267,36 @@ def industry_details(request, industry_id):
         "search_items": json.dumps(search_items),
         "economic_sectors": economic_sectors,
         "attachments": attachments,
+        "industry_products": industry_products,
+        "products": products,
+        "PRODUCT_PACKAGING_MATERIAL": [ m[0] for m in PRODUCT_PACKAGING_MATERIAL],
+        "PRODUCT_PRODUCTION_CAPACITY_PERIOD": [ p[0] for p in PRODUCT_PRODUCTION_CAPACITY_PERIOD],
+        "PRODUCT_QUANTITIES": [m[0] for m in PRODUCT_QUANTITIES],
+        "PRODUCT_PRODUCTION_CAPACITY_UNIT": [unit[0] for unit in PRODUCT_PRODUCTION_CAPACITY_UNIT],
+        "PRODUCT_QUANTITIES_UNITS_MAP": json.dumps(PRODUCT_QUANTITIES_UNITS_MAP),
         "contracts": contracts
     }
     return render(request, "industry/industry_detail_page/industry_details.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_industry(request, industry_id):
+    try:
+        industry = CompanySite.objects.get(id=industry_id)
+        contracts = IndustryContract.objects.filter(industry=industry).order_by("signing_date")
+        if len(contracts) > 0:
+            message = "This industry cannot be deleted because it has some historical data"
+        else:
+            industry.delete()
+            message = "Industry deleted successfully!"
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
+    except Exception as e:
+        message = f"[EROOR] {str(e)}"
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
+
+
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def add_industry_economic_sectors(request, industry_id):
@@ -278,6 +315,68 @@ def add_industry_economic_sectors(request, industry_id):
 
             redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
             return redirect(f"{redirect_url}#industry-detail")
+    except:
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def add_industry_product(request, industry_id):
+    try:
+        industry = CompanySite.objects.get(id=industry_id)
+        if request.method == "POST":
+            product = request.POST.get("product")
+            brand_name = request.POST.get("brand_name")
+            quantity_measure = request.POST.get("quantity_measure")
+            quantity_measure_unit = request.POST.get("quantity_measure_unit")
+            quantity = request.POST.get("quantity")
+            packaging_material = request.POST.get("packaging_material")
+            production_installed_capacity = request.POST.get("production_installed_capacity")
+            production_installed_capacity_unit = request.POST.get("production_installed_capacity_unit")
+            production_installed_capacity_period = request.POST.get("production_installed_capacity_period")
+
+            
+            if product and len(product.strip()) > 5 and len(product.split("||")) > 1:
+                product_code = product.split("||")[0].strip()
+                product = Product.objects.filter(product_code=product_code).first()
+
+                if product:
+                    IndustryProduct.objects.create(
+                        industry=industry,
+                        product=product,
+                        product_brand_name=brand_name.strip(),
+                        quantity=quantity,
+                        quantity_measure=quantity_measure,
+                        quantity_measure_unit=quantity_measure_unit,
+                        packaging_material=packaging_material,
+                        production_installed_capacity=production_installed_capacity,
+                        production_installed_capacity_unit=production_installed_capacity_unit,
+                        production_installed_capacity_period=production_installed_capacity_period
+                    )
+                    message = f"New product has been added for {industry.company.name}"
+                else:
+                    message = "Unable to add a new product, check if you have selected the product instead of typing"
+            else:
+                message = "You should select the product from the list."
+
+        redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
+        return redirect(f"{redirect_url}#product-industry")
+    except CompanySite.DoesNotExist:
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
+    except:
+        redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
+        return redirect(f"{redirect_url}#product-industry")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_industry_product(request, product_id):
+    try:
+        product = IndustryProduct.objects.get(id=product_id)
+        industry = product.industry
+        product.delete()
+        redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
+        return redirect(f"{redirect_url}#product-industry")
     except:
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
@@ -315,6 +414,22 @@ def record_industry_attachment(request, industry_id):
 
     redirect_url = reverse('industry:companies-industries-list')
     return redirect(f"{redirect_url}#companies-industries-in-parks")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_industry_attachment(request, attachment_id):
+    try:
+        attachment = IndustryAttachment.objects.get(id=attachment_id)
+        industry = attachment.industry
+
+        if os.path.isfile(attachment.document.path) and os.path.exists(attachment.document.path):
+            os.remove(attachment.document.path)
+        attachment.delete()
+        redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
+        return redirect(f"{redirect_url}#attachment-industry")
+    except:
+        redirect_url = reverse('industry:companies-industries-list')
+        return redirect(f"{redirect_url}#companies-industries-in-parks")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")

@@ -11,7 +11,7 @@
                     <th>#</th>
                     <th>ECONOMIC SECTOR NAME</th>
                     <th>RECORDED DATE</th>
-                    <th colspan="3">ACTIONS</th>
+                    <th colspan="1">ACTIONS</th>
                 </thead>
                 <tbody>
                     {% for economic_sector in economic_sectors %}
@@ -19,9 +19,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ economic_sector.name }}</td>
                             <td>{{ economic_sector.recorded_date|date:"d-m-Y H:i:s A"}}</td>
-                            <td><a href="" class="view_button">view details</a></td>
-                            <td><a href="" class="update_button">update</a></td>
-                            <td><a href="" class="delete_button">delete</a></td>
+                            <td><a href="{% url 'systems_management:delete-economic-sector' economic_sector.id  %}" class="delete_button">delete</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

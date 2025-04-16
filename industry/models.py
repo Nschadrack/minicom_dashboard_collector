@@ -186,7 +186,8 @@ class IndustryEconomicSector(models.Model):
 
 
 class IndustryProduct(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_industry_products")
+    industry = models.ForeignKey(CompanySite, on_delete=models.CASCADE, related_name="company_products")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_brands")
     product_brand_name = models.CharField(max_length=200, null=False, blank=False)
     quantity = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
     quantity_measure = models.CharField(max_length=20, choices=PRODUCT_QUANTITIES, null=False, blank=False)
@@ -195,6 +196,7 @@ class IndustryProduct(models.Model):
     production_installed_capacity = models.DecimalField(decimal_places=2, max_digits=16, blank=False, null=False)
     production_installed_capacity_unit = models.CharField(max_length=25, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_UNIT)
     production_installed_capacity_period = models.CharField(max_length=20, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_PERIOD)
+    recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "IndustryProducts"

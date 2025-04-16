@@ -41,4 +41,5 @@ PRODUCT_PRODUCTION_CAPACITY_UNIT = (
 PRODUCT_PRODUCTION_CAPACITY_PERIOD = (
     ("Day", "Day"),
     ("Month", "Month"),
+    ("Year", "Year"),
 )
