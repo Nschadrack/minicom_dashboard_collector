@@ -26,33 +26,41 @@ def generate_random_code(length=10):
 @background()
 def bulk_saving_zoning():
     with open(os.path.join(os.getcwd(), "zoning.csv")) as filestream:
+        zones = []
         try:
-            zones = []
-            IndustrialZone.objects.all().delete()
-            # Save them in bulk
-            with transaction.atomic():
-                lines = filestream.readlines()
-                cache_zones = defaultdict()
-                for line in lines:
-                    name = line.split(",")[0]
-                    name= name.strip().title()
-                    zone = cache_zones.get(name, None)
-                    if zone is None:
-                        zone = IndustrialZone(name=name)
-                        cache_zones[name] = zone
-                        zones.append(zone)
+            lines = csv.reader(filestream)
+            counts = 0
+            for line in lines:
+                counts += 1
+                name = line[0]
+                zone = IndustrialZone.objects.filter(name=name).first()
+                if zone is None:
+                    zone = IndustrialZone(name=name)
+                    zone.save()
+                    zones.append(zone)
 
-                IndustrialZone.objects.bulk_create(zones)
-            print(f"Processed {len(zones)} zonings data instances")
+            print(f"Processed {counts} zonings data instances")
             print("\nBackground task completed\n")
         except Exception as e:
-            print(f"\n[ERROR]: {str(e)}: Data rolled back with {len(zones)} records\n")
+            for zon in zones:
+                zon.delete()
+            print(f"\n[ERROR]: {str(e)}: Data rolled back\n")
     
 
 @background()
 def bulk_saving_administrative():
-    AdministrativeUnit.objects.all().delete()
     try:
+        provinces = AdministrativeUnit.objects.filter(category="PROVINCE")
+        districts = AdministrativeUnit.objects.filter(category="DISTRICT")
+        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
+        cells = AdministrativeUnit.objects.filter(category="CELL")
+        villages = AdministrativeUnit.objects.filter(category="VILLAGE")
+        villages.delete()
+        cells.delete()
+        sectors.delete()
+        districts.delete()
+        provinces.delete()
+
         with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
 
             data = csv.reader(filestream)
@@ -99,7 +107,16 @@ def bulk_saving_administrative():
             print(f"Processed { count } data instances")
     except Exception as e:
         print(traceback.format_exc())
-        AdministrativeUnit.objects.all().delete()
+        provinces = AdministrativeUnit.objects.filter(category="PROVINCE")
+        districts = AdministrativeUnit.objects.filter(category="DISTRICT")
+        sectors = AdministrativeUnit.objects.filter(category="SECTOR")
+        cells = AdministrativeUnit.objects.filter(category="CELL")
+        villages = AdministrativeUnit.objects.filter(category="VILLAGE")
+        villages.delete()
+        cells.delete()
+        sectors.delete()
+        districts.delete()
+        provinces.delete()
         print(f"{str(e)}\nData have been rolled back\n")
 
 
