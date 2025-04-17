@@ -184,3 +184,5 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 # Use X-Forwarded-Host for hostname detection
 USE_X_FORWARDED_HOST = True
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None  # Disables COOP for development
