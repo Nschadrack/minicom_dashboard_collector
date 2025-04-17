@@ -488,7 +488,7 @@ body{
 	border-bottom: 1px solid var(--scroll_bar_color);
 }
 .table-data table tr:hover{
-	background-color: var(--aside_bg);
+	background-color: var(--scroll_bar_color);
 	color: white;
 }
 .table-data table tr:nth-child(even){

@@ -558,82 +558,90 @@ def contracts_detail(request, contract_id):
     ).first()
 
     payment = contract.contract_payments.first()
-    payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else ContractPaymentInstallment.objects.none()
-    transactions = PaymentInstallmentTransaction.objects.filter(
-        installment__contract_payment=payment).select_related("installment").order_by("installment__expected_payment_date")
-    installment_payment_amount = None
-    unpaid_installments = None
-    transaction_to_refund = PaymentInstallmentTransaction.objects.filter(id=payment.transaction_to_refund).first()
+    if payment is not None:
+        payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else ContractPaymentInstallment.objects.none()
+        transactions = PaymentInstallmentTransaction.objects.filter(
+            installment__contract_payment=payment).select_related("installment").order_by("installment__expected_payment_date")
+        installment_payment_amount = None
+        unpaid_installments = None
+        transaction_to_refund = PaymentInstallmentTransaction.objects.filter(id=payment.transaction_to_refund).first()
 
-    if contract is None:
-        return redirect("industry:companies-industries-list")
-    
-    if request.method == "POST":
-        payment_modality = request.POST.get("payment_modality")
-        payment_start_date = request.POST.get("payment_start_date")
-        irembo_application_number = request.POST.get("irembo_application_number", None)
-        contract_payment = IndustryContractPayment(
-            contract=contract,
-            total_amount_to_pay=contract.contract_amount,
-            total_amount_unpaid=contract.contract_amount,
-            payment_currency=contract.contract_currency,
-            payment_modality=payment_modality,
-            number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
-            irembo_application_number=irembo_application_number
-        )
-        contract_payment.save()
-        payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
-        payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
+        if contract is None:
+            return redirect("industry:companies-industries-list")
+        
+        if request.method == "POST":
+            payment_modality = request.POST.get("payment_modality")
+            payment_start_date = request.POST.get("payment_start_date")
+            irembo_application_number = request.POST.get("irembo_application_number", None)
+            contract_payment = IndustryContractPayment(
+                contract=contract,
+                total_amount_to_pay=contract.contract_amount,
+                total_amount_unpaid=contract.contract_amount,
+                payment_currency=contract.contract_currency,
+                payment_modality=payment_modality,
+                number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
+                irembo_application_number=irembo_application_number
+            )
+            contract_payment.save()
+            payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
+            payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
 
-        payment_dates = []
-        if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
-            payment_dates.append(payment_start_date)
-        elif payment_modality == "INSTALLMENTS": # create six payment installments
-            payment_dates.append(payment_start_date)
-            for i in range(5): # creating 6 installments dates
-                payment_dates.append(
-                    payment_dates[i] + relativedelta(years=1)
-                )
-        else:
-            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-            return redirect(f"{redirect_url}#contract-detail")
-        
-        succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
-        if not succeeded:
-            contract_payment.delete()
-        else:
-            if total_amount !=  contract_payment.total_amount_to_pay:
-                contract_payment.total_amount_to_pay = total_amount
-                contract_payment.total_amount_unpaid = total_amount
-                contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
-                contract_payment.save() 
-                contract_payment.contract.save() # update the contract as well
-        
-        redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-        return redirect(f"{redirect_url}#contract-payments")
-        
-    unpaid_installment = payment_installments.filter(payment_status__in=("PARTIALLY PAID", "NOT PAID")).first()
-    if unpaid_installment is None:
-        unpaid_installments = list(payment_installments.filter(accrued_penalties__gt=0))
-        for install_ in unpaid_installments:
-            if install_.accrued_penalties != install_.paid_penalties:
-                unpaid_installment = install_
-                break
-    
-    if unpaid_installment:
-        if unpaid_installment.actual_paid_amount:
-            installment_payment_amount = unpaid_installment.expected_payment_amount - unpaid_installment.actual_paid_amount
-        else:
-            installment_payment_amount = unpaid_installment.expected_payment_amount
-        
-        if installment_payment_amount is None:
-            if unpaid_installment.accrued_penalties and unpaid_installment.accrued_penalties > 0:
-                if unpaid_installment.paid_penalties and unpaid_installment.paid_penalties > 0:
-                    installment_payment_amount = unpaid_installment.accrued_penalties - unpaid_installment.paid_penalties
-                else:
-                    installment_payment_amount = unpaid_installment.accrued_penalties
+            payment_dates = []
+            if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
+                payment_dates.append(payment_start_date)
+            elif payment_modality == "INSTALLMENTS": # create six payment installments
+                payment_dates.append(payment_start_date)
+                for i in range(5): # creating 6 installments dates
+                    payment_dates.append(
+                        payment_dates[i] + relativedelta(years=1)
+                    )
             else:
-                installment_payment_amount = 0
+                redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+                return redirect(f"{redirect_url}#contract-detail")
+            
+            succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
+            if not succeeded:
+                contract_payment.delete()
+            else:
+                if total_amount !=  contract_payment.total_amount_to_pay:
+                    contract_payment.total_amount_to_pay = total_amount
+                    contract_payment.total_amount_unpaid = total_amount
+                    contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
+                    contract_payment.save() 
+                    contract_payment.contract.save() # update the contract as well
+            
+            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+            return redirect(f"{redirect_url}#contract-payments")
+            
+        unpaid_installment = payment_installments.filter(payment_status__in=("PARTIALLY PAID", "NOT PAID")).first()
+        if unpaid_installment is None:
+            unpaid_installments = list(payment_installments.filter(accrued_penalties__gt=0))
+            for install_ in unpaid_installments:
+                if install_.accrued_penalties != install_.paid_penalties:
+                    unpaid_installment = install_
+                    break
+        
+        if unpaid_installment:
+            if unpaid_installment.actual_paid_amount:
+                installment_payment_amount = unpaid_installment.expected_payment_amount - unpaid_installment.actual_paid_amount
+            else:
+                installment_payment_amount = unpaid_installment.expected_payment_amount
+            
+            if installment_payment_amount is None:
+                if unpaid_installment.accrued_penalties and unpaid_installment.accrued_penalties > 0:
+                    if unpaid_installment.paid_penalties and unpaid_installment.paid_penalties > 0:
+                        installment_payment_amount = unpaid_installment.accrued_penalties - unpaid_installment.paid_penalties
+                    else:
+                        installment_payment_amount = unpaid_installment.accrued_penalties
+                else:
+                    installment_payment_amount = 0
+    else:
+        payment = None
+        payment_installments = []
+        unpaid_installment = None
+        installment_payment_amount = 0
+        transactions = []
+        transaction_to_refund = None
 
     context = {
         "contract": contract,
