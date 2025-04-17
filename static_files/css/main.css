@@ -17,6 +17,7 @@
 	--darkRed:rgb(116, 24, 4);
 	--table_tr_background_color: rgb(230, 230, 230);
 	--table_header_background_color: #DAF1DE;
+	--tr_hover_color: #b6d0ee;
 }
 *{
 	box-sizing: border-box;
@@ -488,8 +489,8 @@ body{
 	border-bottom: 1px solid var(--scroll_bar_color);
 }
 .table-data table tr:hover{
-	background-color: var(--scroll_bar_color);
-	color: white;
+	background-color: var(--tr_hover_color);
+	color: var(--darkBlue);
 }
 .table-data table tr:nth-child(even){
 	/* background-color: var(--main_bg); */
@@ -1348,4 +1349,39 @@ main:hover{
 
 .custom-dropdown div:hover, .custom-dropdown2 div:hover {
     background-color: #f0f0f0;
+}
+
+.closebtnCopyText-cls {
+    cursor: pointer;
+    margin-left: 10px;
+    background: none;
+    border: none;
+    font-weight: bold;
+}
+
+.copy-alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.copy-alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.closebtnCopyText-cls {
+    color: inherit;
+    float: right;
+    font-size: 1.2em;
+    line-height: 0.8;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 5px;
+}
+
+.closebtnCopyText-cls:hover {
+    opacity: 0.8;
 }

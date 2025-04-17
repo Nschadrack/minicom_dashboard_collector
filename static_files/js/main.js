@@ -442,43 +442,167 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// copying the text
+
+// Copy text with modern API and fallback
 function copyText(itemId) {
-    let text = document.getElementById(`myInputToCopy-${itemId}`).value;
-    let alertP = document.getElementById(`copyAlertMessage-${itemId}`);
-    navigator.clipboard.writeText(text).then(() => {
-        alertP.innerHTML = `Copied to clipboard! <button onclick='closeCopyTextAlert(${itemId});' id='closebtnCopyText-${itemId}' class='closebtnCopyText-cls'>X</button>`;
+    const textElement = document.getElementById(`myInputToCopy-${itemId}`);
+    const alertP = document.getElementById(`copyAlertMessage-${itemId}`);
+
+    if (!textElement) {
+        console.error(`Copy element not found for ID: ${itemId}`);
+        return;
+    }
+
+    const text = textElement.value;
+    
+    // Modern clipboard API (requires secure context)
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+            .then(() => showCopyAlert('success', itemId))
+            .catch(async (err) => {
+                // Try fallback if modern API fails
+                if (!attemptFallbackCopy(text)) {
+                    showCopyAlert('error', itemId);
+                    console.error('Clipboard API error:', err);
+                }
+            });
+    } else {
+        // Use legacy method
+        if (!attemptFallbackCopy(text)) {
+            showCopyAlert('error', itemId);
+        }
+    }
+
+    function attemptFallbackCopy(text) {
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            if (successful) showCopyAlert('success', itemId);
+            return successful;
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            return false;
+        }
+    }
+
+    function showCopyAlert(type, itemId) {
+        const message = type === 'success' 
+            ? 'Copied to clipboard!'
+            : 'Failed to copy - please press Ctrl/Cmd+C';
+            
+        alertP.innerHTML = `${message} <button onclick="closeCopyTextAlert(${itemId})" 
+                          class="closebtnCopyText-cls">×</button>`;
         alertP.style.display = "block";
-    }).catch(err => {
-        alertP.innerHTML = `Failed to copy! <button onclick='closeCopyTextAlert(${itemId});' id='closebtnCopyText-${itemId}' class='closebtnCopyText-cls'>X</button>`;
-        alertP.style.display = "block";
-    });
+        
+        // Auto-hide alert after 3 seconds
+        setTimeout(() => {
+            alertP.style.display = "none";
+        }, 3000);
+    }
+}
+
+// Close alert handler (ensure this exists)
+function closeCopyTextAlert(itemId) {
+    const alertP = document.getElementById(`copyAlertMessage-${itemId}`);
+    if (alertP) alertP.style.display = "none";
 }
 
 function copyText2(itemId) {
-    let textInput = document.getElementById(`myInputToCopy2-${itemId}`);
-    let text = textInput.value
-    let alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
-    navigator.clipboard.writeText(text).then(() => {
-        alertP.innerHTML = `Copied to clipboard! <button onclick='closeCopyTextAlert2(${itemId});' id='closebtnCopyText2-${itemId}' class='closebtnCopyText-cls'>X</button>`;
+    const textInput = document.getElementById(`myInputToCopy2-${itemId}`);
+    const alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
+
+    // Validate elements exist
+    if (!textInput || !alertP) {
+        console.error(`Copy elements missing for item ${itemId}`);
+        return;
+    }
+
+    const text = textInput.value;
+    
+    // Modern Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text)
+            .then(() => showAlert('success', itemId))
+            .catch(async (error) => {
+                console.warn('Modern clipboard failed, trying fallback:', error);
+                attemptLegacyCopy(text, itemId);
+            });
+    } else {
+        // Legacy browser fallback
+        attemptLegacyCopy(text, itemId);
+    }
+
+    function attemptLegacyCopy(text, itemId) {
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            
+            const selection = document.getSelection();
+            const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+            textarea.select();
+            
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            if (selected) {
+                selection.removeAllRanges();
+                selection.addRange(selected);
+            }
+
+            showAlert(success ? 'success' : 'error', itemId);
+            return success;
+        } catch (error) {
+            console.error('Legacy copy failed:', error);
+            showAlert('error', itemId);
+            return false;
+        }
+    }
+
+    function showAlert(type, itemId) {
+        const icon = type === 'success' ? '✓' : '⚠';
+        const message = type === 'success' 
+            ? 'Copied to clipboard!' 
+            : 'Copy failed - use Ctrl/Cmd+C';
+        
+        alertP.innerHTML = `
+            <span class="copy-alert-${type}">
+                ${icon} ${message}
+                <button onclick="closeCopyTextAlert2(${itemId})" 
+                        class="closebtnCopyText-cls" 
+                        aria-label="Close alert">
+                    ×
+                </button>
+            </span>
+        `;
         alertP.style.display = "block";
-    }).catch(err => {
-        alertP.innerHTML = `Failed to copy! <button onclick='closeCopyTextAlert2(${itemId});' id='closebtnCopyText2-${itemId}' class='closebtnCopyText-cls'>X</button>`;
-        alertP.style.display = "block";
-    });
+        
+        // Auto-dismiss after 4 seconds
+        clearTimeout(alertP.timeout);
+        alertP.timeout = setTimeout(() => {
+            alertP.style.display = "none";
+        }, 4000);
+    }
 }
 
-function closeCopyTextAlert(itemId){
-    let alertP = document.getElementById(`copyAlertMessage-${itemId}`);
-    alertP.style.display="none";
-
+// Matching close handler
+function closeCopyTextAlert2(itemId) {
+    const alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
+    if (alertP) {
+        alertP.style.display = "none";
+        clearTimeout(alertP.timeout);
+    }
 }
 
-function closeCopyTextAlert2(itemId){
-    let alertP = document.getElementById(`copyAlertMessage2-${itemId}`);
-    alertP.style.display="none";
-
-}
 function showPaymentRefund(){
     let refundDiv = document.getElementById("refund-form-payment");
     let refundWarningDiv = document.getElementById("refund-warning-div");
