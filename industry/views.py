@@ -407,7 +407,7 @@ def record_industry_attachment(request, industry_id):
                 document=document
             )
             attachment.save()
-            attachment.document_url = f"{base_domain}/{attachment.document.url}"
+            attachment.document_url = f"{base_domain}/{attachment.document.url.lstrip('/')}"
             attachment.save()
             redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
             return redirect(f"{redirect_url}#attachment-industry")
@@ -541,7 +541,7 @@ def contracts_list(request):
             )
 
             contract.save()
-            contract.contract_document_url = f"{base_domain}/{contract.contract_document.url}"
+            contract.contract_document_url = f"{base_domain}/{contract.contract_document.url.lstrip('/')}"
             contract.save()
 
             redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
@@ -703,7 +703,7 @@ def record_refund(request, transaction_id):
             transaction.recorded_by = request.user
             transaction.save()
             base_domain = get_base_domain(request=request)
-            transaction.refund_proof_url = f"{base_domain}/{transaction.refund_proof.url}"
+            transaction.refund_proof_url = f"{base_domain}/{transaction.refund_proof.url.lstrip('/')}"
             transaction.save()
             
             redirect_url = reverse('industry:contracts-detail', args=(transaction.installment.contract_payment.contract.id, ))

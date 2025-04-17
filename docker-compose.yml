@@ -35,7 +35,7 @@ services:
         expose:
             - 8000
         ports:
-            - "8080:8000"
+            - "8000:8000"
         volumes:
             - static_volume:/app/static
             - ./media:/app/media
@@ -63,9 +63,9 @@ services:
             - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
             - ./system_management/migrations:/app/system_management/migrations
         expose:
-            - 80
+            - 8080
         ports:
-            - "80:80"
+            - "8080:8080"
         depends_on:
             - minicom_main_system
         networks:
