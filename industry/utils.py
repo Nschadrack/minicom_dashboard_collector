@@ -2,6 +2,8 @@ import csv
 import os
 from decimal import Decimal
 from django.http import HttpRequest
+from django.conf import settings
+
 from .models import (IndustrialZone, PartitionedPlot, 
                      IndustryEconomicZone, AllocatedPlot,
                      CompanyProfile, CompanySite, IndustryContractPayment,
@@ -11,9 +13,10 @@ from django.utils import timezone
 
 
 def get_base_domain(request):
-    scheme = 'https' if request.is_secure() else 'http'
-    host = request.META.get('HTTP_HOST', request.get_host())
-    base_domain = f"{scheme}://{host}"
+    # scheme = 'https' if request.is_secure() else 'http'
+    host = settings.PUBLIC_IP
+    scheme = "http"
+    base_domain = f"{scheme}://{host}:{settings.WEBSERVER_PORT}"
     return base_domain
 
 def load_countries():

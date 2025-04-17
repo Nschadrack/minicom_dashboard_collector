@@ -34,8 +34,11 @@ EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
 EMAIL_ID = os.getenv("EMAIL_ID")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+PUBLIC_IP = os.getenv("IP_PUBLIC")
+PRIVATE_IP = os.getenv("IP_PRIVATE")
+WEBSERVER_PORT = os.getenv("WEBSERVER_PORT")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", os.getenv("IP_PRIVATE"), os.getenv("IP_PUBLIC")]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", PRIVATE_IP, PUBLIC_IP]
 
 
 # Application definition
