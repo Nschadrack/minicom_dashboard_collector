@@ -24,6 +24,6 @@ echo "Started background task queue"
 echo "===================================="
 
 # Then start the Gunicorn server
-gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8000 --timeout 300 minicom_dashboard.wsgi:application
+gunicorn --workers $NUM_WORKERS --bind 0.0.0.0:8080 --timeout 300 minicom_dashboard.wsgi:application
 
 # python manage.py runserver 0.0.0.0:8000

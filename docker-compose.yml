@@ -33,9 +33,9 @@ services:
             - DB_USER=${DB_USER}
             - DB_PASSWORD=${DB_PASSWORD}
         expose:
-            - 8000
+            - 8080
         ports:
-            - "8000:8000"
+            - "8080:8080"
         volumes:
             - static_volume:/app/static
             - ./media:/app/media
@@ -53,24 +53,24 @@ services:
             - minicom_main_system_network
             - app_net
 
-    nginx:
-        build: ./nginx
-        volumes:
-            - static_volume:/app/static
-            - ./media:/app/media
-            - ./automation/migrations:/app/automation/migrations
-            - ./industry/migrations:/app/industry/migrations
-            - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
-            - ./system_management/migrations:/app/system_management/migrations
-        expose:
-            - 8080
-        ports:
-            - "8080:8080"
-        depends_on:
-            - minicom_main_system
-        networks:
-            - minicom_main_system_network
-            - app_net
+    # nginx:
+    #     build: ./nginx
+    #     volumes:
+    #         - static_volume:/app/static
+    #         - ./media:/app/media
+    #         - ./automation/migrations:/app/automation/migrations
+    #         - ./industry/migrations:/app/industry/migrations
+    #         - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
+    #         - ./system_management/migrations:/app/system_management/migrations
+    #     expose:
+    #         - 8080
+    #     ports:
+    #         - "8080:8080"
+    #     depends_on:
+    #         - minicom_main_system
+    #     networks:
+    #         - minicom_main_system_network
+    #         - app_net
 
 volumes:
     static_volume:
