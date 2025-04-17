@@ -17,6 +17,11 @@ def get_base_domain(request):
     host = settings.PUBLIC_IP
     scheme = "http"
     base_domain = f"{scheme}://{host}:{settings.WEBSERVER_PORT}"
+    try:
+        if int(settings.WEBSERVER_PORT) == 80:
+            base_domain = f"{scheme}://{host}"
+    except:
+        pass
     return base_domain
 
 def load_countries():
@@ -386,7 +391,7 @@ def record_payment_transaction(data:dict, base_domain: str):
             payment_proof=payment_proof
         )
         transaction.save()
-        transaction.payment_proof_url = f"{base_domain}/{transaction.payment_proof.url}"
+        transaction.payment_proof_url = f"{base_domain}/{transaction.payment_proof.url.lstrip('/')}"
         transaction.save()
 
         succeed, message = clear_installment_and_payment(transaction=transaction, installment=installment)
