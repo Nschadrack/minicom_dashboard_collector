@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "corsheaders",
 
     # custom defined
     "dashboard",
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware', # Place before CommonMiddleware
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -168,3 +170,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = 'system_management.User'
+
+CORS_ALLOWED_ORIGINS = [
+    f"http://{PUBLIC_IP}:8080",
+    f"http://{PRIVATE_IP}:8080",
+    f"http://{PUBLIC_IP}",
+    f"http://{PRIVATE_IP}",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+# Trust the X-Forwarded-Proto header from Nginx
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+
+# Use X-Forwarded-Host for hostname detection
+USE_X_FORWARDED_HOST = True

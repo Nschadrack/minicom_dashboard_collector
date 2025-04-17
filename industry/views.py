@@ -25,6 +25,7 @@ from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
 from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, PRODUCT_PACKAGING_MATERIAL,
                        PRODUCT_QUANTITIES_UNITS_MAP, PRODUCT_PRODUCTION_CAPACITY_PERIOD,
                        PRODUCT_PRODUCTION_CAPACITY_UNIT)
+import traceback
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -292,7 +293,7 @@ def delete_industry(request, industry_id):
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
     except Exception as e:
-        message = f"[EROOR] {str(e)}"
+        message = f"[ERROR] {str(e)}"
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
 
@@ -428,6 +429,7 @@ def delete_industry_attachment(request, attachment_id):
         redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
         return redirect(f"{redirect_url}#attachment-industry")
     except:
+        print(traceback.print_exc())
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
 
