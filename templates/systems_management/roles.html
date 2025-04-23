@@ -27,19 +27,5 @@
                 </tbody>
             </table>
         </div>
-        <div class="car_new_form_div">
-            <form class="car_new_form" method="post" action="">
-                {% csrf_token %}
-                <fieldset>
-                    <legend>Creating a new system role</legend>	
-                    <div class="form-group">
-                        <label>Role name</label>
-                        <input type="text" maxlength="60" name="role_name" required/>
-                    </div>
-                    <input type="submit" value="Save new role"/>
-                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
-                </fieldset>						
-            </form>
-        </div>
     </div>
 {% endblock %}

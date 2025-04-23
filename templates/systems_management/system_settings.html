@@ -11,8 +11,10 @@
                     <p><a href="{% url 'system_management:feed-data' 'zoning' %}" class="system_settings_button_feed">Feed Industrial Zonings</a></p><br/>
                 </div>
                 <div>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sub-Sectors</a></p><br/>
+                    <p><a href="" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
+                    {% if reporting_months|length != 12 %}
+                        <p><a href="{% url 'system_management:feed-data' 'reporting_months' %}" class="system_settings_button_feed">Feed Reporting Months</a></p><br/>
+                    {% endif %}
                 </div>
                 <div>
                     <p><a href="{% url 'system_management:feed-data' 'administrative_divisions' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>

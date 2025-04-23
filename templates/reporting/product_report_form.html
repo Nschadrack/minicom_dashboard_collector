@@ -1,0 +1,164 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <head>
+        <style>
+            :root {
+                --primary-color: #2c3e50;
+                --secondary-color: #3498db;
+                --background: #f8f9fa;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'Segoe UI', sans-serif;
+                background-color: var(--background);
+            }
+
+            .form-container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .back{
+                padding: 5px;
+                text-decoration: none;
+                border-radius: 5px;
+                color: white;
+                background-color: var(--primary-color);
+            }
+
+            .form-header {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .form-header h2 {
+                color: var(--primary-color);
+                margin-bottom: 0;
+                margin-top: 1rem;
+                font-size: 1.4rem;
+                border-bottom: 2px double black;
+                padding-bottom: 5px;
+            }
+            
+            .form-header p {
+                color: var(--primary-color);
+                margin-bottom: 2.5rem;
+                font-size: 1.2rem;
+                padding: 10px;
+                font-weight: bold;
+                font-style: italic;
+                background-color: var(--secondary-color);
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .form-section {
+                padding: 1.2rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+            }
+
+            .form-section h3 {
+                color: var(--secondary-color);
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+            }
+
+            .input-group {
+                margin-bottom: 0.9rem;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0.8rem;
+                color: var(--primary-color);
+                font-size: 1.1rem;
+            }
+
+            input{
+                width: 100%;
+                padding: 0.8rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: border-color 0.3s ease;
+            }
+
+            input:focus {
+                outline: none;
+                border-color: var(--secondary-color);
+            }
+
+
+            .submit-btn {
+                background-color: var(--secondary-color);
+                color: white;
+                padding: 1rem 2rem;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .submit-btn:hover {
+                background-color: #2980b9;
+            }
+
+            @media (max-width: 768px) {
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="form-container">
+            <a href="{% url 'reporting:reporting' %}" class="back">Back</a>
+            <div class="form-header">
+                <h2>Reporting On The Product: {{ product.product.product_code }} - {{ product.product.name }} - {{ product.product_brand_name }}</h2>
+                <p>Reporting Period: From {{ start_date }} To {{ end_date }}</p>
+            </div>
+
+            <form id="reportForm" method="POST" action="">
+                {% csrf_token %}
+                <!-- Dates Section -->
+                <div class="input-group">
+                    <input type="hidden" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="input-group">
+                    <input type="hidden" name="end_date" value="{{ end_date }}">
+                </div>
+                <div class="form-grid">
+                    <!-- Dates Section -->
+                    <div class="form-section">
+                        <h3>Production Capacity</h3>
+                        <h2><i>Product Installed Capacity: {{ product.production_installed_capacity }} {{ product.production_installed_capacity_unit }} Per {{ product.production_installed_capacity_period }}</i></h2><br/><br/>
+                        <div class="input-group">
+                            <label>What was the daily average production volume in <b>{{ product.production_installed_capacity_unit|title }}</b> during this period? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" required name="production_volume">
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group" style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="submit-btn">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </body>
+{% endblock %}

@@ -1,10 +1,10 @@
 <div id="product-industry" class="tab-content">
     <div class="upper-detail-div">
+        {% if industry_economic_sub_sectors|length > 0 %}
+            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new product</button>
+        {% endif %}
         <div class="current_price_list table-data">
             <h4>List of Products</h4>
-            {% if industry_economic_sub_sectors|length > 0 %}
-                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new product</button>
-            {% endif %}
             <table class="table-data">
                 <thead>
                     <th>#</th>

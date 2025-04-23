@@ -50,10 +50,10 @@
         <!-- partitioned plots Tab -->
         <div id="partitioned-plots" class="tab-content">
             <div class="upper-detail-div">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a partitioned plot</button>		
                 <div class="current_price_list table-data">     
                     {% if park_partitioned_plots|length > 0 %}	
                         <h4>List of Plots Partitioned In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a partitioned plot</button>		
                         <table class="table-data">
                             <thead>
                                 <th>#</th>

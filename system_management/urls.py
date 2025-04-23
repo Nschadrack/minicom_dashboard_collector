@@ -5,7 +5,8 @@ from .views import (users_list, user_detail, login_user,
                     economic_sectors_list, assign_roles, 
                     system_settings, assign_role_permissions,
                     delete_sub_economic_sector, products_list,
-                    delete_economic_sector)
+                    delete_economic_sector, delete_product,
+                    configurations, activate_months_reporting_period)
 
 app_name = "systems_management"
 
@@ -30,12 +31,17 @@ urlpatterns = [
     # economic sector routers 
     path("economic-sector/", economic_sectors_list, name="economic-sectors-list"),
     path("economic/sub-sector/", economic_sub_sectors_list, name="economic-sub-sectors-list"),
-    path("economic/sub-sector/<str:id>/", delete_economic_sector, name="delete-economic-sector"),
-    path("economic/sub-sector/<str:id>/", delete_sub_economic_sector, name="delete-sub-economic-sector"),
+    path("economic/<str:id>/delete", delete_economic_sector, name="delete-economic-sector"),
+    path("economic/sub-sector/<str:id>/delete/", delete_sub_economic_sector, name="delete-sub-economic-sector"),
     path("economic/products-list/", products_list, name="products-list"),
+    path("economic/products-list/<str:product_id>/", delete_product, name="delete-product"),
 
     # System settings routers
     path("system-settings/", system_settings, name="system-settings"),
     path("system-settings/feed-<str:flag>/", system_settings, name="feed-data"),
+    
+    # configurations
+    path("configurations/", configurations, name="configurations"),
+    path("configurations/<str:month_id>/", activate_months_reporting_period, name="activate-months-reporting-period"),
 
 ]

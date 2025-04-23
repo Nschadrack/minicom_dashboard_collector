@@ -51,10 +51,10 @@
         <!-- permissions Tab -->
         <div id="role-permissions" class="tab-content">
             <div class="upper-detail-div">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new permission</button>
                 <div class="current_price_list table-data">
                     {% if role_permissions|length > 0 %}
                         <h4>List of permissions granted to this role</h4>
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new permission</button>
                         <table class="table-data">
                             <thead>
                                 <th>#</th>

@@ -34,10 +34,12 @@
         <!-- permissions Tab -->
         <div id="user-roles" class="tab-content">
             <div class="upper-detail-div">
+                {% if user_roles|length > 0 %}	
+                    <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
+                {% endif %}	
                 <div class="current_price_list table-data">     
                     {% if user_roles|length > 0 %}	
                         <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} is a member of the following role(s)</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>		
                         <table class="table-data">
                             <thead>
                                 <th>#</th>

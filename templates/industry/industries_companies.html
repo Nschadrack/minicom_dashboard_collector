@@ -15,11 +15,11 @@
         <!-- companies industries profiles Tab -->
         <div id="companies-industries-profiles" class="tab-content active">
             <div class="upper-detail-div">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record an industry profile</button>	
                 <div class="current_price_list table-data">     
                     {% if companies_industries_profiles|length > 0 %}	
-                        <h4>List of Industries Profiles</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record an industry profile</button>		
-                        <table class="table-data">
+                        <h4>List of Industries Profiles</h4>			
+                        <table>
                             <thead>
                                 <th>#</th>
                                 <th>INDUSTRY TIN</th>
@@ -65,10 +65,10 @@
         <!-- industries in the park tab -->
         <div id="companies-industries-in-parks" class="tab-content">
             <div class="upper-detail-div">
+                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add industry out of industrial zone</button>		
                 <div  class="current_price_list table-data">
                     <h4>List of Industries In Parks, Zones and Other</h4>		
-                    <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add an industry not in park and industrial zone</button>		
-                    <table class="table-data">
+                    <table>
                         <thead>
                             <th>#</th>
                             <th>INDUSTRY TIN</th>

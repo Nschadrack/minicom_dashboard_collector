@@ -1,10 +1,10 @@
 <div id="contract-industry" class="tab-content">
     <div class="upper-detail-div">
+        {% if contracts|length < 1 %} 
+            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new contract</button>
+        {% endif %}
         <div class="current_price_list table-data">
             <h4>List of Contracts</h4>
-            {% if contracts|length < 1 %}
-                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new contract</button>
-            {% endif %}
             <table class="table-data">
                 <thead>
                     <th>#</th>

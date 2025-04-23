@@ -37,6 +37,7 @@ EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 PUBLIC_IP = os.getenv("IP_PUBLIC")
 PRIVATE_IP = os.getenv("IP_PRIVATE")
 WEBSERVER_PORT = os.getenv("WEBSERVER_PORT")
+REPORTING_ALERT_DAYS_TO_ACTUAL_REPORTING = os.getenv("REPORTING_ALERT_DAYS_TO_ACTUAL_REPORTING", 7)
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", PRIVATE_IP, PUBLIC_IP]
 
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
     "industry",
     "minicom_dashboards",
     "automation",
+    "reporting",
 
     # background task
     "background_task",

@@ -1,0 +1,36 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="add-report">Adding Report</th>
+                <li class="tab-link" data-tab="report-on-product">Reports On Product</th>
+            <li class="tab-link" data-tab="report-on-employment">Reports On Employment</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        <div id="add-report" class="tab-content active">
+            <div class="upper-detail-div">
+                <div class="current_price_list"> 
+                    {% include 'reporting/add_new_report_tab.html' %}
+                </div>
+            </div>
+        </div>
+        <div id="report-on-product" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% comment %} {% include 'configurations/reporting_periods.html' %}				 {% endcomment %}
+                </div>
+            </div>
+        </div>
+        <div id="report-on-employment" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% comment %} {% include 'configurations/reporting_periods.html' %}				 {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

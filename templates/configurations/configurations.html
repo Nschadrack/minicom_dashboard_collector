@@ -1,0 +1,31 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="reporting-months">Reporting months</th>
+                <li class="tab-link" data-tab="reporting-periods">Reporting Periods</th>
+            <li class="tab-link" data-tab="others">Others</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        <!-- Role users Tab -->
+        <div id="reporting-months" class="tab-content active">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data"> 
+                    {% include 'configurations/reporting_months.html' %}
+                </div>
+            </div>
+        </div>
+        <!-- permissions Tab -->
+        <div id="reporting-periods" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% include 'configurations/reporting_periods.html' %}				
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

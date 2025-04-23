@@ -38,9 +38,10 @@
                 <a href="{% url 'system_management:economic-sectors-list' %}">Economic sectors</a>
                 <a href="{% url 'system_management:economic-sub-sectors-list' %}">Economic sub-sectors</a>
 				<a href="{% url 'system_management:products-list' %}">Products</a>
+				<a href="{% url 'system_management:configurations' %}">Configurations</a>
 				<a href="{% url 'system_management:system-settings' %}">System settings</a>
 			</section>
-			<a href="">Requests</a>
+			<a href="{% url 'reporting:reporting' %}">Reporting</a>
 			<a href="{% url 'system_management:logout' %}">Sign out</a>
 			{% comment %} <a href="#">Notifications <span class="aside-navigation-spans">0</span></a> {% endcomment %}
 			{% comment %} <a href="#">Settings</a> {% endcomment %}

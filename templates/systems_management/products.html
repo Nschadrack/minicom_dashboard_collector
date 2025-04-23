@@ -28,13 +28,14 @@
                                 <td>{{ product.recorded_date|date:"d-m-Y H:i:s A"}}</td>
                                 <td><a href="" class="view_button">view details</a></td>
                                 <td><a href="" class="update_button">update</a></td>
-                                <td><a href="" class="delete_button">delete</a></td>
+                                <td><a class="delete_button" onclick="openModal('{% url 'systems_management:delete-product' product.id %}', 'delete', 'this product: {{ product.product_code }} | {{ product.name|title }}?')">delete</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table> 
             </div>
         </div>
+        {% include 'helpers/pup-up-modal.html' %}
         <div class="car_new_form_div">
             <form class="car_new_form" method="post" action="">
                 {% csrf_token %}

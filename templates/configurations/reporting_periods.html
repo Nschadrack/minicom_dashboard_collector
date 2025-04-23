@@ -1,0 +1,23 @@
+{% if reporting_periods|length > 0 %}
+    <h4>Annual Reporting Period Plans</h4>			
+    <table class="table-data">
+        <thead>
+            <th>#</th>
+            <th>START DATE</th>
+            <th>END DATE</th>
+            <th>NBR OF MONTHS</th>
+        </thead>
+        <tbody>
+            {% for period in reporting_periods %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ period.start_date|date:'d-m-Y' }}</td>
+                    <td>{{ period.end_date|date:'d-m-Y' }}</td>
+                    <td>{{ period.period_config.months }} month(s)</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h4>There are no annual reporting periods in the system</h4>
+{% endif %}

@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.utils.safestring import mark_safe
 from django.urls import reverse
@@ -9,8 +10,11 @@ from .models import (User, Role, UserRole, Module,
                      RolePermission, IndustrialZone,
                      EconomicSector, EconomicSubSector, 
                      AdministrativeUnit, Product)
+from industry.models import IndustryProduct
+from reporting.models import MonthsReportingPeriodConfig, ReportingPeriodPlan
 from .utils import (generate_random_code, build_default_password_email_template,
                     bulk_saving_administrative, bulk_saving_zoning, send_mails)
+from reporting.utils import generate_periods
 
 
 def login_user(request):
@@ -209,6 +213,7 @@ def delete_economic_sector(request, id):
             message = f"Economic sector: {sector.name} deleted successfully!"
     else:
         message = f"Unable to delete economic sector with ID: {id} because it does not exist."
+    print(f"\n{message}\n")
     return redirect("system_management:economic-sectors-list")
 
 
@@ -235,16 +240,17 @@ def economic_sub_sectors_list(request):
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def delete_sub_economic_sector(request, id):
-    sub_sector = EconomicSubSector.objects.filter(id=id).first()
-    if sub_sector:
+    try:
+        sub_sector = EconomicSubSector.objects.get(id=id)
         product = Product.objects.filter(sub_sector=sub_sector).first()
         if product:
             message = "You cannot delete this sub economic sector because it has products linked to it."
         else:
             message = "Sub economic sector deleted successfully!"
             sub_sector.delete()
-    else:
+    except EconomicSubSector.DoesNotExist:
         message = f"Unable to delete sub economic sector with ID={id} because it does not exist."
+    print(f"\n{message}\n")
     return redirect("system_management:economic-sub-sectors-list")
 
 
@@ -287,6 +293,80 @@ def products_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def delete_product(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+        industry_product = IndustryProduct.objects.filter(product=product).first()
+        if industry_product:
+            message = "You cannot delete this product because it has other industry products linked to it"
+        else:
+            product.delete()
+            message = "Product deleted successfully!"
+    except Product.DoesNotExist:
+        message = "Unable to delete the product because it does not exist"
+    
+    print(f"\n{message}\n")
+    return redirect("systems_management:products-list")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def activate_months_reporting_period(request, month_id):
+    try:
+        month = MonthsReportingPeriodConfig.objects.get(id=month_id)
+        today = datetime.today().date()
+        existing_plans = list(ReportingPeriodPlan.objects.filter(end_date__gt=today).order_by("end_date"))
+        start_date = None
+        if len(existing_plans) > 0:
+            end_date = existing_plans[0].end_date
+            # Add one day to start from the next day of this date
+            start_date = (end_date + timedelta(days=1)).strftime("%Y-%m-%d")
+
+        months = month.months
+        periods = generate_periods(months, start_date)
+
+        for existing_plan in existing_plans[1:]:
+            existing_plan.delete()
+        
+        for period in periods:
+            ReportingPeriodPlan.objects.create(
+                start_date=period[0],
+                end_date=period[1],
+                period_config=month
+            )
+        active_months = MonthsReportingPeriodConfig.objects.filter(is_active=True).exclude(id=month.id)
+        for active_month in active_months:
+            active_month.is_active = False
+            active_month.save()
+        month.is_active = True
+        month.save()
+        
+        if not start_date:
+            start_date = f"01-01-{today.year}"
+
+        message = f"Reporting period plan has been modified to restart from {start_date} with {months} month(s) range"
+    except MonthsReportingPeriodConfig.DoesNotExist:
+        message = "Unable to activate the reporting period"
+    except Exception as e:
+        message = "Unexpected error ocurred"
+    redirect_url = reverse('system_management:configurations')
+    return redirect(f"{redirect_url}#add-report")
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def configurations(request):
+    reporting_months = MonthsReportingPeriodConfig.objects.all().order_by("id")
+    reporting_periods = list(ReportingPeriodPlan.objects.all().order_by("start_date"))
+    if len(reporting_periods) > 12:
+        reporting_periods = reporting_periods[-12:]
+    context = {
+        "reporting_months": reporting_months,
+        "reporting_periods": reporting_periods
+    }
+    
+    return render(request, "configurations/configurations.html", context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def system_settings(request, flag=None):
     if flag == "modules":
         with open(os.path.join(os.getcwd(), "modules.json")) as f:
@@ -300,6 +380,15 @@ def system_settings(request, flag=None):
                         name=module["name"],
                         parent_id=parent
                     )
+        return redirect("systems_management:system-settings")
+    elif flag == "reporting_months":
+        with open(os.path.join(os.getcwd(), "reporting_months.json")) as f:
+            months = json.load(f)
+            for month in months:
+                MonthsReportingPeriodConfig.objects.create(
+                    id=month["id"],
+                    months=month["months"]
+                )
         return redirect("systems_management:system-settings")
     elif flag == "administrative_divisions":
         sectors = AdministrativeUnit.objects.filter(category="SECTOR")
@@ -316,6 +405,7 @@ def system_settings(request, flag=None):
         
     
     modules = len(Module.objects.all())
+    reporting_months = MonthsReportingPeriodConfig.objects.all()
     zones = len(IndustrialZone.objects.all())
     economic_sectors = len(EconomicSector.objects.all())
     economic_sub_sectors = len(EconomicSubSector.objects.all())
@@ -324,6 +414,7 @@ def system_settings(request, flag=None):
     context ={
         "modules": modules,
         "zones": zones,
+        "reporting_months": reporting_months,
         "economic_sectors": economic_sectors,
         "economic_sub_sectors": economic_sub_sectors,
         "administrative_divisions": administrative_divisions

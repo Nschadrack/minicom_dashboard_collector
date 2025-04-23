@@ -1,0 +1,275 @@
+{% extends "base_layout.html" %}
+{% block main_data_load %}
+    <head>
+        <style>
+            :root {
+                --primary-color: #2c3e50;
+                --secondary-color: #3498db;
+                --background: #f8f9fa;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'Segoe UI', sans-serif;
+                background-color: var(--background);
+            }
+
+            .form-container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .back{
+                padding: 5px;
+                text-decoration: none;
+                border-radius: 5px;
+                color: white;
+                background-color: var(--primary-color);
+            }
+
+            .form-header {
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .form-header h3{
+                text-align: left;
+                margin-bottom: 1rem;
+            }
+
+            .form-header h2 {
+                color: var(--primary-color);
+                margin-bottom: 10px;
+                margin-top: 1rem;
+                font-size: 1.4rem;
+                border-bottom: 2px double black;
+                padding-bottom: 5px;
+            }
+            .form-header p {
+                color: var(--primary-color);
+                margin-bottom: 2.5rem;
+                font-size: 1.2rem;
+                padding: 10px;
+                font-weight: bold;
+                font-style: italic;
+                background-color: var(--secondary-color);
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .form-section {
+                padding: 1.2rem;
+                border: 1px solid var(--primary-color);
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+
+            .form-section h3 {
+                color: var(--secondary-color);
+                margin-bottom: 2.5rem;
+                font-weight: bold;
+                font-size: 1.1rem;
+                text-align: center;
+                border-bottom: 2px double var(--primary-color);
+                padding-bottom: 3px;
+            }
+
+            .input-group {
+                margin-bottom: 0.9rem;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0.8rem;
+                color: var(--primary-color);
+                font-size: 1.1rem;
+            }
+
+            input, textarea {
+                width: 100%;
+                padding: 0.8rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: border-color 0.3s ease;
+            }
+
+            input:focus, textarea:focus {
+                outline: none;
+                border-color: var(--secondary-color);
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+
+            .submit-btn {
+                background-color: var(--secondary-color);
+                color: white;
+                padding: 1rem 2rem;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            .submit-btn:hover {
+                background-color: #2980b9;
+            }
+
+            .validation-message {
+                color: #e74c3c;
+                font-size: 0.9rem;
+                margin-top: 0.3rem;
+                display: none;
+            }
+
+            @media (max-width: 768px) {
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="form-container">
+            <a href="{% url 'reporting:reporting' %}" class="back">Back</a>
+            <div class="form-header">
+                <h2>Reporting On Employment Changes</h2>
+                <h3>TIN NUMBER: {{ industry.company.tin_number }}</h3>
+                <h3>INDUSTRY NAME: {{ industry.company.name }}</h3>
+                <h3>LOCATION: 
+                    {% if industry.is_in_park %}
+                        {{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}
+                    {% else %}
+                        {{ industry.province|title }} - {{ industry.district|title }} - {{ industry.sector|title }} - {{ industry.cell|title }}
+                    {% endif %}
+                </h3>    
+                <p>Reporting Period: From {{ start_date }} To {{ end_date }}</p>
+            </div>
+
+            <form id="reportForm" method="POST" action="">
+                {% csrf_token %}
+                <!-- Dates Section -->
+                <div class="input-group">
+                    <input type="hidden" id="start_date" name="start_date" value="{{ start_date }}">
+                </div>
+                <div class="input-group">
+                    <input type="hidden" id="end_date" name="end_date" value="{{ end_date }}">
+                </div>
+
+                <div class="form-section">
+                    <h3>The Employment Status As Of {{ end_date }}</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>How many permanent female(women, girls) employees did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_female_permanent_employees">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>How many permanent male(men, boys) employees did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_male_permanent_employees">
+                        </div>
+
+                        <div class="input-group">
+                            <label>How many casual female(women, girls) employees did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_female_casual_employees">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>How many casual male(men, boys) employees did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_male_casual_employees">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>The Employment Creation(New Hire) Between {{ start_date }} And {{ end_date }}</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>How many new permanent female(women, girls) employees joined between <b>{{ start_date }} and {{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="new_female_permanent_employees">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>How many new permanent male(men, boys) employees joined between <b>{{ start_date }} and {{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="new_male_permanent_employees">
+                        </div>
+
+                        <div class="input-group">
+                            <label>How many new casual female(women, girls) employees joined between <b>{{ start_date }} and {{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="new_female_casual_employees">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>How many new casual male(men, boys) employees joined between <b>{{ start_date }} and {{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="new_male_casual_employees">
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>The Employment Loss Due to Contract Termination Between {{ start_date }} And {{ end_date }}</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>How many employees lost job between <b>{{ start_date }} and {{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="job_loss">
+                        </div>  
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>The Youth Employment (Employees Under 36 years old) Status As Of {{ end_date }}</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>How many female youth employees(permanent & casual) did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_female_youth_employees">
+                        </div>  
+                        <div class="input-group">
+                            <label>How many male youth employees(permanent & casual) did you have by <b>{{ end_date }}</b>? <b>[Required]</b></label>
+                            <input type="number" required name="current_male_youth_employees">
+                        </div>  
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="form-section">
+                    <h3>Additional Information</h3>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Any improvement suggestions?</label>
+                            <textarea name="improvement_suggestion"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Are there challenges faced?</label>
+                            <textarea name="challenges_faced"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Any support needed?</label>
+                            <textarea name="support_needed"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="submit-btn">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </body>
+{% endblock %}
