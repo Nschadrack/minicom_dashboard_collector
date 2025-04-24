@@ -1,4 +1,5 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% load humanize %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
@@ -30,7 +31,7 @@
                         <p><strong>Investment Amount: </strong>
                             {% if industry.investment_amount %}
                                 {% with value=industry.investment_amount|floatformat:3 %}
-                                    {{ value|floatformat:3|intcomma|cut:".000" }}
+                                    {{ value|format_number }}
                                 {% endwith %}
                                 {{ industry.investment_currency }}
                             {% endif %}
@@ -38,7 +39,7 @@
                         <p><strong>Occupied space: </strong>
                             {% if industry.occupied_space %}
                                 {% with value=industry.occupied_space|floatformat:5 %}
-                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                    {{ value|format_number:5 }}
                                 {% endwith %}
                                 <b>m<sup>2</sup></b>
                             {% endif %}
@@ -46,7 +47,7 @@
                         <p><strong>Total Plot Size: </strong>
                             {% if industry.allocated_plot %}
                                 {% with value=industry.allocated_plot.plot_size|floatformat:5 %}
-                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                    {{ value|format_number:5 }}
                                 {% endwith %}
                                 <b>m<sup>2</sup></b>
                             {% endif %}

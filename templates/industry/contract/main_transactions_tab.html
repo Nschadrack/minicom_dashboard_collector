@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <div id="transactions" class="tab-content">
     <div class="upper-detail-div">
         <div class="current_price_list table-data">     
@@ -23,7 +24,7 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ transaction.installment.expected_payment_date|date:'d-m-Y' }}</td>
                                     <td>{{ transaction.payment_date|date:'d-m-Y' }}</td>
-                                    <td>{{ transaction.payment_amount }} {{ transaction.installment.contract_payment.payment_currency }}</td>
+                                    <td>{{ transaction.payment_amount|format_number }} {{ transaction.installment.contract_payment.payment_currency }}</td>
                                     {% if transaction.installment.contract_payment.contract %}
                                         <td><a href="{% url 'industry:contracts-detail' transaction.installment.contract_payment.contract.id %}#contract-payments" class="view_button">view linked payment</a></td>
                                     {% else %}
@@ -31,7 +32,7 @@
                                     {% endif %}
                                     <td>
                                         {% if transaction.refund_amount > 0 %}
-                                            {{ transaction.refund_amount }} {{ transaction.installment.contract_payment.payment_currency }}
+                                            {{ transaction.refund_amount|format_number }} {{ transaction.installment.contract_payment.payment_currency }}
                                         {% else %}
                                             0 {{ transaction.installment.contract_payment.payment_currency }}
                                         {% endif %}

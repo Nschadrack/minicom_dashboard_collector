@@ -1,5 +1,6 @@
 {% extends "base_layout.html" %}
 {% load humanize %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">{{ industrial_park.name|title}} {{ industrial_park.category|title}}</p>
@@ -25,7 +26,7 @@
                     <p><strong>Name: </strong>{{ industrial_park.name }} {{ industrial_park.category|title }}</p>                 
                     <p><strong>Total Land Area: </strong>
                         {% with value=industrial_park.total_land_size|floatformat:5 %}
-                            {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {{ value|format_number:5 }}
                         {% endwith %}
                         <b>m<sup>2</sup></b>
                     </p>
@@ -40,7 +41,7 @@
                     <p><strong>System Recorded Date: </strong>{{ industrial_park.recorded_date|date:'d-m-Y H:i:s A' }}</p>
                     <p><strong>Total Leasable Land Area: </strong>
                         {% with value=industrial_park.leasable_land|floatformat:5 %}
-                            {{ value|floatformat:5|intcomma|cut:".00000" }}
+                            {{ value|format_number:5 }}
                         {% endwith %}
                         <b>m<sup>2</sup></b>
                     </p>
@@ -73,7 +74,7 @@
                                         <td>{{ park_partitioned_plot.plot_number|upper }}</td>
                                         <td>
                                             {% with value=park_partitioned_plot.plot_size|floatformat:5 %}
-                                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                                {{ value|format_number:5 }}
                                             {% endwith %}
                                             m<sup>2</sup>
                                         </td>
@@ -132,7 +133,7 @@
                                         <td>{{ allocated_plot.upi_status|title }}</td>
                                         <td>
                                             {% with value=allocated_plot.plot_size|floatformat:5 %}
-                                                {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                                {{ value|format_number:5 }}
                                             {% endwith %}
                                             <b>m<sup>2</sup></b>
                                         </td>
@@ -192,7 +193,7 @@
                                     <td>{{ industry.company.category|upper }}</td>
                                     <td>{{ industry.company.company_size|upper }}</td>
                                     {%  if industry.investment_amount %}
-                                        <td>{{ industry.investment_amount}} {{ industry.investment_currency }}</td>
+                                        <td>{{ industry.investment_amount|format_number}} {{ industry.investment_currency }}</td>
                                     {% else %}
                                         <td></td>
                                     {% endif %}

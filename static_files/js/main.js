@@ -353,6 +353,21 @@ function fillInCells(data){
     }
 }
 
+function fillInVillages(data){
+    let loaded_villages = JSON.parse(data);
+    let cellSelected = document.getElementById("exampleInputCell");
+    let targetedVillage = document.getElementById("exampleInputVillage");
+    let selectedIndex = cellSelected.selectedIndex;
+    let selectIndexValue = cellSelected.options[selectedIndex].value;
+
+    targetedVillage.innerHTML = "<option disabled selected>choose village</option>"
+    for(const element of loaded_villages) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedVillage.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+
 // multi selection
 function handleSelection(selectedValue, hiddenFieldId, tagsContainerId) {
     const hiddenInput = document.getElementById(hiddenFieldId);

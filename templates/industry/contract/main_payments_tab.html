@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <div id="payments" class="tab-content">
     <div class="upper-detail-div">
         <div class="current_price_list table-data">     
@@ -28,42 +29,42 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ payment.payment_modality|title }}</td>
                                 {% if payment.total_amount_to_pay %}
-                                    <td>{{ payment.total_amount_to_pay }} {{ payment.payment_currency }}</td>
+                                    <td>{{ payment.total_amount_to_pay|format_number }} {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
                                 {% if payment.total_amount_paid %}
-                                    <td>{{ payment.total_amount_paid }}  {{ payment.payment_currency }}</td>
+                                    <td>{{ payment.total_amount_paid|format_number }}  {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
                                 {% if payment.total_amount_unpaid %}
-                                    <td>{{ payment.total_amount_unpaid }} {{ payment.payment_currency }}</td>
+                                    <td>{{ payment.total_amount_unpaid|format_number }} {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
                                 {% if payment.accrued_penalties %}
-                                    <td>{{ contract.accrued_penalties }} {{ payment.payment_currency }}</td>
+                                    <td>{{ contract.accrued_penalties|format_number }} {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td>0 {{ payment.payment_currency }}</td>
                                 {% endif %}
                                 {% if payment.paid_penalties %}
-                                    <td>{{ payment.paid_penalties }}  {{ payment.payment_currency }}</td>
+                                    <td>{{ payment.paid_penalties|format_number }}  {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td>0 {{ payment.payment_currency }}</td>
                                 {% endif %}
                                 {% if payment.amount_overdued %}
-                                    <td>{{ payment.amount_overdued }} {{ payment.payment_currency }}</td>
+                                    <td>{{ payment.amount_overdued|format_number }} {{ payment.payment_currency }}</td>
                                 {% else %}
                                     <td>0 {{ payment.payment_currency }}</td>
                                 {% endif %}
                                 {% if payment.days_in_arrears %}
-                                    <td>{{ payment.days_in_arrears }} days</td>
+                                    <td>{{ payment.days_in_arrears|format_number }} days</td>
                                 {% else %}
                                     <td>0 days</td>
                                 {% endif %}
                                 <td>{{ payment.payment_status|upper }}</td>
-                                <td>{{ payment.number_of_installments }}</td>
+                                <td>{{ payment.number_of_installments|format_number }}</td>
                                 {% if payment.next_payment_date %}
                                     <td>{{ payment.next_payment_date|date:'d-m-Y' }}</td>
                                 {% else %}

@@ -1,10 +1,12 @@
 from datetime import datetime, date
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import ReportingPeriodPlan, IndustryProductReport, EmploymentReport
 from industry.models import IndustryProduct, CompanySite
+from automation.utils import format_number
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -158,10 +160,13 @@ def reporting(request):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def add_product_report(request, product_id, start_date, end_date):
     product = None
+    enable_justification = False
+    reported_capacity = None
     try:
         product = IndustryProduct.objects.get(id=product_id)
     except IndustryProduct.DoesNotExist:
         message = "Unable to load the product reporting form"
+        messages.error(request, message=message)
         redirect_url = reverse('reporting:reporting')
         return redirect(f"{redirect_url}#add-report")
     
@@ -169,28 +174,43 @@ def add_product_report(request, product_id, start_date, end_date):
         start_date = request.POST.get("start_date")
         end_date = request.POST.get("end_date")
         production_volume = request.POST.get("production_volume")
-        try:
-            start_date = datetime.strptime(start_date, "%d-%m-%Y")
-            end_date = datetime.strptime(end_date, "%d-%m-%Y")
-            IndustryProductReport.objects.create(
-                start_date=start_date,
-                end_date=end_date,
-                product=product,
-                production_volume=production_volume,
-                reported_by=request.user
-            )
-            message = f"Report for the period from {start_date.strftime('%d-%m-%Y')} to {end_date.strftime('%d-%m-%Y')} on the product: {product.product.product_code} - {product.product.name} - {product.product_brand_name} added successfully"
-        except Exception as e:
-            message = f"Unable to add report. error: {str(e)}"
-    
-        print(f"\n{message}\n")
-        redirect_url = reverse('reporting:reporting')
-        return redirect(f"{redirect_url}#add-report")
+        justification_production_capacity = request.POST.get("justification_production_capacity", "")
+
+        if float(production_volume) > float(product.production_installed_capacity) and len(justification_production_capacity.strip()) < 10:
+            enable_justification = True
+            message = f"You reported production = {format_number(production_volume)} {product.production_installed_capacity_unit} "
+            message += f"which is greated than installed production capacity = {format_number(product.production_installed_capacity)} {product.production_installed_capacity_unit}/{product.production_installed_capacity_period}."
+            message += "You can provide more information why you exceeded the installed production capacity or if you have extended your production line, please edit the production installed capacity under products module"
+            message += " and resume the report on this product."
+            reported_capacity = production_volume
+            messages.error(request, message=message)
+        else:
+            try:
+                start_date = datetime.strptime(start_date, "%d-%m-%Y")
+                end_date = datetime.strptime(end_date, "%d-%m-%Y")
+                IndustryProductReport.objects.create(
+                    start_date=start_date,
+                    end_date=end_date,
+                    product=product,
+                    production_volume=production_volume,
+                    current_installed_production=product.production_installed_capacity,
+                    reported_by=request.user,
+                    justification_production_capacity=justification_production_capacity
+                )
+                message = f"Report for the period from {start_date.strftime('%d-%m-%Y')} to {end_date.strftime('%d-%m-%Y')} on the product: {product.product.product_code} - {product.product.name} - {product.product_brand_name} added successfully"
+                messages.success(request, message=message)
+            except Exception as e:
+                message = f"Unable to add report. error: {str(e)}"
+                messages.error(request, message=message)        
+            redirect_url = reverse('reporting:reporting')
+            return redirect(f"{redirect_url}#add-report")
 
     context = {
         "start_date": start_date,
         "end_date": end_date,
-        "product": product
+        "product": product,
+        "reported_capacity": reported_capacity,
+        "enable_justification": enable_justification,
     }
     return render(request, "reporting/product_report_form.html", context)
 
@@ -202,6 +222,7 @@ def add_employment_report(request, industry_id, start_date, end_date):
         industry = CompanySite.objects.get(id=industry_id)
     except CompanySite.DoesNotExist:
         message = "Unable to load the employment reporting form"
+        messages.error(request, message)
         redirect_url = reverse('reporting:reporting')
         return redirect(f"{redirect_url}#add-report")
     
@@ -234,7 +255,7 @@ def add_employment_report(request, industry_id, start_date, end_date):
             message += f"current male employees(permanent + casual) = {int(current_male_permanent_employees) + int(current_male_casual_employees)} and cannot be less than the current male youth employees = {int(current_male_youth_employees)}"
         
         if error:
-           print(f"\n{message}\n")
+           messages.error(request, message)
            redirect_url = reverse('reporting:reporting')
            return redirect(f"{redirect_url}#add-report") 
 
@@ -260,7 +281,8 @@ def add_employment_report(request, industry_id, start_date, end_date):
                 current_male_youth_employees=current_male_youth_employees,
                 improvement_suggestion=improvement_suggestion,
                 challenges_faced=challenges_faced,
-                support_needed=support_needed
+                support_needed=support_needed,
+                 reported_by=request.user
             )
             message = f"The employment report for the period from {start_date.strftime('%d-%m-%Y')} to {end_date.strftime('%d-%m-%Y')} for the industry: {industry.company.tin_number} - {industry.company.name}: Located in "
 
@@ -270,10 +292,11 @@ def add_employment_report(request, industry_id, start_date, end_date):
                 message += f"{industry.province.title()} - {industry.district.title()} - {industry.sector.title()} - {industry.cell.title()}"
 
             message += " added successfully"
+            messages.success(request, message)
         except Exception as e:
             message = f"Unable to add report. error: {str(e)}"
+            messages.error(request, message)
     
-        print(f"\n{message}\n")
         redirect_url = reverse('reporting:reporting')
         return redirect(f"{redirect_url}#add-report")
 

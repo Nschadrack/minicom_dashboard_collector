@@ -1,4 +1,5 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% block main_data_load %}
     <head>
         <style>
@@ -90,7 +91,7 @@
                 font-size: 1.1rem;
             }
 
-            input{
+            input, textarea{
                 width: 100%;
                 padding: 0.8rem;
                 border: 1px solid #e0e0e0;
@@ -99,7 +100,7 @@
                 transition: border-color 0.3s ease;
             }
 
-            input:focus {
+            input:focus, textarea:focus {
                 outline: none;
                 border-color: var(--secondary-color);
             }
@@ -134,7 +135,7 @@
                 <h2>Reporting On The Product: {{ product.product.product_code }} - {{ product.product.name }} - {{ product.product_brand_name }}</h2>
                 <p>Reporting Period: From {{ start_date }} To {{ end_date }}</p>
             </div>
-
+            {% include 'helpers/message_alert.html' %}
             <form id="reportForm" method="POST" action="">
                 {% csrf_token %}
                 <!-- Dates Section -->
@@ -148,12 +149,26 @@
                     <!-- Dates Section -->
                     <div class="form-section">
                         <h3>Production Capacity</h3>
-                        <h2><i>Product Installed Capacity: {{ product.production_installed_capacity }} {{ product.production_installed_capacity_unit }} Per {{ product.production_installed_capacity_period }}</i></h2><br/><br/>
+                        <h2><i>Product Installed Capacity: {{ product.production_installed_capacity|format_number }} {{ product.production_installed_capacity_unit }} Per {{ product.production_installed_capacity_period }}</i></h2><br/><br/>
                         <div class="input-group">
-                            <label>What was the daily average production volume in <b>{{ product.production_installed_capacity_unit|title }}</b> during this period? <b>[Required]</b></label><br/>
-                            <input type="number" step="0.01" required name="production_volume">
+                            <label>What was the average production during this period? <b>[Required]</b></label><br/>
+                            {% if reported_capacity %}
+                                <input type="number" step="0.01" required name="production_volume" value="{{ reported_capacity }}"/>
+                            {%  else %}
+                                <input type="number" step="0.01" required name="production_volume">
+                            {% endif %}
                         </div>
                     </div>
+
+                    {% if enable_justification %}
+                        <div class="form-section">
+                            <h3 style="color: red;">Reported Production Capacity Exceeded Production Installed Capacity</h3>
+                            <div class="input-group">
+                                <label>Provide more information why did the production capacity exceed installed capacity? <b>[Required]</b></label><br/>
+                                <textarea name="justification_production_capacity" required></textarea>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="input-group" style="text-align: center; margin-top: 2rem;">
                     <button type="submit" class="submit-btn">Submit Report</button>

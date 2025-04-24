@@ -15,6 +15,7 @@ minicom_dashboards/migrations/*
 media
 
 automation/__pycache__/
+automation/templatetags/__pycache__/
 automation/migrations/*
 !automation/migrations/__init__.py
 

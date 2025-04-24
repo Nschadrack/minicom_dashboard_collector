@@ -47,11 +47,18 @@ class CompanyProfile(models.Model):
     category = models.CharField(max_length=30, choices=CATEGORIES, null=False, blank=False)
     phone_contact = models.CharField(max_length=20, null=False, blank=False)
     email_contact = models.EmailField(max_length=200, null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="user_company")
     registeration_date = models.DateField(null=True, blank=True)
     investor_origin_country = models.TextField(null=False, blank=False)
     company_size = models.CharField(max_length=15, choices=COMPANY_SIZES, null=False, blank=False)
     profile_created_date = models.DateTimeField(auto_now_add=True)
+    managing_director_name = models.CharField(max_length=200, blank=False, null=False)
+    managing_director_id = models.CharField(max_length=20, blank=True, null=True)
+    headquaters_province = models.CharField(max_length=60, blank=False, null=False)
+    headquaters_district = models.CharField(max_length=60, blank=False, null=False)
+    headquaters_sector = models.CharField(max_length=60, blank=False, null=False)
+    headquaters_cell = models.CharField(max_length=60, blank=False, null=False)
+    headquaters_village = models.CharField(max_length=60, blank=False, null=False)
 
     class Meta:
         db_table = "CompanyProfiles"

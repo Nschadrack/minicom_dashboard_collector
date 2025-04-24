@@ -23,8 +23,10 @@ class IndustryProductReport(models.Model):
     end_date = models.DateField(null=False, blank=False)
     product = models.ForeignKey(IndustryProduct, on_delete=models.CASCADE)
     production_volume = models.DecimalField(decimal_places=2, max_digits=12,  null=False, blank=False)
+    current_installed_production = models.DecimalField(decimal_places=2, max_digits=12)
     reported_on = models.DateTimeField(auto_now_add=True)
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    justification_production_capacity = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = "IndustryProductReports"

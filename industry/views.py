@@ -2,9 +2,9 @@ import json
 import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from pytz import all_timezones
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
 from django.db.models import Prefetch
 from django.contrib.auth.decorators import login_required
 from system_management.models import (User, AdministrativeUnit, 
@@ -22,7 +22,7 @@ from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
                     get_base_domain, create_payment_installment, convert_datetime_timezone,
                     record_payment_transaction)
-from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, PRODUCT_PACKAGING_MATERIAL,
+from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_PACKAGING_MATERIAL,
                        PRODUCT_QUANTITIES_UNITS_MAP, PRODUCT_PRODUCTION_CAPACITY_PERIOD,
                        PRODUCT_PRODUCTION_CAPACITY_UNIT)
 import traceback
@@ -40,16 +40,20 @@ def industrial_parks_list(request):
         sector = AdministrativeUnit.objects.filter(category="SECTOR", id=request.POST.get("sector").strip()).first()
         cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
 
-        IndustryEconomicZone.objects.create(
-            name=name,
-            category=category,
-            total_land_size=total_area,
-            leasable_land=leasable_area,
-            province=province.name,
-            district=district.name,
-            sector=sector.name,
-            cell=cell.name
-        )
+        if IndustryEconomicZone.objects.filter(name__iexact=name, category__iexact=category).first():
+            messages.info(request, message=f"{name.tittle()} {category.title()} already exists.")
+        else:
+            IndustryEconomicZone.objects.create(
+                name=name,
+                category=category,
+                total_land_size=total_area,
+                leasable_land=leasable_area,
+                province=province.name,
+                district=district.name,
+                sector=sector.name,
+                cell=cell.name
+            )
+            messages.success(request, message=f"{name.tittle()} {category.title()} added successfully!")
         return redirect("industry:parks-list")
     industrial_parks = IndustryEconomicZone.objects.all().order_by("category", "name")
     provinces = AdministrativeUnit.objects.filter(category="PROVINCE").order_by("name")
@@ -110,8 +114,9 @@ def record_partitioned_plot(request, park_id):
                 zone=zone,
                 park=park
             )
-        
+            messages.success(request, message="Partitioned plot added successfully!")
         if park is None:
+            messages.info(request, message="The industrial park/economic zone should be recorded first!")
             return redirect("industry:parks-list")
         
         redirect_url = reverse("industry:park-details", args=(park.id, ))
@@ -131,6 +136,22 @@ def companies_industries_list(request):
             investor_origin_country = request.POST.get("selected_items")
             company_size = request.POST.get("company_size", "").strip()
 
+            first_name = request.POST.get("first_name", "").strip()
+            last_name = request.POST.get("last_name", "").strip()
+            managing_director_id = request.POST.get("managing_director_id", "").strip()
+            headquaters_province = request.POST.get("headquaters_province", "").strip()
+            headquaters_district = request.POST.get("headquaters_district", "").strip()
+            headquaters_sector = request.POST.get("headquaters_sector", "").strip()
+            headquaters_cell = request.POST.get("headquaters_cell", "").strip()
+            headquaters_village = request.POST.get("headquaters_village", "").strip()
+
+            headquaters_province = AdministrativeUnit.objects.filter(category="PROVINCE", id=headquaters_province).first().name
+            headquaters_district = AdministrativeUnit.objects.filter(category="DISTRICT", id=headquaters_district).first().name
+            headquaters_sector = AdministrativeUnit.objects.filter(category="SECTOR", id=headquaters_sector).first().name
+            headquaters_cell = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_cell).first().name
+            headquaters_village = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_village).first().name
+
+
             if len(registeration_date.strip()) < 6:
                 registeration_date = None
 
@@ -140,29 +161,42 @@ def companies_industries_list(request):
                 user = User(
                     user_category="COMPANY",
                     change_password_required=True,
-                    first_name=name[:250],
-                    last_name="",
+                    first_name=first_name,
+                    last_name=last_name,
                     email=email_contact
                 )
                 user.set_password(password)
                 user.save()
-            profile = CompanyProfile(
-                name=name,
-                category=category,
-                tin_number=tin_number,
-                user=user,
-                phone_contact=phone_contact,
-                email_contact=email_contact,
-                registeration_date=registeration_date,
-                investor_origin_country=investor_origin_country,
-                company_size=company_size
-            )
-            profile.save()
-        except:
-            pass
+                profile = CompanyProfile(
+                    name=name,
+                    category=category,
+                    tin_number=tin_number,
+                    user=user,
+                    phone_contact=phone_contact,
+                    email_contact=email_contact,
+                    registeration_date=registeration_date,
+                    investor_origin_country=investor_origin_country,
+                    company_size=company_size,
+                    managing_director_id=managing_director_id,
+                    headquaters_province=headquaters_province,
+                    headquaters_district=headquaters_district,
+                    headquaters_sector=headquaters_sector,
+                    headquaters_cell=headquaters_cell,
+                    headquaters_village=headquaters_village,
+                    managing_director_name=f"{first_name} {last_name}"
+                )
+                profile.save()
+                message = f"New company profile with TIN: {tin_number} and name: {name} created successfully!"
+                messages.success(request, message=message)
+            else:
+                message = f"The contact email: {email_contact} is alreay taken, provide a different email"
+                messages.info(request, message=message)
+        except Exception as e:
+            message = f"Error: {str(e)}"
+            messages.error(request, message=message)
         
         redirect_url = reverse('industry:companies-industries-list')
-        return redirect(f"{redirect_url}#companies-industries-in-parks")
+        return redirect(f"{redirect_url}#companies-industries-profiles")
         
     companies_industries_profiles = CompanyProfile.objects.all().order_by("name")
     park_industries = CompanySite.objects.all().order_by("company__name")
@@ -170,6 +204,7 @@ def companies_industries_list(request):
     districts = AdministrativeUnit.objects.filter(category="DISTRICT").order_by("name")
     sectors = AdministrativeUnit.objects.filter(category="SECTOR").order_by("name")
     cells = AdministrativeUnit.objects.filter(category="CELL").order_by("name")
+    villages = AdministrativeUnit.objects.filter(category="VILLAGE").order_by("name")
     context = {
         "companies_industries_profiles": companies_industries_profiles,
         "park_industries": park_industries,
@@ -179,6 +214,7 @@ def companies_industries_list(request):
         "districts": json.dumps(list(districts.values())),
         "sectors": json.dumps(list(sectors.values())),
         "cells": json.dumps(list(cells.values())),
+        "villages": json.dumps(list(villages.values()))
     }
     return render(request, "industry/industries_companies.html", context=context)
 

@@ -1,4 +1,5 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% block main_data_load %}
     <head>
         <style>
@@ -162,7 +163,7 @@
                 </h3>    
                 <p>Reporting Period: From {{ start_date }} To {{ end_date }}</p>
             </div>
-
+            {% include 'helpers/message_alert.html' %}
             <form id="reportForm" method="POST" action="">
                 {% csrf_token %}
                 <!-- Dates Section -->
