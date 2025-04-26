@@ -275,8 +275,10 @@ def add_industry_not_in_park(request):
                 investment_currency=investment_currency,
                 is_in_park=False
             )
+
+            messages.success(request, message="New {industry.name} industry location has been recorded successfully!")
         except Exception as e:
-            print(f"\n[ERROR]: {str(e)}\n")
+            messages.error(request, message=f"Error: {str(e)}")
 
     redirect_url = reverse('industry:companies-industries-list')
     return redirect(f"{redirect_url}#companies-industries-in-parks")
@@ -323,13 +325,16 @@ def delete_industry(request, industry_id):
         contracts = IndustryContract.objects.filter(industry=industry).order_by("signing_date")
         if len(contracts) > 0:
             message = "This industry cannot be deleted because it has some historical data"
+            messages.info(request, message=message)
         else:
             industry.delete()
             message = "Industry deleted successfully!"
+            messages.success(request, message=message)
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
     except Exception as e:
         message = f"[ERROR] {str(e)}"
+        messages.error(request, message=message)
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
 
@@ -347,12 +352,14 @@ def add_industry_economic_sectors(request, industry_id):
                 sector = EconomicSubSector.objects.filter(id=sector_id).first()
                 if sector is not None:
                     IndustryEconomicSector.objects.create(industry=industry, sector=sector)
+                    messages.success(request, message=f"New economic sector: {sector.name} added successfully!")
                 else:
-                    print("Sector with id {sector_id} not found\n")
+                    messages.info(request, message=f"Sector with id {sector_id} not found")
 
             redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
             return redirect(f"{redirect_url}#industry-detail")
-    except:
+    except Exception as e:
+        messages.error(request, message=f"Error: {str(e)}")
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
 
@@ -391,17 +398,22 @@ def add_industry_product(request, industry_id):
                         production_installed_capacity_period=production_installed_capacity_period
                     )
                     message = f"New product has been added for {industry.company.name}"
+                    messages.success(request, message=message)
                 else:
                     message = "Unable to add a new product, check if you have selected the product instead of typing"
+                    messages.info(request, message=message)
             else:
                 message = "You should select the product from the list."
+                messages.info(request, message=message)
 
         redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
         return redirect(f"{redirect_url}#product-industry")
     except CompanySite.DoesNotExist:
+        messages.error(request, message="Induststry location selected does not exist")
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
-    except:
+    except Exception as e:
+        messages.error(request, message=f"Error: {str(e)}")
         redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
         return redirect(f"{redirect_url}#product-industry")
 
@@ -412,9 +424,11 @@ def delete_industry_product(request, product_id):
         product = IndustryProduct.objects.get(id=product_id)
         industry = product.industry
         product.delete()
+        messages.success(request, message="Product deleted successfully!")
         redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
         return redirect(f"{redirect_url}#product-industry")
-    except:
+    except Exception as e:
+        messages.error(request, message=f"Error: {str(e)}")
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
 
@@ -446,9 +460,11 @@ def record_industry_attachment(request, industry_id):
             attachment.save()
             attachment.document_url = f"{base_domain}/{attachment.document.url.lstrip('/')}"
             attachment.save()
+            messages.success(request, message="New attached added successfully")
             redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
             return redirect(f"{redirect_url}#attachment-industry")
-
+    else:
+        messages.info(request, message=f"Industry with ID={industry_id} does not exist")
     redirect_url = reverse('industry:companies-industries-list')
     return redirect(f"{redirect_url}#companies-industries-in-parks")
 
@@ -462,9 +478,11 @@ def delete_industry_attachment(request, attachment_id):
         if os.path.isfile(attachment.document.path) and os.path.exists(attachment.document.path):
             os.remove(attachment.document.path)
         attachment.delete()
+        messages.success(request, message="Attachment deleted successfully!")
         redirect_url = reverse('industry:industry-info-details', args=(industry.id, ))
         return redirect(f"{redirect_url}#attachment-industry")
-    except:
+    except Exception as e:
+        messages.error(request, message=f"Error: {str(e)}")
         print(traceback.print_exc())
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-in-parks")
@@ -485,22 +503,33 @@ def land_request(request):
             zone = IndustrialZone.objects.filter(id=zone).first()
             land_owner = CompanyProfile.objects.filter(id=land_owner).first()
 
-            if len(request_date.strip()) < 6:
-                request_date = None
-            if len(request_closure_date.strip()) < 6:
-                request_closure_date = None
+            if park is None:
+                messages.info(request, message="Selected park/special economic zone does not exist")
             
-            land_request_obj = LandRequestInformation(
-               land_owner=land_owner,
-               requested_land_size=requested_land_size,
-                request_date=request_date,
-                request_closure_date=request_closure_date,
-                park=park,
-                zone=zone
-            )
-            land_request_obj.save()
+            if zone is None:
+                messages.info(request, message="Selected zoning does not exist")
+            
+            if land_owner is None:
+                messages.info(request, message="Industry profile was not found!")
+
+            if park and zone and land_owner:
+                if len(request_date.strip()) < 6:
+                    request_date = None
+                if len(request_closure_date.strip()) < 6:
+                    request_closure_date = None
+                
+                land_request_obj = LandRequestInformation(
+                land_owner=land_owner,
+                requested_land_size=requested_land_size,
+                    request_date=request_date,
+                    request_closure_date=request_closure_date,
+                    park=park,
+                    zone=zone
+                )
+                land_request_obj.save()
+                messages.success(request, message="New land information request added successfully!")
         except Exception as e:
-            print(f"\n\nError: {str(e)}\n\n")
+            messages.error(request, message=f"Error: {{str(e)}}")
 
     land_requests = LandRequestInformation.objects.all().order_by("request_date", "recorded_date")
     company_profiles = CompanyProfile.objects.all().order_by("name")
@@ -521,20 +550,23 @@ def land_request(request):
 def land_request_detail(request, land_request_id, flag=None):
     land_request = LandRequestInformation.objects.filter(id=land_request_id).first()
     if land_request is None:
+        messages.info(request, message="Land information request was not found")
         return redirect("industry:land-requests")
     
     if flag and flag.upper() == "ALLOCATE_PLOT" and request.method == "POST":
         succeed = record_allocated_plot_from_request(request=request, land_request=land_request)
 
         if not succeed:
-            # failure message message
-            pass
+            messages.info(request, message="Unable to recorded allocate plot")
+        else:
+            messages.success(request, message="Allocated plot recorded successfully!")
     elif flag and flag.upper() == "ADD_INDUSTRY" and request.method == "POST":
         succeed = record_industry_in_plot_from_request(request=request)
 
         if not succeed:
-            # failure message message
-            pass
+            messages.info(request, message="Unable to add industry in the allocated plot!")
+        else:
+            messages.success(request, message=f"The industry added in the allocated plot successfully!")
     
     parks = IndustryEconomicZone.objects.all().order_by("name")
     zones, partitioned_plots = get_zones_and_partitioned_plots_in_park()
@@ -582,8 +614,11 @@ def contracts_list(request):
             contract.contract_document_url = f"{base_domain}/{contract.contract_document.url.lstrip('/')}"
             contract.save()
 
+            messages.success(request, message="Contract saved successfully!")
             redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
             return redirect(f"{redirect_url}#contract-detail")
+        else:
+            messages.info(request, message="Unable to save the contract because the industry to be added on the contract does not exists")
         return redirect("industry:companies-industries-list")
     
     return redirect("industry:companies-industries-list")
@@ -605,6 +640,7 @@ def contracts_detail(request, contract_id):
         transaction_to_refund = PaymentInstallmentTransaction.objects.filter(id=payment.transaction_to_refund).first()
 
         if contract is None:
+            messages.info(request, message="contract could not be found!")
             return redirect("industry:companies-industries-list")
         
         if request.method == "POST":
@@ -634,12 +670,14 @@ def contracts_detail(request, contract_id):
                         payment_dates[i] + relativedelta(years=1)
                     )
             else:
+                message.info(request, message="Wrong payment modality selected")
                 redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
                 return redirect(f"{redirect_url}#contract-detail")
             
             succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
             if not succeeded:
                 contract_payment.delete()
+                messages.info(request, "Unable to create payment installments")
             else:
                 if total_amount !=  contract_payment.total_amount_to_pay:
                     contract_payment.total_amount_to_pay = total_amount
@@ -647,6 +685,7 @@ def contracts_detail(request, contract_id):
                     contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
                     contract_payment.save() 
                     contract_payment.contract.save() # update the contract as well
+                messages.success(request, message="Payment isntallments created successfully!")
             
             redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
             return redirect(f"{redirect_url}#contract-payments")
@@ -680,6 +719,7 @@ def contracts_detail(request, contract_id):
         installment_payment_amount = 0
         transactions = []
         transaction_to_refund = None
+        messages.info(request, message="Payment could not be found to create payment installments")
 
     context = {
         "contract": contract,
@@ -705,6 +745,10 @@ def make_payment_transaction(request):
         }
         base_domain = get_base_domain(request=request)
         succeeded, message, contract_id = record_payment_transaction(data=data, base_domain=base_domain)
+        if succeeded:
+            messages.success(request, message)
+        else:
+            messages.info(request, message=message)
         redirect_url = reverse('industry:contracts-detail', args=(contract_id, ))
         return redirect(f"{redirect_url}#installments-transactions") 
     return redirect("industry:companies-industries-list")
@@ -743,9 +787,12 @@ def record_refund(request, transaction_id):
             base_domain = get_base_domain(request=request)
             transaction.refund_proof_url = f"{base_domain}/{transaction.refund_proof.url.lstrip('/')}"
             transaction.save()
+
+            messages.success(request, message="New transaction refund has been recorded successfully!")
             
             redirect_url = reverse('industry:contracts-detail', args=(transaction.installment.contract_payment.contract.id, ))
             return redirect(f"{redirect_url}#installments-transactions") 
+        messages.info(request, message="Could not find the transaction to refund")
     return redirect("industry:companies-industries-list")
 
 

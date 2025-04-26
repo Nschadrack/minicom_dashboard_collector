@@ -44,6 +44,7 @@
                         <label>Select the economic sector <b>[required]</b></label>
                         <div class="datalist-container">
                             <input type="text" id="datalistStyledInput" placeholder="Search or select..." name="economic_sector" autocomplete="off">
+                            <input type="hidden" id="hiddenInput" name="economic_sector"/>
                             <div id="customDropdown" class="custom-dropdown">
                                 {% for economic_sector in economic_sectors %}
                                     <div data-id="{{ economic_sector.id }}">{{economic_sector.id}} || {{economic_sector.name|title}}</div>
@@ -63,6 +64,7 @@
     </div>
     <script>
         const input = document.getElementById('datalistStyledInput');
+        const hiddenInput = document.getElementById('hiddenInput');
         const dropdown = document.getElementById('customDropdown');
         const options = dropdown.querySelectorAll('div');
         
@@ -97,6 +99,7 @@
             option.addEventListener('mousedown', (e) => {
                 e.preventDefault(); // Prevent input blur from happening immediately
                 input.value = option.textContent;
+                hiddenInput.value = option.textContent;
                 dropdown.style.display = 'none';
             });
         });

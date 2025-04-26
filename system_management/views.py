@@ -253,8 +253,11 @@ def economic_sub_sectors_list(request):
         if EconomicSubSector.objects.filter(isic_code=isic_code).first():
             messages.info(request, message=f"Sub economic sector with ISIC code: {isic_code} already exists!")
         else:
-            EconomicSubSector.objects.create(isic_code=isic_code, name=name, economic_sector=economic_sector)
-            messages.success(request, message="Economic sub sector added successfully!")
+            if economic_sector:
+                EconomicSubSector.objects.create(isic_code=isic_code, name=name, economic_sector=economic_sector)
+                messages.success(request, message="Economic sub sector added successfully!")
+            else:
+                messages.error(request, message="You should select an economic sector")
         return redirect("system_management:economic-sub-sectors-list")
 
     economic_sub_sectors = EconomicSubSector.objects.all().order_by("economic_sector__name", "name")
@@ -293,23 +296,30 @@ def products_list(request):
         economic_sub_sector = request.POST.get("economic_sub_sector", "-1||").split("||")[0]
         economic_sector = EconomicSector.objects.filter(id=economic_sector.strip()).first()
         economic_sub_sector = EconomicSubSector.objects.filter(id=economic_sub_sector.strip()).first()
-        last_product = Product.objects.filter(sub_sector=economic_sub_sector).order_by("id").last()
 
-        product_code = "0001"
-        if last_product:
-            product_code = last_product.product_code[-4:] # ignoring sub-sector code 202340002
-            code_len = len(product_code)
-            product_code = int(product_code) + 1
-            len_diff = code_len - len(str(product_code))
-            product_code = "0" * len_diff + str(product_code)
+        if economic_sector is None:
+            messages.error(request, message="You should select the economic sector")
+        
+        if economic_sub_sector is None:
+            messages.error(request, message="You should select sub economic sector!")
 
-        Product.objects.create(
-            sub_sector=economic_sub_sector,
-            product_code=f"{economic_sub_sector.isic_code}{product_code}",
-            name=name
-        )
+        if economic_sub_sector and economic_sector:
+            last_product = Product.objects.filter(sub_sector=economic_sub_sector).order_by("id").last()
+            product_code = "0001"
+            if last_product:
+                product_code = last_product.product_code[-4:] # ignoring sub-sector code 202340002
+                code_len = len(product_code)
+                product_code = int(product_code) + 1
+                len_diff = code_len - len(str(product_code))
+                product_code = "0" * len_diff + str(product_code)
 
-        messages.success(request, message="New product added successfully!")
+            Product.objects.create(
+                sub_sector=economic_sub_sector,
+                product_code=f"{economic_sub_sector.isic_code}{product_code}",
+                name=name
+            )
+
+            messages.success(request, message="New product added successfully!")
 
         return redirect("system_management:products-list")
 
