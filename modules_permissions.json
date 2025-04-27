@@ -373,7 +373,21 @@
     "permission_id": 53,
     "module_id": "0018",
     "name": "Reporting",
-    "action_value": 3,
+    "action_value": 4,
     "action": "Delete"
+},
+{
+    "permission_id": 54,
+    "module_id": "0007",
+    "name": "System Setting",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 55,
+    "module_id": "0007",
+    "name": "System Setting",
+    "action_value": 2,
+    "action": "Edit"
 }
 ]
