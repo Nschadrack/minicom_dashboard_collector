@@ -52,7 +52,7 @@
         <!-- partitioned plots Tab -->
         <div id="partitioned-plots" class="tab-content">
             <div class="upper-detail-div">
-                {% if request.user|is_user_permitted:"0012,2" %}
+                {% if park_partitioned_plots|length > 0 and request.user|is_user_permitted:"0012,2" %}
                     <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a partitioned plot</button>
                 {% endif %}		
                 <div class="current_price_list table-data">     
