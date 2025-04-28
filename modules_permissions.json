@@ -389,5 +389,12 @@
     "name": "System Setting",
     "action_value": 2,
     "action": "Edit"
-}
+},
+{
+    "permission_id": 56,
+    "module_id": "0006",
+    "name": "Economic Sub-Sector",
+    "action_value": 3,
+    "action": "View"
+},
 ]
