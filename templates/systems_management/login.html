@@ -9,10 +9,17 @@
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo"><img src="{% static 'images/minicom_logo.png' %}"/></div>
+            <h1 class="ministry-title">Ministry of Trade and Industry</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="{% url 'index' %}" class="login-btn">Home</a>
+        </nav>
+        <i class="menu-toggle fas fa-bars"></i>
+    </header>
     <div class="login-container">
-        {% comment %} <a href="{% url 'account:home' %}" class="logo-header">
-            <div class="logo"><img src="{% static 'admin/assets/images/logo.jpg' %}" alt="logo"/></div>
-        </a> {% endcomment %}
         <div class="messages-box">
             <div class="text-center">
                 {% include "helpers/message_alert.html" %}
@@ -20,7 +27,7 @@
         </div><br/>
         <div class="form-section">
             <div class="login-box">
-                <h2 class="login-title">Welcome Back</h2>
+                <h2 class="login-title">CDIH - Login</h2>
                 <form method="POST" action="{% url 'system_management:login' %}">
                     {% csrf_token %}
                     <div class="form-group">
@@ -34,7 +41,7 @@
                     <button type="submit" class="login-button">Login</button>
                     <div class="additional-links">
                         {% comment %} <a href="{% url 'account:home' %}">← Back to Home</a> {% endcomment %}
-                        <a href="{% url 'systems_management:forgot_password' %}">Forgot Password?</a>
+                        <a href="{% url 'systems_management:forgot_password' %}" class="login-btn">Forgot Password?</a>
                     </div>
                 </form>
             </div>

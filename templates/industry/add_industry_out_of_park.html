@@ -36,8 +36,8 @@
             <input type="number" step="0.00000001" name="latitude"/>
         </div>
         <div class="form-group">
-            <label for="exampleInputProvince">Province <b>[required]</b></label>
-            <select id="exampleInputProvince" name="province" required onchange="fillInDistricts('{{ districts|escapejs }}');" required>
+            <label for="exampleInputProvince2">Province <b>[required]</b></label>
+            <select id="exampleInputProvince2" name="province" onchange="fillInDistrictsTwo('{{ districts|escapejs }}');" required>
                 <option disabled selected>choose province</option>
                 {% for province in provinces %}
                     <option value="{{ province.id }}">{{ province.name }}</option>
@@ -45,20 +45,20 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="exampleInputDistrict">Distric <b>[required]</b></label>
-            <select id="exampleInputDistrict" name="district" required onchange="fillInSectors('{{ sectors|escapejs }}');" required>
+            <label for="exampleInputDistrict2">Distric <b>[required]</b></label>
+            <select id="exampleInputDistrict2" name="district" required onchange="fillInSectors2('{{ sectors|escapejs }}');" required>
 
             </select>
         </div>
         <div class="form-group">
-            <label for="exampleInputSector">Sector <b>[required]</b></label>
-            <select id="exampleInputSector" name="sector" required onchange="fillInCells('{{ cells|escapejs }}');" required>
+            <label for="exampleInputSector2">Sector <b>[required]</b></label>
+            <select id="exampleInputSector2" name="sector" required onchange="fillInCells2('{{ cells|escapejs }}');" required>
 
             </select>
         </div>
         <div class="form-group">
-            <label for="exampleInputCell">Cell <b>[required]</b></label>
-            <select id="exampleInputCell" name="cell" required>
+            <label for="exampleInputCell2">Cell <b>[required]</b></label>
+            <select id="exampleInputCell2" name="cell" required>
 
             </select>
         </div>
