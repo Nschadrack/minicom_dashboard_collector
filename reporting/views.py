@@ -52,10 +52,10 @@ def reporting(request):
     # Identify products already reported
     all_reported = []
     all_reported_industries = []
-    considered_start_date = None
-    considered_end_date = None
-    considered_start_date_employment = None
-    considered_end_date_employment = None
+    considered_start_date = next_report_plan.start_date
+    considered_end_date = next_report_plan.end_date
+    considered_start_date_employment = next_report_plan.start_date
+    considered_end_date_employment = next_report_plan.end_date
 
     if already_reported:
         # Collect product IDs from existing reports
