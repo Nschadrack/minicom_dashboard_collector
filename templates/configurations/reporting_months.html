@@ -20,7 +20,7 @@
                         <td><a class="view_button" onclick="openModal('{% url 'systems_management:activate-months-reporting-period' month.id  %}', 'activate', 'the reporting period range to: {{ month.months }} month(s)? This will modify the reporting period dates starting from next phase of reporting.')">Activate</a></td>
                     {% else %}
                         <td></td>
-                    {% ebdif %}
+                    {% endif %}
                 {% endif %}
             </tr>
         {% endfor %}
