@@ -53,7 +53,7 @@
         <!-- permissions Tab -->
         <div id="role-permissions" class="tab-content">
             <div class="upper-detail-div">
-                {% if request.user|is_user_permitted:"0003,6" %}
+                {% if role_permissions|length > 0  and request.user|is_user_permitted:"0003,6" %}
                     <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new permission</button>
                 {% endif %}
                 <div class="current_price_list table-data">
