@@ -32,31 +32,35 @@ from  system_management.permissions import (check_role_permission_on_module_deco
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0012", 3)
 def industrial_parks_list(request):
     if request.method == "POST":
-        name = request.POST.get("name")
-        category = request.POST.get("category")
-        total_area = request.POST.get("total_area")
-        leasable_area = request.POST.get("leasable_area")
-        province = AdministrativeUnit.objects.filter(category="PROVINCE", id=request.POST.get("province").strip()).first()
-        district = AdministrativeUnit.objects.filter(category="DISTRICT", id=request.POST.get("district").strip()).first()
-        sector = AdministrativeUnit.objects.filter(category="SECTOR", id=request.POST.get("sector").strip()).first()
-        cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
+        if is_user_permitted(request.user, "0012", 1):
+            name = request.POST.get("name")
+            category = request.POST.get("category")
+            total_area = request.POST.get("total_area")
+            leasable_area = request.POST.get("leasable_area")
+            province = AdministrativeUnit.objects.filter(category="PROVINCE", id=request.POST.get("province").strip()).first()
+            district = AdministrativeUnit.objects.filter(category="DISTRICT", id=request.POST.get("district").strip()).first()
+            sector = AdministrativeUnit.objects.filter(category="SECTOR", id=request.POST.get("sector").strip()).first()
+            cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
 
-        if IndustryEconomicZone.objects.filter(name__iexact=name, category__iexact=category).first():
-            messages.info(request, message=f"{name.tittle()} {category.title()} already exists.")
+            if IndustryEconomicZone.objects.filter(name__iexact=name, category__iexact=category).first():
+                messages.info(request, message=f"{name.tittle()} {category.title()} already exists.")
+            else:
+                IndustryEconomicZone.objects.create(
+                    name=name,
+                    category=category,
+                    total_land_size=total_area,
+                    leasable_land=leasable_area,
+                    province=province.name,
+                    district=district.name,
+                    sector=sector.name,
+                    cell=cell.name
+                )
+                messages.success(request, message=f"{name.tittle()} {category.title()} added successfully!")
         else:
-            IndustryEconomicZone.objects.create(
-                name=name,
-                category=category,
-                total_land_size=total_area,
-                leasable_land=leasable_area,
-                province=province.name,
-                district=district.name,
-                sector=sector.name,
-                cell=cell.name
-            )
-            messages.success(request, message=f"{name.tittle()} {category.title()} added successfully!")
+            messages.error(request, message="You don't have permission to register industrial park/special economic zone")
         return redirect("industry:parks-list")
     industrial_parks = IndustryEconomicZone.objects.all().order_by("category", "name")
     provinces = AdministrativeUnit.objects.filter(category="PROVINCE").order_by("name")
@@ -74,6 +78,7 @@ def industrial_parks_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0012", 3)
 def industrial_park_detail(request, park_id):
     industrial_park = IndustryEconomicZone.objects.filter(id=park_id).first()
     zones = IndustrialZone.objects.all().order_by("name")
@@ -98,105 +103,114 @@ def industrial_park_detail(request, park_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0012", 3)
 def record_partitioned_plot(request, park_id):
+    
     if request.method == "POST":
-        upi_status = request.POST.get("upi_status")
-        plot_number = request.POST.get("plot_number")
-        plot_upi = request.POST.get("plot_upi")
-        plot_size = request.POST.get("plot_size")
-        zone_id = request.POST.get("zone", " -").split("-")[0]
+        if is_user_permitted(request.user, "0012", 2):
+            upi_status = request.POST.get("upi_status")
+            plot_number = request.POST.get("plot_number")
+            plot_upi = request.POST.get("plot_upi")
+            plot_size = request.POST.get("plot_size")
+            zone_id = request.POST.get("zone", " -").split("-")[0]
 
-        park = IndustryEconomicZone.objects.filter(id=park_id).first()
-        zone = IndustrialZone.objects.filter(id=zone_id).first()
-        if park is not None and zone is not None:
-            PartitionedPlot.objects.create(
-                plot_number=plot_number,
-                partitioned_plot_upi=plot_upi,
-                upi_status=upi_status,
-                plot_size=plot_size,
-                zone=zone,
-                park=park
-            )
-            messages.success(request, message="Partitioned plot added successfully!")
-        if park is None:
-            messages.info(request, message="The industrial park/economic zone should be recorded first!")
-            return redirect("industry:parks-list")
+            park = IndustryEconomicZone.objects.filter(id=park_id).first()
+            zone = IndustrialZone.objects.filter(id=zone_id).first()
+            if park is not None and zone is not None:
+                PartitionedPlot.objects.create(
+                    plot_number=plot_number,
+                    partitioned_plot_upi=plot_upi,
+                    upi_status=upi_status,
+                    plot_size=plot_size,
+                    zone=zone,
+                    park=park
+                )
+                messages.success(request, message="Partitioned plot added successfully!")
+            if park is None:
+                messages.info(request, message="The industrial park/economic zone should be recorded first!")
+                return redirect("industry:parks-list")
+        else:
+            messages.error(request, message="You don't have permission to modify the industrial park/special economic zone")
         
         redirect_url = reverse("industry:park-details", args=(park.id, ))
         return redirect(f"{redirect_url}#partitioned-plots")
     
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 3)
 def companies_industries_list(request):
     if request.method == "POST":
-        try:
-            name = request.POST.get("name", "").strip()
-            tin_number = request.POST.get("tin_number", "").strip()
-            category = request.POST.get("category", "").strip()
-            phone_contact = request.POST.get("phone_contact", "").strip()
-            email_contact = request.POST.get("email_contact", "").strip().lower()
-            registeration_date = request.POST.get("registeration_date", None).strip()
-            investor_origin_country = request.POST.get("selected_items")
-            company_size = request.POST.get("company_size", "").strip()
+        if is_user_permitted(request.user, "0013", 1):
+            try:
+                name = request.POST.get("name", "").strip()
+                tin_number = request.POST.get("tin_number", "").strip()
+                category = request.POST.get("category", "").strip()
+                phone_contact = request.POST.get("phone_contact", "").strip()
+                email_contact = request.POST.get("email_contact", "").strip().lower()
+                registeration_date = request.POST.get("registeration_date", None).strip()
+                investor_origin_country = request.POST.get("selected_items")
+                company_size = request.POST.get("company_size", "").strip()
 
-            first_name = request.POST.get("first_name", "").strip()
-            last_name = request.POST.get("last_name", "").strip()
-            managing_director_id = request.POST.get("managing_director_id", "").strip()
-            headquaters_province = request.POST.get("headquaters_province", "").strip()
-            headquaters_district = request.POST.get("headquaters_district", "").strip()
-            headquaters_sector = request.POST.get("headquaters_sector", "").strip()
-            headquaters_cell = request.POST.get("headquaters_cell", "").strip()
-            headquaters_village = request.POST.get("headquaters_village", "").strip()
+                first_name = request.POST.get("first_name", "").strip()
+                last_name = request.POST.get("last_name", "").strip()
+                managing_director_id = request.POST.get("managing_director_id", "").strip()
+                headquaters_province = request.POST.get("headquaters_province", "").strip()
+                headquaters_district = request.POST.get("headquaters_district", "").strip()
+                headquaters_sector = request.POST.get("headquaters_sector", "").strip()
+                headquaters_cell = request.POST.get("headquaters_cell", "").strip()
+                headquaters_village = request.POST.get("headquaters_village", "").strip()
 
-            headquaters_province = AdministrativeUnit.objects.filter(category="PROVINCE", id=headquaters_province).first().name
-            headquaters_district = AdministrativeUnit.objects.filter(category="DISTRICT", id=headquaters_district).first().name
-            headquaters_sector = AdministrativeUnit.objects.filter(category="SECTOR", id=headquaters_sector).first().name
-            headquaters_cell = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_cell).first().name
-            headquaters_village = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_village).first().name
+                headquaters_province = AdministrativeUnit.objects.filter(category="PROVINCE", id=headquaters_province).first().name
+                headquaters_district = AdministrativeUnit.objects.filter(category="DISTRICT", id=headquaters_district).first().name
+                headquaters_sector = AdministrativeUnit.objects.filter(category="SECTOR", id=headquaters_sector).first().name
+                headquaters_cell = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_cell).first().name
+                headquaters_village = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_village).first().name
 
 
-            if len(registeration_date.strip()) < 6:
-                registeration_date = None
+                if len(registeration_date.strip()) < 6:
+                    registeration_date = None
 
-            user = User.objects.filter(email=email_contact).first()
-            if user is None:
-                password = generate_random_code()
-                user = User(
-                    user_category="COMPANY",
-                    change_password_required=True,
-                    first_name=first_name,
-                    last_name=last_name,
-                    email=email_contact
-                )
-                user.set_password(password)
-                user.save()
-                profile = CompanyProfile(
-                    name=name,
-                    category=category,
-                    tin_number=tin_number,
-                    user=user,
-                    phone_contact=phone_contact,
-                    email_contact=email_contact,
-                    registeration_date=registeration_date,
-                    investor_origin_country=investor_origin_country,
-                    company_size=company_size,
-                    managing_director_id=managing_director_id,
-                    headquaters_province=headquaters_province,
-                    headquaters_district=headquaters_district,
-                    headquaters_sector=headquaters_sector,
-                    headquaters_cell=headquaters_cell,
-                    headquaters_village=headquaters_village,
-                    managing_director_name=f"{first_name} {last_name}"
-                )
-                profile.save()
-                message = f"New company profile with TIN: {tin_number} and name: {name} created successfully!"
-                messages.success(request, message=message)
-            else:
-                message = f"The contact email: {email_contact} is alreay taken, provide a different email"
-                messages.info(request, message=message)
-        except Exception as e:
-            message = f"Error: {str(e)}"
-            messages.error(request, message=message)
+                user = User.objects.filter(email=email_contact).first()
+                if user is None:
+                    password = generate_random_code()
+                    user = User(
+                        user_category="COMPANY",
+                        change_password_required=True,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email_contact
+                    )
+                    user.set_password(password)
+                    user.save()
+                    profile = CompanyProfile(
+                        name=name,
+                        category=category,
+                        tin_number=tin_number,
+                        user=user,
+                        phone_contact=phone_contact,
+                        email_contact=email_contact,
+                        registeration_date=registeration_date,
+                        investor_origin_country=investor_origin_country,
+                        company_size=company_size,
+                        managing_director_id=managing_director_id,
+                        headquaters_province=headquaters_province,
+                        headquaters_district=headquaters_district,
+                        headquaters_sector=headquaters_sector,
+                        headquaters_cell=headquaters_cell,
+                        headquaters_village=headquaters_village,
+                        managing_director_name=f"{first_name} {last_name}"
+                    )
+                    profile.save()
+                    message = f"New company profile with TIN: {tin_number} and name: {name} created successfully!"
+                    messages.success(request, message=message)
+                else:
+                    message = f"The contact email: {email_contact} is alreay taken, provide a different email"
+                    messages.info(request, message=message)
+            except Exception as e:
+                message = f"Error: {str(e)}"
+                messages.error(request, message=message)
+        else:
+            messages.error(request, message="You don't have permission to register company profile")
         
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-profiles")
@@ -223,6 +237,7 @@ def companies_industries_list(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 3)
 def industry_profile_details(request, profile_id):
     industry = CompanyProfile.objects.filter(id=profile_id).first()
     branches = CompanySite.objects.filter(company=industry)
@@ -236,58 +251,63 @@ def industry_profile_details(request, profile_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 3)
 def add_industry_not_in_park(request):
     if request.method == "POST":
-        try:
-            tin_number = request.POST.get("industry", " || ").split("||")[0]
-            occupied_space = request.POST.get("occupied_space")
-            longitude = request.POST.get("longitude", "")
-            latitude = request.POST.get("latitude", "")
-            province = AdministrativeUnit.objects.filter(category="PROVINCE", id=request.POST.get("province").strip()).first()
-            district = AdministrativeUnit.objects.filter(category="DISTRICT", id=request.POST.get("district").strip()).first()
-            sector = AdministrativeUnit.objects.filter(category="SECTOR", id=request.POST.get("sector").strip()).first()
-            cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
+        if is_user_permitted(request.user, "0013", 1):
+            try:
+                tin_number = request.POST.get("industry", " || ").split("||")[0]
+                occupied_space = request.POST.get("occupied_space")
+                longitude = request.POST.get("longitude", "")
+                latitude = request.POST.get("latitude", "")
+                province = AdministrativeUnit.objects.filter(category="PROVINCE", id=request.POST.get("province").strip()).first()
+                district = AdministrativeUnit.objects.filter(category="DISTRICT", id=request.POST.get("district").strip()).first()
+                sector = AdministrativeUnit.objects.filter(category="SECTOR", id=request.POST.get("sector").strip()).first()
+                cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
 
-            investment_amount = request.POST.get("investment_amount")
-            investment_currency = request.POST.get("investment_currency")
+                investment_amount = request.POST.get("investment_amount")
+                investment_currency = request.POST.get("investment_currency")
 
-            industry = CompanyProfile.objects.get(tin_number=tin_number)
+                industry = CompanyProfile.objects.get(tin_number=tin_number)
 
-            if len(longitude.strip()) < 2:
-                longitude = None
-            if len(latitude.strip()) < 2:
-                latitude = None
-            
-            if len(occupied_space.strip()) < 2:
-                occupied_space = None
-            
-            if len(investment_amount.strip()) < 2:
-                investment_amount = None
-                investment_currency = None
+                if len(longitude.strip()) < 2:
+                    longitude = None
+                if len(latitude.strip()) < 2:
+                    latitude = None
+                
+                if len(occupied_space.strip()) < 2:
+                    occupied_space = None
+                
+                if len(investment_amount.strip()) < 2:
+                    investment_amount = None
+                    investment_currency = None
 
-            CompanySite.objects.create(
-                company=industry,
-                longitude=longitude,
-                latitude=latitude,
-                province=province.name,
-                district=district.name,
-                sector=sector.name,
-                cell=cell.name,
-                occupied_space=occupied_space,
-                investment_amount=investment_amount,
-                investment_currency=investment_currency,
-                is_in_park=False
-            )
+                CompanySite.objects.create(
+                    company=industry,
+                    longitude=longitude,
+                    latitude=latitude,
+                    province=province.name,
+                    district=district.name,
+                    sector=sector.name,
+                    cell=cell.name,
+                    occupied_space=occupied_space,
+                    investment_amount=investment_amount,
+                    investment_currency=investment_currency,
+                    is_in_park=False
+                )
 
-            messages.success(request, message="New {industry.name} industry location has been recorded successfully!")
-        except Exception as e:
-            messages.error(request, message=f"Error: {str(e)}")
+                messages.success(request, message="New {industry.name} industry location has been recorded successfully!")
+            except Exception as e:
+                messages.error(request, message=f"Error: {str(e)}")
+        else:
+            messages.error(request, message="You don't have permission to add industry")
 
     redirect_url = reverse('industry:companies-industries-list')
     return redirect(f"{redirect_url}#companies-industries-in-parks")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 3)
 def industry_details(request, industry_id):
     industry = CompanySite.objects.filter(id=industry_id).first()
     attachments = IndustryAttachment.objects.filter(industry=industry).order_by("category","-uploaded_date", "name")
@@ -322,6 +342,7 @@ def industry_details(request, industry_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 4)
 def delete_industry(request, industry_id):
     try:
         industry = CompanySite.objects.get(id=industry_id)
@@ -344,6 +365,7 @@ def delete_industry(request, industry_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 2)
 def add_industry_economic_sectors(request, industry_id):
     try:
         industry = CompanySite.objects.get(id=industry_id)
@@ -368,6 +390,7 @@ def add_industry_economic_sectors(request, industry_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 2)
 def add_industry_product(request, industry_id):
     try:
         industry = CompanySite.objects.get(id=industry_id)
@@ -422,6 +445,7 @@ def add_industry_product(request, industry_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 2)
 def delete_industry_product(request, product_id):
     try:
         product = IndustryProduct.objects.get(id=product_id)
@@ -437,6 +461,7 @@ def delete_industry_product(request, product_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 2)
 def record_industry_attachment(request, industry_id):
     industry = CompanySite.objects.filter(id=industry_id).first()
     if industry is not None:
@@ -473,6 +498,7 @@ def record_industry_attachment(request, industry_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 2)
 def delete_industry_attachment(request, attachment_id):
     try:
         attachment = IndustryAttachment.objects.get(id=attachment_id)
@@ -492,47 +518,51 @@ def delete_industry_attachment(request, attachment_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0015", 3)
 def land_request(request):
     if request.method == "POST":
-        try:
-            land_owner = request.POST.get("land_owner")
-            request_date = request.POST.get("request_date", None)
-            request_closure_date = request.POST.get("request_closure_date", None)
-            requested_land_size = request.POST.get("requested_land_size").strip()
-            park = request.POST.get("park")
-            zone = request.POST.get("zone")
+        if is_user_permitted(request.user, "0015", 1):
+            try:
+                land_owner = request.POST.get("land_owner")
+                request_date = request.POST.get("request_date", None)
+                request_closure_date = request.POST.get("request_closure_date", None)
+                requested_land_size = request.POST.get("requested_land_size").strip()
+                park = request.POST.get("park")
+                zone = request.POST.get("zone")
 
-            park = IndustryEconomicZone.objects.filter(id=park).first()
-            zone = IndustrialZone.objects.filter(id=zone).first()
-            land_owner = CompanyProfile.objects.filter(id=land_owner).first()
+                park = IndustryEconomicZone.objects.filter(id=park).first()
+                zone = IndustrialZone.objects.filter(id=zone).first()
+                land_owner = CompanyProfile.objects.filter(id=land_owner).first()
 
-            if park is None:
-                messages.info(request, message="Selected park/special economic zone does not exist")
-            
-            if zone is None:
-                messages.info(request, message="Selected zoning does not exist")
-            
-            if land_owner is None:
-                messages.info(request, message="Industry profile was not found!")
-
-            if park and zone and land_owner:
-                if len(request_date.strip()) < 6:
-                    request_date = None
-                if len(request_closure_date.strip()) < 6:
-                    request_closure_date = None
+                if park is None:
+                    messages.info(request, message="Selected park/special economic zone does not exist")
                 
-                land_request_obj = LandRequestInformation(
-                land_owner=land_owner,
-                requested_land_size=requested_land_size,
-                    request_date=request_date,
-                    request_closure_date=request_closure_date,
-                    park=park,
-                    zone=zone
-                )
-                land_request_obj.save()
-                messages.success(request, message="New land information request added successfully!")
-        except Exception as e:
-            messages.error(request, message=f"Error: {{str(e)}}")
+                if zone is None:
+                    messages.info(request, message="Selected zoning does not exist")
+                
+                if land_owner is None:
+                    messages.info(request, message="Industry profile was not found!")
+
+                if park and zone and land_owner:
+                    if len(request_date.strip()) < 6:
+                        request_date = None
+                    if len(request_closure_date.strip()) < 6:
+                        request_closure_date = None
+                    
+                    land_request_obj = LandRequestInformation(
+                    land_owner=land_owner,
+                    requested_land_size=requested_land_size,
+                        request_date=request_date,
+                        request_closure_date=request_closure_date,
+                        park=park,
+                        zone=zone
+                    )
+                    land_request_obj.save()
+                    messages.success(request, message="New land information request added successfully!")
+            except Exception as e:
+                messages.error(request, message=f"Error: {{str(e)}}")
+        else:
+            messages.error(request, message="You don't have permission to add land information request")
 
     land_requests = LandRequestInformation.objects.all().order_by("request_date", "recorded_date")
     company_profiles = CompanyProfile.objects.all().order_by("name")
@@ -550,6 +580,7 @@ def land_request(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0015", 3)
 def land_request_detail(request, land_request_id, flag=None):
     land_request = LandRequestInformation.objects.filter(id=land_request_id).first()
     if land_request is None:
@@ -589,45 +620,50 @@ def land_request_detail(request, land_request_id, flag=None):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0014", 3)
 def contracts_list(request):
     if request.method == "POST":
-        industry_id = request.POST.get("industry")
-        contract_type = request.POST.get("contract_type")
-        signing_date = request.POST.get("signing_date")
-        contract_amount = request.POST.get("contract_amount")
-        contract_currency = request.POST.get("contract_currency")
-        operational_years = request.POST.get("operational_years")
-        contract_document = request.FILES.get("document")
+        if is_user_permitted(request.user, "0014", 1):
+            industry_id = request.POST.get("industry")
+            contract_type = request.POST.get("contract_type")
+            signing_date = request.POST.get("signing_date")
+            contract_amount = request.POST.get("contract_amount")
+            contract_currency = request.POST.get("contract_currency")
+            operational_years = request.POST.get("operational_years")
+            contract_document = request.FILES.get("document")
 
-        industry = CompanySite.objects.filter(id=industry_id).first()
+            industry = CompanySite.objects.filter(id=industry_id).first()
 
-        if industry is not None:
-            base_domain = get_base_domain(request)
-            contract = IndustryContract(
-                industry=industry,
-                contract_type=contract_type,
-                signing_date=signing_date,
-                contract_amount=contract_amount,
-                contract_currency=contract_currency,
-                operational_years=operational_years,
-                contract_document=contract_document
-            )
+            if industry is not None:
+                base_domain = get_base_domain(request)
+                contract = IndustryContract(
+                    industry=industry,
+                    contract_type=contract_type,
+                    signing_date=signing_date,
+                    contract_amount=contract_amount,
+                    contract_currency=contract_currency,
+                    operational_years=operational_years,
+                    contract_document=contract_document
+                )
 
-            contract.save()
-            contract.contract_document_url = f"{base_domain}/{contract.contract_document.url.lstrip('/')}"
-            contract.save()
+                contract.save()
+                contract.contract_document_url = f"{base_domain}/{contract.contract_document.url.lstrip('/')}"
+                contract.save()
 
-            messages.success(request, message="Contract saved successfully!")
-            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-            return redirect(f"{redirect_url}#contract-detail")
+                messages.success(request, message="Contract saved successfully!")
+                redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+                return redirect(f"{redirect_url}#contract-detail")
+            else:
+                messages.info(request, message="Unable to save the contract because the industry to be added on the contract does not exists")
         else:
-            messages.info(request, message="Unable to save the contract because the industry to be added on the contract does not exists")
+            messages.error(request, message="You don't have permission to add contract")
         return redirect("industry:companies-industries-list")
     
     return redirect("industry:companies-industries-list")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0014", 3)
 def contracts_detail(request, contract_id):
     contract = IndustryContract.objects.filter(id=contract_id).prefetch_related(
         Prefetch("contract_payments", queryset=IndustryContractPayment.objects.prefetch_related("payment_installments"))
@@ -647,50 +683,53 @@ def contracts_detail(request, contract_id):
             return redirect("industry:companies-industries-list")
         
         if request.method == "POST":
-            payment_modality = request.POST.get("payment_modality")
-            payment_start_date = request.POST.get("payment_start_date")
-            irembo_application_number = request.POST.get("irembo_application_number", None)
-            contract_payment = IndustryContractPayment(
-                contract=contract,
-                total_amount_to_pay=contract.contract_amount,
-                total_amount_unpaid=contract.contract_amount,
-                payment_currency=contract.contract_currency,
-                payment_modality=payment_modality,
-                number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
-                irembo_application_number=irembo_application_number
-            )
-            contract_payment.save()
-            payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
-            payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
+            if is_user_permitted(request.user, "0014", 2):
+                payment_modality = request.POST.get("payment_modality")
+                payment_start_date = request.POST.get("payment_start_date")
+                irembo_application_number = request.POST.get("irembo_application_number", None)
+                contract_payment = IndustryContractPayment(
+                    contract=contract,
+                    total_amount_to_pay=contract.contract_amount,
+                    total_amount_unpaid=contract.contract_amount,
+                    payment_currency=contract.contract_currency,
+                    payment_modality=payment_modality,
+                    number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
+                    irembo_application_number=irembo_application_number
+                )
+                contract_payment.save()
+                payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
+                payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
 
-            payment_dates = []
-            if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
-                payment_dates.append(payment_start_date)
-            elif payment_modality == "INSTALLMENTS": # create six payment installments
-                payment_dates.append(payment_start_date)
-                for i in range(5): # creating 6 installments dates
-                    payment_dates.append(
-                        payment_dates[i] + relativedelta(years=1)
-                    )
-            else:
-                message.info(request, message="Wrong payment modality selected")
+                payment_dates = []
+                if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
+                    payment_dates.append(payment_start_date)
+                elif payment_modality == "INSTALLMENTS": # create six payment installments
+                    payment_dates.append(payment_start_date)
+                    for i in range(5): # creating 6 installments dates
+                        payment_dates.append(
+                            payment_dates[i] + relativedelta(years=1)
+                        )
+                else:
+                    message.info(request, message="Wrong payment modality selected")
+                    redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+                    return redirect(f"{redirect_url}#contract-detail")
+                
+                succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
+                if not succeeded:
+                    contract_payment.delete()
+                    messages.info(request, "Unable to create payment installments")
+                else:
+                    if total_amount !=  contract_payment.total_amount_to_pay:
+                        contract_payment.total_amount_to_pay = total_amount
+                        contract_payment.total_amount_unpaid = total_amount
+                        contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
+                        contract_payment.save() 
+                        contract_payment.contract.save() # update the contract as well
+                    messages.success(request, message="Payment isntallments created successfully!")
+                
                 redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-                return redirect(f"{redirect_url}#contract-detail")
-            
-            succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
-            if not succeeded:
-                contract_payment.delete()
-                messages.info(request, "Unable to create payment installments")
             else:
-                if total_amount !=  contract_payment.total_amount_to_pay:
-                    contract_payment.total_amount_to_pay = total_amount
-                    contract_payment.total_amount_unpaid = total_amount
-                    contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
-                    contract_payment.save() 
-                    contract_payment.contract.save() # update the contract as well
-                messages.success(request, message="Payment isntallments created successfully!")
-            
-            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+                messages.error(request, message="You don't have permission to modify contract/adding payment to the contract")
             return redirect(f"{redirect_url}#contract-payments")
             
         unpaid_installment = payment_installments.filter(payment_status__in=("PARTIALLY PAID", "NOT PAID")).first()
@@ -738,6 +777,7 @@ def contracts_detail(request, contract_id):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0014", 2)
 def make_payment_transaction(request):
     if request.method == "POST":
         data = {
@@ -758,6 +798,7 @@ def make_payment_transaction(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0014", 3)
 def main_indstry_contracts(request):
     contracts = list(IndustryContract.objects.all().order_by("signing_date"))
     payments = list(IndustryContractPayment.objects.all().order_by("next_payment_date"))
@@ -775,6 +816,7 @@ def main_indstry_contracts(request):
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0014", 2)
 def record_refund(request, transaction_id):
     if request.method == "POST":
         transaction = PaymentInstallmentTransaction.objects.filter(id=transaction_id).first()

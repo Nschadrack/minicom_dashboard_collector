@@ -46,23 +46,34 @@
                                 {% else %}
                                     <td>NO</td>
                                 {% endif %}
-                                <td><a href="{% url 'industry:industry-info-details' contract.industry.id %}#industry-detail" class="view_button">view industry details</a></td>
-                                <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view contract details</a></td>
-                                <td>
-                                    {% if contract.contract_document_url %}
-                                        <input type="hidden" id="document-viewer-documentUrl-contract-{{contract.id}}" value="{{ contract.contract_document_url }}"/>
-                                        <button onclick="DocumentViewerTwo.loadDocument('contract-{{ contract.id }}')"  class="view_button">View contract document</button>
-                                    {% else %}
-                                        contract document is missing
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if contract.contract_document_url %}
-                                        <input type="text" id="myInputToCopy2-{{contract.id}}" class="myInputToCopy-cls" value="{{ contract.contract_document_url }}" readonly>
-                                        <button onclick="copyText2('{{contract.id}}');" id="copy-text-button2-{{contract.id}}" class="copy-text-button-cls">Copy contract document link</button>
-                                        <p id="copyAlertMessage2-{{contract.id}}" class="copyAlertMessage-cls"></p>
-                                    {% endif %}
-                                </td>
+                                {% if request.user|is_user_permitted:"0013,3" %}
+                                    <td><a href="{% url 'industry:industry-info-details' contract.industry.id %}#industry-detail" class="view_button">view industry details</a></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if request.user|is_user_permitted:"0013,3" %}
+                                    <td><a href="{% url 'industry:contracts-detail' contract.id %}" class="view_button">view contract details</a></td>
+                                
+                                    <td>
+                                        {% if contract.contract_document_url %}
+                                            <input type="hidden" id="document-viewer-documentUrl-contract-{{contract.id}}" value="{{ contract.contract_document_url }}"/>
+                                            <button onclick="DocumentViewerTwo.loadDocument('contract-{{ contract.id }}')"  class="view_button">View contract document</button>
+                                        {% else %}
+                                            contract document is missing
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if contract.contract_document_url %}
+                                            <input type="text" id="myInputToCopy2-{{contract.id}}" class="myInputToCopy-cls" value="{{ contract.contract_document_url }}" readonly>
+                                            <button onclick="copyText2('{{contract.id}}');" id="copy-text-button2-{{contract.id}}" class="copy-text-button-cls">Copy contract document link</button>
+                                            <p id="copyAlertMessage2-{{contract.id}}" class="copyAlertMessage-cls"></p>
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

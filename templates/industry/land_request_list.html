@@ -1,9 +1,12 @@
 {% extends 'base_layout.html' %}
 {% load humanize %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Land Information Requests</p>
-        <button id="car_title_header_and_new_btn_button">+ new land request</button>
+        {% if request.user|is_user_permitted:"0015,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new land request</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
         {% include 'helpers/message_alert.html' %}
@@ -39,8 +42,16 @@
                             <td>{{ land_request.request_date|date:'d-m-Y' }}</td>
                             <td>{{ land_request.request_closure_date|date:'d-m-Y' }}</td>
                             <td><a href="{% url 'industry:land-request-detail' land_request.id %}" class="view_button">view details</a></td>
-                            <td><a href="" class="update_button">update</a></td>
-                            <td><a href="" class="delete_button">delete</a></td>
+                            {% if request.user|is_user_permitted:"0015,2" %}
+                                <td><a href="" class="update_button">update</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if request.user|is_user_permitted:"0015,4" %}
+                                <td><a href="" class="delete_button">delete</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -52,7 +52,9 @@
         <!-- partitioned plots Tab -->
         <div id="partitioned-plots" class="tab-content">
             <div class="upper-detail-div">
-                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a partitioned plot</button>		
+                {% if request.user|is_user_permitted:"0012,2" %}
+                    <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ Record a partitioned plot</button>
+                {% endif %}		
                 <div class="current_price_list table-data">     
                     {% if park_partitioned_plots|length > 0 %}	
                         <h4>List of Plots Partitioned In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		

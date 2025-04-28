@@ -4,10 +4,10 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, first_name, last_name, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
         user = self.model(email=email, first_name=first_name, last_name=last_name)
         user.set_password(password)
+        user.is_staff = True
+        user.is_superuser = True
         user.save()
         return user
     

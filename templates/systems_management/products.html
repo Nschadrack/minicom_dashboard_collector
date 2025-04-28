@@ -1,8 +1,11 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Products</p>
-        <button id="car_title_header_and_new_btn_button">+ new product</button>
+        {% if request.user|is_user_permitted:"0016,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new product</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
         {% include "helpers/message_alert.html" %}

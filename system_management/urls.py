@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (users_list, user_detail, login_user, 
-                    logout_user, roles_list, role_details,
+                    logout_user, change_password, roles_list, role_details,
                     zones_list, economic_sub_sectors_list, 
                     economic_sectors_list, assign_roles, 
                     system_settings, assign_role_permissions,
@@ -19,6 +19,8 @@ urlpatterns = [
     # Login routers
     path("login/", login_user, name="login"),
     path("logout/", logout_user, name="logout"),
+    path("change-password/", change_password, name="forgot_password"),
+    path("change-password/<str:username>/", change_password, name="change_password"),
 
     # Roles routers
     path("roles/", roles_list, name="roles-list"),

@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <h4>Reporting Months Configurations</h4>			
 <table class="table-data">
     <thead>
@@ -15,7 +16,11 @@
                     <td>Active</td>
                 {% else %}
                     <td>Inactive</td>
-                    <td><a class="view_button" onclick="openModal('{% url 'systems_management:activate-months-reporting-period' month.id  %}', 'activate', 'the reporting period range to: {{ month.months }} month(s)? This will modify the reporting period dates starting from next phase of reporting.')">Activate</a></td>
+                    {% if request.user|is_user_permitted:"0017,2" %}
+                        <td><a class="view_button" onclick="openModal('{% url 'systems_management:activate-months-reporting-period' month.id  %}', 'activate', 'the reporting period range to: {{ month.months }} month(s)? This will modify the reporting period dates starting from next phase of reporting.')">Activate</a></td>
+                    {% else %}
+                        <td></td>
+                    {% ebdif %}
                 {% endif %}
             </tr>
         {% endfor %}

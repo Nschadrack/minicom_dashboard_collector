@@ -24,14 +24,45 @@ def login_user(request):
         password = request.POST["password"].strip()
         user = authenticate(request, email=username, password=password)
         if user is not None:
+            if user.change_password_required:
+                messages.info(request, message="This is your first time to login, you need to change password!")
+                return redirect(reverse("system_management:change_password", args=(user.email,)))
             login(request, user)
             return redirect("dashboard:dashboard") 
         else:
             messages.error(request, message="Invalid credentials. username or password is incorrect!")
     
-    return render(request, "index.html")
+    return render(request, "systems_management/login.html")
     # return render(request, "index_map.html")
 
+def change_password(request, username=None):
+    user = None
+    if username:
+        user = User.objects.filter(email=username).first()
+    
+    if request.method == "POST":
+        password1 = request.POST.get("password1", None)
+        password2 = request.POST.get("password2", None)
+        email = request.POST.get("email", None)
+
+        if password1 and password2 and email and (password1 == password2):
+            user = User.objects.filter(email=email).first()
+            if user:
+                user.set_password(password1)
+                user.change_password_required = False
+                user.save()
+                messages.success(request, message="Password changed successfully!")
+                return redirect("system_management:login")
+            else:
+                messages.error(request, message=f"user account with email: {email} does not exist")
+        else:
+            messages.error(request, message="Check your email/username and passwords entered. Password fields must match!")
+            return redirect("system_management:login")
+
+    context = {
+        "user": user
+    }
+    return render(request, "systems_management/change_password.html", context)
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def logout_user(request):

@@ -19,30 +19,66 @@
 		</div>
 		<div id="aside_navigations">
 			<a href="">Overview</a>
-			<button onclick="toggleAssetRegistrySection()">Industry management</button>
-			<section id="assets-registry-section">
-				<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
-				<a href="{% url 'industry:companies-industries-list' %}">Industries</a>
-				<a href="{% url 'industry:all-contracts' %}">Contracts Information</a>
-				<a href="{% url 'industry:land-requests' %}">Land Information</a>
-			</section>
-			<button onclick="toggleDashboardsSection()">Dashboard management</button>
-			<section id="dashboards-section">
-				<a href="{% url 'minicom_dashboards:industry-dashboards' %}">Industry dashboards</a>
-				<a href="{% url 'minicom_dashboards:trade-dashboards' %}">Trade dashboards</a>
-			</section>
-			<button onclick="toggleUsersManagementAssetSection()">Administration</button>
-			<section id="users-management-section">
-				<a href="{% url 'system_management:users-list' %}">Users management</a>
-				<a href="{% url 'system_management:roles-list' %}">Roles management</a>
-                <a href="{% url 'system_management:zones-list' %}">Industrial zones</a>
-                <a href="{% url 'system_management:economic-sectors-list' %}">Economic sectors</a>
-                <a href="{% url 'system_management:economic-sub-sectors-list' %}">Economic sub-sectors</a>
-				<a href="{% url 'system_management:products-list' %}">Products</a>
-				<a href="{% url 'system_management:configurations' %}">Configurations</a>
-				<a href="{% url 'system_management:system-settings' %}">System settings</a>
-			</section>
-			<a href="{% url 'reporting:reporting' %}">Reporting</a>
+			{% if request.user|is_user_permitted:"0011,3" %}
+				<button onclick="toggleAssetRegistrySection()">Industry management</button>
+				<section id="assets-registry-section">
+					{% if request.user|is_user_permitted:"0012,3" %}
+						<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0013,3" %}
+						<a href="{% url 'industry:companies-industries-list' %}">Industries</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0014,3" %}
+						<a href="{% url 'industry:all-contracts' %}">Contracts Information</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0015,3" %}
+						<a href="{% url 'industry:land-requests' %}">Land Information</a>
+					{% endif %}
+				</section>
+			{% endif %}
+			{% if request.user|is_user_permitted:"0008,3" %}
+				<button onclick="toggleDashboardsSection()">Dashboard management</button>
+				<section id="dashboards-section">
+					{% if request.user|is_user_permitted:"0009,3" %}
+						<a href="{% url 'minicom_dashboards:industry-dashboards' %}">Industry dashboards</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0010,3" %}
+						<a href="{% url 'minicom_dashboards:trade-dashboards' %}">Trade dashboards</a>
+					{% endif %}
+				</section>
+			{% endif %}
+			{% if request.user|is_user_permitted:"0001,3" %}
+				<button onclick="toggleUsersManagementAssetSection()">Administration</button>
+				<section id="users-management-section">
+					{% if request.user|is_user_permitted:"0002,3" %}
+						<a href="{% url 'system_management:users-list' %}">Users management</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0003,3" %}
+						<a href="{% url 'system_management:roles-list' %}">Roles management</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0004,3" %}
+						<a href="{% url 'system_management:zones-list' %}">Industrial zones</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0005,3" %}
+						<a href="{% url 'system_management:economic-sectors-list' %}">Economic sectors</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0006,3" %}
+						<a href="{% url 'system_management:economic-sub-sectors-list' %}">Economic sub-sectors</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0016,3" %}
+						<a href="{% url 'system_management:products-list' %}">Products</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0017,3" %}
+						<a href="{% url 'system_management:configurations' %}">Configurations</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0007,3" %}
+						<a href="{% url 'system_management:system-settings' %}">System settings</a>
+					{% endif %}
+				</section>
+			{% endif %}
+			{% if request.user|is_user_permitted:"0018,3" %}
+				<a href="{% url 'reporting:reporting' %}">Reporting</a>
+			{% endif %}
 			<a href="{% url 'system_management:logout' %}">Sign out</a>
 			{% comment %} <a href="#">Notifications <span class="aside-navigation-spans">0</span></a> {% endcomment %}
 			{% comment %} <a href="#">Settings</a> {% endcomment %}

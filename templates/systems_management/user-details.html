@@ -1,4 +1,5 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">#USER:  {{ user.email|upper}}</p>
@@ -35,7 +36,7 @@
         <!-- permissions Tab -->
         <div id="user-roles" class="tab-content">
             <div class="upper-detail-div">
-                {% if user_roles|length > 0 %}	
+                {% if user_roles|length > 0  and request.user|is_user_permitted:"0003,6"%}	
                     <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
                 {% endif %}	
                 <div class="current_price_list table-data">     
@@ -56,15 +57,25 @@
                                         <td>{{ user_role.role.name }}</td>
                                         <td>{{ user_role.assigned_date|date:"d-m-Y H:i:s A" }}</td>
                                         <td>{{ user_role.assigned_by.email }}</td>
-                                        <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
-                                        <td><a href="" class="delete_button">remove</a></td>
+                                        {% if request.user|is_user_permitted:"0003,3" %}
+                                            <td><a href="{% url 'system_management:role-details' user_role.id %}"  class="view_button">view details</a></td>
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                        {% if request.user|is_user_permitted:"0003,7" %}
+                                            <td><a href="" class="delete_button">remove</a></td>
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     {% else %}
                         <h4>{{ user.first_name|upper}} {{ user.last_name|upper }} has no role which limits the system accessibility</h4>	
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>	
+                        {% if request.user|is_user_permitted:"0003,6" %}
+                            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>Assign new role</button>
+                        {% endif %}	
                     {% endif %}						
                 </div>
             </div>

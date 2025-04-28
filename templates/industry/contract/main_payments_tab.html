@@ -21,7 +21,6 @@
                         <th>LINKED CONTRACT</th>
                         <th>UPDATE DATE</th>
                         <th>INDUSTRY SIGNED</th>
-                        <th colspan="2">ACTION</th>
                     </thead>
                     <tbody>
                         {% for payment in payments %}
@@ -81,8 +80,6 @@
                                     <td></td>
                                 {% endif %}                
                                 <td><a href="{% url 'industry:industry-info-details' payment.contract.industry.id %}#industry-detail" class="view_button">view industry details</a></td>
-                                <td><a href="{{ contract.contract_document_url }}" class="view_button" target="_blank">view document</a></td>
-                                <td><a href="{% url 'industry:contracts-detail' payment.contract.id %}#contract-payments" class="view_button">view details</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
