@@ -1,23 +1,29 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">#SYSTEM SETTINGS</p>
     </div>
-    <div id="card_body_data">				
+    <div id="card_body_data">	
+        {% include "helpers/message_alert.html" %}			
         <div id="car_prices">
-            <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
-                <div>
-                    <p><a href="{% url 'system_management:feed-data' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
-                    <p><a href="{% url 'system_management:feed-data' 'zoning' %}" class="system_settings_button_feed">Feed Industrial Zonings</a></p><br/>
+            {% if request.user|is_user_permitted:"0007,1" %}
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
+                    <div>
+                        <p><a href="{% url 'system_management:feed-data' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
+                        <p><a href="{% url 'system_management:feed-data' 'zoning' %}" class="system_settings_button_feed">Feed Industrial Zonings</a></p><br/>
+                    </div>
+                    <div>
+                        <p><a href="" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
+                        {% if reporting_months|length != 12 %}
+                            <p><a href="{% url 'system_management:feed-data' 'reporting_months' %}" class="system_settings_button_feed">Feed Reporting Months</a></p><br/>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p><a href="{% url 'system_management:feed-data' 'administrative_divisions' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>
+                    </div>
                 </div>
-                <div>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
-                    <p><a href="{% url 'system_management:users-list' %}" class="system_settings_button_feed">Feed Economic Sub-Sectors</a></p><br/>
-                </div>
-                <div>
-                    <p><a href="{% url 'system_management:feed-data' 'administrative_divisions' %}" class="system_settings_button_feed">Feed Administrative Divisions(Provinces)</a></p><br/>
-                </div>
-            </div>
+            {% endif %}
             <div class="current_price_list table-data">     		
                 <table class="table-data">
                     <thead>

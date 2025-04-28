@@ -15,7 +15,13 @@ minicom_dashboards/migrations/*
 media
 
 automation/__pycache__/
+automation/templatetags/__pycache__/
 automation/migrations/*
 !automation/migrations/__init__.py
+
+reporting/__pycache__/
+reporting/migrations/*
+!reporting/migrations/__init__.py
+
 database.sqlite3
 .env

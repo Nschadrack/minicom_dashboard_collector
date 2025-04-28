@@ -77,5 +77,15 @@
     "module_id": "0016",
     "name": "Products",
     "parent_id": "0001"
+},
+{
+    "module_id": "0017",
+    "name": "Configurations",
+    "parent_id": "0001"
+},
+{
+    "module_id": "0018",
+    "name": "Reporting",
+    "parent_id": null
 }
 ]

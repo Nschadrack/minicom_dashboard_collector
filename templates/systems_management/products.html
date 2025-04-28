@@ -1,10 +1,14 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Products</p>
-        <button id="car_title_header_and_new_btn_button">+ new product</button>
+        {% if request.user|is_user_permitted:"0016,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new product</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
         <div id="car_table_data" class="table-data">
             <div id="car_table_data" class="table-data">
                 <table>
@@ -28,13 +32,14 @@
                                 <td>{{ product.recorded_date|date:"d-m-Y H:i:s A"}}</td>
                                 <td><a href="" class="view_button">view details</a></td>
                                 <td><a href="" class="update_button">update</a></td>
-                                <td><a href="" class="delete_button">delete</a></td>
+                                <td><a class="delete_button" onclick="openModal('{% url 'systems_management:delete-product' product.id %}', 'delete', 'this product: {{ product.product_code }} | {{ product.name|title }}?')">delete</a></td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table> 
             </div>
         </div>
+        {% include 'helpers/pup-up-modal.html' %}
         <div class="car_new_form_div">
             <form class="car_new_form" method="post" action="">
                 {% csrf_token %}

@@ -1,5 +1,6 @@
 {% extends "base_layout.html" %}
 {% load humanize %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">#LAND INFORMATION: REQUEST BY {{ land_request.land_owner.user.first_name|upper }}</p>
@@ -16,6 +17,7 @@
 
     <!-- Tab Content -->
     <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
         <!-- Role users Tab -->
         <div id="land-request-detail" class="tab-content active">
             <div class="upper-detail-div">
@@ -93,9 +95,11 @@
                             <p><strong>System Recorded Date: </strong>{{ allocated_plot.recorded_date|date:'d-m-Y H:i:s A' }}</p><br/><br/>
                         </div>
                     </div>
+                    {% if request.user|is_user_permitted:"0013,1" %}
+                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add another industry</button>	
+                    {% endif %}	
                     <div  class="current_price_list table-data">
                         <h4>List of Industries in This Plot</h4>		
-                        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add industry</button>		
                         <table class="table-data">
                             <thead>
                                 <th>#</th>
@@ -136,7 +140,11 @@
                                         {%  endif %}
                                         <td>{{ industry.construction_status|title }}</td>
                                         <td>{{ industry.operational_status|title }}</td>
-                                        <td><a href="{% url 'industry:industry-info-details' industry.id %}#industry-detail" class="view_button">view details</a></td>
+                                        {% if request.user|is_user_permitted:"00013,3" %}
+                                            <td><a href="{% url 'industry:industry-info-details' industry.id %}#industry-detail" class="view_button">view details</a></td>
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>

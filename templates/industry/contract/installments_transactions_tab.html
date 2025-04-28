@@ -1,8 +1,9 @@
+{% load custom_filters %}
 <div id="installments-transactions" class="tab-content">
     <div class="upper-detail-div">
         <div id="car_table_data" class="table-data">
             <h4 style="border-bottom: 2px double black; text-align:center;">List Of Transactions For The Installments </h4>
-            {% if unpaid_installment %}
+            {% if unpaid_installment and request.user|is_user_permitted:"0014,2" %}
                 <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new transaction</button>
             {% endif %}
             <table>
@@ -25,10 +26,10 @@
                             <td>{{ transaction.recorded_date|date:'d-m-Y H:i:s A' }}</td>
                             <td>{{ transaction.installment.expected_payment_date|date:'d-m-Y' }}</td>
                             <td>{{ transaction.payment_date|date:'d-m-Y' }}</td>
-                            <td>{{ transaction.payment_amount }} {{ transaction.installment.contract_payment.payment_currency }}</td>
+                            <td>{{ transaction.payment_amount|format_number }} {{ transaction.installment.contract_payment.payment_currency }}</td>
                             <td>
                                 {% if transaction.refund_amount > 0 %}
-                                    {{ transaction.refund_amount }} {{ transaction.installment.contract_payment.payment_currency }}
+                                    {{ transaction.refund_amount|format_number }} {{ transaction.installment.contract_payment.payment_currency }}
                                 {% else %}
                                     0 {{ transaction.installment.contract_payment.payment_currency }}
                                 {% endif %}

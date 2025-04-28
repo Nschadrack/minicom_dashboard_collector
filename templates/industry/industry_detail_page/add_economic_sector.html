@@ -1,3 +1,4 @@
+{% load custom_filters %}
 <form class="car_new_form" method="post" action="{% url 'industry:add-industry-economic-sector' industry.id %}">
     {% csrf_token %}
     <fieldset>

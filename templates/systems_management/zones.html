@@ -1,10 +1,14 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Industrial Zonings</p>
-        <button id="car_title_header_and_new_btn_button">+ new industrial zoning</button>
+        {% if request.user|is_user_permitted:"0004,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new industrial zoning</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
         <div id="car_table_data" class="table-data">
             <table>
                 <thead>
@@ -20,8 +24,16 @@
                             <td>{{ zone.name }}</td>
                             <td>{{ zone.recorded_date|date:"d-m-Y H:i:s A"}}</td>
                             <td><a href="" class="view_button">view details</a></td>
-                            <td><a href="" class="update_button">update</a></td>
-                            <td><a href="" class="delete_button">delete</a></td>
+                            {% if request.user|is_user_permitted:"0004,2" %}
+                                <td><a href="" class="update_button">update</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if request.user|is_user_permitted:"0004,4" %}
+                                <td><a href="" class="delete_button">delete</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -1,8 +1,11 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of industry dashboards</p>
-        <button id="car_title_header_and_new_btn_button">+ new dashboard</button>
+        {% if request.user|is_user_permitted:"0009,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new dashboard</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
         <div id="car_table_data" class="table-data">
@@ -33,9 +36,21 @@
                                     {{dashboard.updated_by.get_full_name}}
                                 {% endif %}
                             </td>
-                            <td><a href="{% url 'minicom_dashboards:dashboard-detail' dashboard.id  %}" class="view_button">view dashboard</a></td>
-                            <td><a href="{% url 'minicom_dashboards:edit-dashboard-detail' dashboard.id %}" class="update_button">edit</a></td>
-                            <td><a href="{% url 'minicom_dashboards:delete-dashboard' dashboard.id  %}" class="delete_button">delete</a></td>
+                            {% if request.user|is_user_permitted:"0009,3" %}
+                                <td><a href="{% url 'minicom_dashboards:dashboard-detail' dashboard.id  %}" class="view_button">view dashboard</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if request.user|is_user_permitted:"0009,2" %}
+                                <td><a href="{% url 'minicom_dashboards:edit-dashboard-detail' dashboard.id %}" class="update_button">edit</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if request.user|is_user_permitted:"0009,4" %}
+                                <td><a href="{% url 'minicom_dashboards:delete-dashboard' dashboard.id  %}" class="delete_button">delete</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

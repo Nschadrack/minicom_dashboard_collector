@@ -1,11 +1,15 @@
 {% extends 'base_layout.html' %}
 {% load humanize %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Industrial Parks/Economic Zones</p>
-        <button id="car_title_header_and_new_btn_button">+ new industrial park/economic zone</button>
+        {% if request.user|is_user_permitted:"0012,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new industrial park/economic zone</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
         <div id="car_table_data" class="table-data">
             <table>
                 <thead>
@@ -28,12 +32,12 @@
                             <td>{{industrial_park.category|title}}</td>
                             <td>
                                 {% with value=industrial_park.total_land_size|floatformat:5 %}
-                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                    {{ value|format_number:5 }}
                                 {% endwith %}
                             </td>
                             <td>
                                 {% with value=industrial_park.leasable_land|floatformat:5 %}
-                                    {{ value|floatformat:5|intcomma|cut:".00000" }}
+                                    {{ value|format_number:5 }}
                                 {% endwith %}
                             </td>
                             <td>{{ industrial_park.province|title}}</td>

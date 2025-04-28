@@ -1,5 +1,6 @@
 {% extends "base_layout.html" %}
 {% load humanize %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">#INDUSTRY PROFILE DETAILS: {{ industry.tin_number }} - {{ industry.name }}</p>
@@ -12,12 +13,12 @@
             <li class="tab-link active" data-tab="profile-detail">Profile Information Details</li>
             <li class="tab-link" data-tab="profile-branches">Locations</li>
             <li class="tab-link" data-tab="attachment-profile">Attachments</li>
-            <li class="tab-link" data-tab="payment-profile">Payments</li>
         </ul>
     </div>
 
     <!-- Tab Content -->
     <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
         <!-- Role users Tab -->
         <div id="profile-detail" class="tab-content active">
             <div class="upper-detail-div">
@@ -46,7 +47,7 @@
         <!-- branches Tab -->
         {% include 'industry/industry_profile_detail_page/branches_tab.html' %}
 
-        <!-- Payment Tab -->
+        <!-- Attachment Tab -->
         {% include 'industry/industry_profile_detail_page/attachments_tab.html' %}
         
     </div>

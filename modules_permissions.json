@@ -326,5 +326,68 @@
     "name": "Products",
     "action_value": 2,
     "action": "Edit"
+},
+{
+    "permission_id": 47,
+    "module_id": "0017",
+    "name": "Configurations",
+    "action_value": 2,
+    "action": "Edit"
+},
+{
+    "permission_id": 48,
+    "module_id": "0017",
+    "name": "Configurations",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 49,
+    "module_id": "0017",
+    "name": "Configurations",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 50,
+    "module_id": "0017",
+    "name": "Configurations",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 51,
+    "module_id": "0018",
+    "name": "Reporting",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 52,
+    "module_id": "0018",
+    "name": "Reporting",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 53,
+    "module_id": "0018",
+    "name": "Reporting",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 54,
+    "module_id": "0007",
+    "name": "System Setting",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 55,
+    "module_id": "0007",
+    "name": "System Setting",
+    "action_value": 2,
+    "action": "Edit"
 }
 ]

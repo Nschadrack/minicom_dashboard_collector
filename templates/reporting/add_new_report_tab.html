@@ -1,0 +1,85 @@
+{% load custom_filters %}
+<div>
+    {% include 'helpers/message_alert.html' %}
+    <div class="add-report-division-messages">
+        {% if not has_pending_products_report %}
+            <p>{{ add_new_report_message|safe }}</p>
+        {% endif %}
+    </div>
+    <div class="add-report-division-messages">
+        {% if has_pending_employment_report %}
+            <p style="background-color: #cd853f; color: white; font-weight: normal; padding: 10px;">
+                You have pending reports on employment dynamics for the period
+                <b>from {{ considered_start_date_employment }} To {{ next_report_plan.start_date|date:"d-m-Y" }}</b>
+            </p>
+            <div class="current_price_list table-data">
+                <table>
+                    <thead>
+                        <th></th>
+                        <th>TIN NUMBER</th>
+                        <th>INDUSTRY NAME</th>
+                        <th>LOCATION</th>
+                    </thead>
+                    <tbody>
+                        {% for industry in industries %}
+                            <tr>
+                                <td><a href="{% url 'reporting:add-employment-report' industry.id considered_start_date_employment considered_end_date_employment %}" class="update_button">add employment report for</a></td>
+                                <td>{{ industry.company.tin_number }}</td>
+                                <td>{{ industry.company.name }}</td>
+                                {% if industry.is_in_park %}
+                                    <td>{{ industry.allocated_plot.park.name|title }} {{ industry.allocated_plot.park.category|title }}</td>
+                                {% else %}
+                                    <td>{{ industry.province|title }} - {{ industry.district|title }} - {{ industry.sector|title }} - {{ industry.cell|title }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="add-report-division-messages">
+    {% if has_pending_products_report %}
+        <p style="background-color: #cd853f; color: white; font-weight: normal; padding: 10px;">{{ add_new_report_message|safe }}</p>
+    {% endif %}
+</div>
+<div class="current_price_list table-data"> 
+    {% if next_report_plan or has_pending_products_report %}  
+        <h4>{{ header_add_new_product_report }}</h4>  		
+        <table>
+            <thead>
+                {% if has_pending_products_report %}
+                    <th></th>
+                {% endif %}
+                <th>#</th>
+                <th>PRODUCT CODE</th>
+                <th>PRODUCT NAME</th>
+                <th>BRAND NAME</th>
+                <th>MEASUREMENT</th>
+                <th>MEASURE VALUE</th>
+                <th>PACKAGING MATERIAL</th>
+                <th>INSTALLED PRODUCTION CAPACITY</th>
+                <th colspan="1">ACTION</th>
+            </thead>
+            <tbody>
+                {% for product in industry_products_to_report_on %}
+                    <tr>
+                        {% if has_pending_products_report %}
+                            <td><a href="{% url 'reporting:add-product-report' product.id considered_start_date considered_end_date %}" class="update_button">add a report</a></td>
+                        {% endif %}
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ product.product.product_code }}</td>
+                        <td>{{ product.product.name|title }}</td>
+                        <td>{{ product.product_brand_name|title }}</td>
+                        <td>{{ product.quantity_measure|title }}</td>
+                        <th>{{ product.quantity|format_number }} {{ product.quantity_measure_unit }}</td>
+                        <td>{{ product.packaging_material|title }}</td>
+                        <td>{{ product.production_installed_capacity|format_number }} {{ product.production_installed_capacity_unit }} / {{ product.production_installed_capacity_period }}</td>
+                        <td><a href="" class="view_button">view details</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}					
+</div>					

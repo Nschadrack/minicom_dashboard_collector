@@ -26,6 +26,18 @@
             <input type="email" name="email_contact" required/>
         </div>
         <div class="form-group">
+            <label>Managing Director Firstname</label>
+            <input type="text" name="first_name" required maxlength="80"/>
+        </div>
+        <div class="form-group">
+            <label>Managing Director Lastname</label>
+            <input type="text" name="last_name" required maxlength="80"/>
+        </div>
+        <div class="form-group">
+            <label>Managing Director ID/Passport Number</label>
+            <input type="text" name="managing_director_id" maxlength="19"/>
+        </div>
+        <div class="form-group">
             <label>Company size</label>
             <select name="company_size" required>
                 <option value="Large">Large</option>
@@ -41,6 +53,42 @@
         <div class="form-section">
             <label for="itemSearch">Investor Origin Country</label>
             {% include 'helpers/multipledropdown.html' %}
+        </div>
+        <div class="form-group">
+            <h3>Headquarter Location</h3>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputProvince">Province <b>[required]</b></label>
+            <select id="exampleInputProvince" name="headquaters_province" required onchange="fillInDistricts('{{ districts|escapejs }}');" required>
+                <option disabled selected>choose province</option>
+                {% for province in provinces %}
+                    <option value="{{ province.id }}">{{ province.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputDistrict">Distric <b>[required]</b></label>
+            <select id="exampleInputDistrict" name="headquaters_district" required onchange="fillInSectors('{{ sectors|escapejs }}');" required>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputSector">Sector <b>[required]</b></label>
+            <select id="exampleInputSector" name="headquaters_sector" required onchange="fillInCells('{{ cells|escapejs }}');" required>
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputCell">Cell <b>[required]</b></label>
+            <select id="exampleInputCell" name="headquaters_cell" required onchange="fillInVillages('{{ villages|escapejs }}');">
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputVillage">Village <b>[required]</b></label>
+            <select id="exampleInputVillage" name="headquaters_village" required>
+
+            </select>
         </div>
         <input type="submit" value="Save profile"/>
         <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>

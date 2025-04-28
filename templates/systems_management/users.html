@@ -1,10 +1,14 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Users</p>
-        <button id="car_title_header_and_new_btn_button">+ new user</button>
+        {% if request.user|is_user_permitted:"0002,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new user</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
         <div id="car_table_data" class="table-data">
             <table>
                 <thead>
@@ -13,6 +17,7 @@
                     <th>LASTNAME</th>
                     <th>E-MAIL</th>
                     <th>USER CATEGORY</th>
+                    <th>COMPANY/INDUSTRY</th>
                     <th>DATE JOINED</th>
                     <th>ACCOUNT STATUS</th>
                     <th colspan="4">ACTIONS</th>
@@ -25,6 +30,7 @@
                             <td>{{user.last_name}}</td>
                             <td>{{user.email}}</td>
                             <td>{{user.user_category}}</td>
+                            <td>{{user.user_company.name|upper}}</td>
                             <td>{{ user.date_joined|date:"d-m-Y H:i:s A"}}</td>
                             {% if user.is_active %}
                                 <td>Active</td>
@@ -37,8 +43,16 @@
                                 <td><a href="#" class="publish_button">Activate</a></td>
                             {% endif %}                          
                             <td><a href="{% url 'system_management:user-details' user.id %}" class="view_button">view details</a></td>
-                            <td><a href="" class="update_button">update</a></td>
-                            <td><a href="" class="delete_button">delete</a></td>
+                            {% if request.user|is_user_permitted:"0002,2" %}
+                                <td><a href="" class="update_button">update</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            {% if request.user|is_user_permitted:"0002,4" %}
+                                <td><a href="" class="delete_button">delete</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>

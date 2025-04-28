@@ -1,10 +1,14 @@
 {% extends 'base_layout.html' %}
+{% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
         <p id="car_title_header_and_new_btn_p">List of Economic Sub Sectors</p>
-        <button id="car_title_header_and_new_btn_button">+ new economic sub-sector</button>
+        {% if request.user|is_user_permitted:"0006,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new economic sub-sector</button>
+        {% endif %}
     </div>
     <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
         <div id="car_table_data" class="table-data">
             <table>
                 <thead>
@@ -23,12 +27,13 @@
                             <td>{{ economic_sub_sector.economic_sector.name }}</td>
                             <td>{{ economic_sub_sector.name }}</td>
                             <td>{{ economic_sub_sector.recorded_date|date:"d-m-Y H:i:s A"}}</td>
-                            <td><a href="{% url 'systems_management:delete-sub-economic-sector' economic_sub_sector.id  %}" class="delete_button">delete</a></td>
+                            <td><a class="delete_button" onclick="openModal('{% url 'systems_management:delete-sub-economic-sector' economic_sub_sector.id  %}', 'delete', 'this sub economic sector: {{ economic_sub_sector.name|title }}?')">delete</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>  
         </div>
+        {% include 'helpers/pup-up-modal.html' %}
         <div class="car_new_form_div">
             <form class="car_new_form" method="post" action="">
                 {% csrf_token %}
@@ -42,6 +47,7 @@
                         <label>Select the economic sector <b>[required]</b></label>
                         <div class="datalist-container">
                             <input type="text" id="datalistStyledInput" placeholder="Search or select..." name="economic_sector" autocomplete="off">
+                            <input type="hidden" id="hiddenInput" name="economic_sector"/>
                             <div id="customDropdown" class="custom-dropdown">
                                 {% for economic_sector in economic_sectors %}
                                     <div data-id="{{ economic_sector.id }}">{{economic_sector.id}} || {{economic_sector.name|title}}</div>
@@ -61,6 +67,7 @@
     </div>
     <script>
         const input = document.getElementById('datalistStyledInput');
+        const hiddenInput = document.getElementById('hiddenInput');
         const dropdown = document.getElementById('customDropdown');
         const options = dropdown.querySelectorAll('div');
         
@@ -95,6 +102,7 @@
             option.addEventListener('mousedown', (e) => {
                 e.preventDefault(); // Prevent input blur from happening immediately
                 input.value = option.textContent;
+                hiddenInput.value = option.textContent;
                 dropdown.style.display = 'none';
             });
         });

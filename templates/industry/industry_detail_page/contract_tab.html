@@ -1,10 +1,11 @@
+{% load custom_filters %}
 <div id="contract-industry" class="tab-content">
     <div class="upper-detail-div">
+        {% if contracts|length < 1 %} 
+            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new contract</button>
+        {% endif %}
         <div class="current_price_list table-data">
             <h4>List of Contracts</h4>
-            {% if contracts|length < 1 %}
-                <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new contract</button>
-            {% endif %}
             <table class="table-data">
                 <thead>
                     <th>#</th>
@@ -22,7 +23,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ contract.contract_type|title }}</td>
                             {% if contract.contract_amount %}
-                                <td>{{ contract.contract_amount }} {{ contract.contract_currency }}</td>
+                                <td>{{ contract.contract_amount|format_number }} {{ contract.contract_currency }}</td>
                             {% else %}
                                 <td></td>
                             {% endif %}

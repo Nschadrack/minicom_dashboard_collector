@@ -43,3 +43,8 @@ PRODUCT_PRODUCTION_CAPACITY_PERIOD = (
     ("Month", "Month"),
     ("Year", "Year"),
 )
+
+CURRENCIES = (
+    ("RWF", "RWF"),
+    ("USD", "USD"),
+)

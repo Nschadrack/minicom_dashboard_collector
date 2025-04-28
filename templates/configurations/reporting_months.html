@@ -1,0 +1,29 @@
+{% load custom_filters %}
+<h4>Reporting Months Configurations</h4>			
+<table class="table-data">
+    <thead>
+        <th>#</th>
+        <th>PERIOD</th>
+        <th>STATUS</th>
+        <th colspan="1">Action</th>
+    </thead>
+    <tbody>
+        {% for month in reporting_months %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>Every {{ month.months }} month(s)</td>
+                {% if month.is_active %}
+                    <td>Active</td>
+                {% else %}
+                    <td>Inactive</td>
+                    {% if request.user|is_user_permitted:"0017,2" %}
+                        <td><a class="view_button" onclick="openModal('{% url 'systems_management:activate-months-reporting-period' month.id  %}', 'activate', 'the reporting period range to: {{ month.months }} month(s)? This will modify the reporting period dates starting from next phase of reporting.')">Activate</a></td>
+                    {% else %}
+                        <td></td>
+                    {% ebdif %}
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'helpers/pup-up-modal.html' %}

@@ -1,4 +1,5 @@
 {% extends "base_layout.html" %}
+{% load custom_filters %}
 {% load humanize %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
@@ -17,6 +18,7 @@
 
     <!-- Tab Content -->
     <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
         <!-- Role users Tab -->
         <div id="contract-detail" class="tab-content active">
             <div class="upper-detail-div">
@@ -39,7 +41,7 @@
                     <div>
                         <p><strong>Contract Type: </strong>{{ contract.contract_type|upper }}</p> 
                         <p><strong>Contract Signing Date: </strong>{{ contract.signing_date|date:'d-m-Y' }}</p>
-                        <p><strong>Contract Amount: </strong>{{ contract.contract_amount }} {{ contract.contract_currency }}</p> 
+                        <p><strong>Contract Amount: </strong>{{ contract.contract_amount|format_number }} {{ contract.contract_currency }}</p> 
                         <p><strong>Operational Year(s): </strong>{{ contract.operational_years }}</p> 
                         <p><strong>Contract Document Link:
                             <input type="text" id="myInputToCopy-{{contract.id}}" class="myInputToCopy-cls" value="{{ contract.contract_document_url }}" readonly>

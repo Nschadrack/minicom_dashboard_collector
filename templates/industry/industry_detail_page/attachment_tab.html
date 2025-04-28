@@ -1,9 +1,10 @@
+{% load custom_filters %}
 <div id="attachment-industry" class="tab-content">
     <div class="upper-detail-div">
+        <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new attachment</button>
         <div class="current_price_list table-data">
             <h4>List of Attachments</h4>
-            <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new attachment</button>
-            <table class="table-data">
+            <table>
                 <thead>
                     <th>#</th>
                     <th>ATTACHMENT NAME</th>

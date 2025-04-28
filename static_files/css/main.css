@@ -394,11 +394,12 @@ body{
 
 .tab-content {
     display: none;
-	overflow: auto;
+	/* overflow: auto; */
     padding: 5px 0;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     border-top: none;
 	border-radius: 5px;
+	height: auto;
 }
 
 .tab-content.active {
@@ -462,9 +463,11 @@ body{
 .table-data{
 	width: 100%;
 	height: auto;
+	overflow: auto;
 }
 .table-data table{
 	border: 1px solid var(--scroll_bar_color);
+	/* border-bottom: 1px solid var(--scroll_bar_color); */
 }
 
 .table-data thead th{
@@ -538,12 +541,12 @@ body{
 }
 .table-data table tr .delete_button{
 	background-color: inherit;
-	border: 1px solid var(--darkBlue);
-	color: var(--darkBlue);
+	border: 1px solid var(--darkRed);
+	color: var(--darkRed);
 }
 .table-data table tr .delete_button:hover {
-	background-color: var(--darkBlue);
-	color: var(--aside_bg_hover_a);
+	background-color: var(--darkRed);
+	color: white;
 }
 .table-data table tr .publish_button{
 	background-color: inherit;
@@ -793,13 +796,14 @@ body{
 .current_price_list{
 	width: 100%;
 	background-color: white;
-	padding: 5px 15px;
-	margin-top: 10px;
+	padding: 5px 0;
+	margin-top: 5px;
 }
 .current_price_list h4{
 	border-bottom: 2px double var(--darkBlue);
 	text-align: center;
-	width: 76%;
+	padding-right: 150px;
+	width: 98vw;
 }
 
 #view_price_archive_button{
@@ -810,10 +814,10 @@ body{
 	border: none;
 	outline: none;
 	padding: 5px 10px;
-	background-color: var(--peru_car);
+	background-color: var(--aside-navigation-span-bg);
 	color: var(--aside_fg);
 	margin-right: 10px;
-	margin-top: -30px;
+	margin-top: 0px;
 }
 #price_archive_list{
 	width: 100%;
@@ -1384,4 +1388,12 @@ main:hover{
 
 .closebtnCopyText-cls:hover {
     opacity: 0.8;
+}
+
+.add-report-division-messages{
+	width: 100%;
+	float: left;
+}
+.add-report-division-messages p{
+	line-height: 1.5;
 }
