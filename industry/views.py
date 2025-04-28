@@ -164,7 +164,7 @@ def companies_industries_list(request):
                 headquaters_district = AdministrativeUnit.objects.filter(category="DISTRICT", id=headquaters_district).first().name
                 headquaters_sector = AdministrativeUnit.objects.filter(category="SECTOR", id=headquaters_sector).first().name
                 headquaters_cell = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_cell).first().name
-                headquaters_village = AdministrativeUnit.objects.filter(category="CELL", id=headquaters_village).first().name
+                headquaters_village = AdministrativeUnit.objects.filter(category="VILLAGE", id=headquaters_village).first().name
 
 
                 if len(registeration_date.strip()) < 6:
