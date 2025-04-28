@@ -46,7 +46,7 @@ def industrial_parks_list(request):
             cell = AdministrativeUnit.objects.filter(category="CELL", id=request.POST.get("cell").strip()).first()
 
             if IndustryEconomicZone.objects.filter(name__iexact=name, category__iexact=category).first():
-                messages.info(request, message=f"{name.tittle()} {category.title()} already exists.")
+                messages.info(request, message=f"{name.title()} {category.title()} already exists.")
             else:
                 IndustryEconomicZone.objects.create(
                     name=name,
@@ -58,7 +58,7 @@ def industrial_parks_list(request):
                     sector=sector.name,
                     cell=cell.name
                 )
-                messages.success(request, message=f"{name.tittle()} {category.title()} added successfully!")
+                messages.success(request, message=f"{name.title()} {category.title()} added successfully!")
         else:
             messages.error(request, message="You don't have permission to register industrial park/special economic zone")
         return redirect("industry:parks-list")
