@@ -323,10 +323,39 @@ function fillInDistricts(data){
         }
     }
 }
+function fillInDistrictsTwo(data){
+    let loaded_districts = JSON.parse(data);
+    let districtProvince = document.getElementById("exampleInputProvince2");
+    let targetedDistricts = document.getElementById("exampleInputDistrict2");
+    let selectedIndex = districtProvince.selectedIndex;
+    let selectIndexValue = districtProvince.options[selectedIndex].value;
+    
+    console.log("data: ", loaded_districts);
+     targetedDistricts.innerHTML = "<option disabled selected>choose district</option>"
+    for(const element of loaded_districts) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedDistricts.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
 function fillInSectors(data){
     let loaded_sectors = JSON.parse(data);
     let districtSelected = document.getElementById("exampleInputDistrict");
     let targetedSectors = document.getElementById("exampleInputSector");
+    let selectedIndex = districtSelected.selectedIndex;
+    let selectIndexValue = districtSelected.options[selectedIndex].value;
+
+     targetedSectors.innerHTML = "<option disabled selected>choose sector</option>"
+    for(const element of loaded_sectors) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedSectors.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+function fillInSectors2(data){
+    let loaded_sectors = JSON.parse(data);
+    let districtSelected = document.getElementById("exampleInputDistrict2");
+    let targetedSectors = document.getElementById("exampleInputSector2");
     let selectedIndex = districtSelected.selectedIndex;
     let selectIndexValue = districtSelected.options[selectedIndex].value;
 
@@ -352,7 +381,35 @@ function fillInCells(data){
         }
     }
 }
+function fillInCells2(data){
+    let loaded_cells = JSON.parse(data);
+    let sectorSelected = document.getElementById("exampleInputSector2");
+    let targetedCells = document.getElementById("exampleInputCell2");
+    let selectedIndex = sectorSelected.selectedIndex;
+    let selectIndexValue = sectorSelected.options[selectedIndex].value;
 
+     targetedCells.innerHTML = "<option disabled selected>choose cell</option>"
+    for(const element of loaded_cells) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedCells.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
+
+function fillInVillages2(data){
+    let loaded_villages = JSON.parse(data);
+    let cellSelected = document.getElementById("exampleInputCell2");
+    let targetedVillage = document.getElementById("exampleInputVillage2");
+    let selectedIndex = cellSelected.selectedIndex;
+    let selectIndexValue = cellSelected.options[selectedIndex].value;
+
+    targetedVillage.innerHTML = "<option disabled selected>choose village</option>"
+    for(const element of loaded_villages) {
+        if (element.parent_id.toString() === selectIndexValue) {
+            targetedVillage.innerHTML += `<option value="${element.id}">${element.name}</option>}`
+        }
+    }
+}
 function fillInVillages(data){
     let loaded_villages = JSON.parse(data);
     let cellSelected = document.getElementById("exampleInputCell");

@@ -1,31 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+}
+
+/* Header Styles */
+.header {
+    background-color: #090030;
+    padding: 0.5rem 5%;
+    min-height: 5vh;
+    position: fixed;
+    z-index: 1000;
+    right: 0;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #090030;
+}
+
+.logo img{
+    width: 100%;
+    height: 100%;
+}
+
+.ministry-title {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Navigation Styles */
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00ff88;
+}
+
+.login-btn {
+    background-color: #00ff88;
+    color: #090030 !important;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+
+/* Mobile Menu */
+.menu-toggle {
+    display: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    .menu-toggle {
+        display: block;
+    }
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+}
+
+
 /* CSS for Login Page */
 .login-container {
-    min-height: 95vh;
-    background: #090030;
+    min-height: 100vh;
+    background: linear-gradient(to right, #090030 60%, #1a1a4a);
     padding: 0;
     position: relative;
     width: 100vw;
 }
 
-.logo-header {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-}
-
-.logo {
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    transition: color 0.3s;
-}
-
-.logo:hover {
-    color: #00FF00;
-}
 .messages-box{
     width: 100%;
     max-width: 30rem;
@@ -41,17 +130,21 @@
 }
 .login-box {
     background: white;
-    padding: 3rem;
+    padding: 0;
+    padding-bottom: 2rem;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(39, 35, 35, 0.2);
     width: 100%;
     max-width: 500px;
     clear: both;
     transform: scale(0.95);
     animation: scaleUp 0.5s forwards;
-    margin-top: 4rem;
+    margin-top: 6rem;
     margin-left: auto;
     margin-right: auto;
+}
+.login-box form{
+    margin: 3rem;
 }
 
 @keyframes scaleUp {
@@ -61,10 +154,18 @@
 }
 
 .login-title {
-    color: #0A2540;
+    color: #f3f3f3;
+    background-color: #02478d;
     text-align: center;
     margin-bottom: 2rem;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    border-bottom: 2px double #090030;
+    border-top: none;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding: 5px;
 }
 
 .form-group {
@@ -80,7 +181,7 @@
 .form-group input {
     width: 100%;
     padding: 0.8rem;
-    border: 2px solid #0A2540;
+    border: 1px solid #0A2540;
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s;
@@ -94,17 +195,17 @@
 .login-button {
     width: 100%;
     padding: 1rem;
-    background: #0A2540;
+    background: #02478d;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     transition: background 0.3s;
 }
 
 .login-button:hover {
-    background: #0a2540a2;
+    background: #0371dfea;
 }
 
 .additional-links {

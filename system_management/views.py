@@ -17,6 +17,8 @@ from .utils import (generate_random_code, build_default_password_email_template,
 from reporting.utils import generate_periods
 from .permissions import check_role_permission_on_module_decorator, is_user_permitted
 
+def index(request):
+    return render(request, "index.html")
 
 def login_user(request):
     if request.method == "POST":

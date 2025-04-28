@@ -669,6 +669,60 @@ def contracts_detail(request, contract_id):
         Prefetch("contract_payments", queryset=IndustryContractPayment.objects.prefetch_related("payment_installments"))
     ).first()
 
+    if contract is None:
+            messages.info(request, message="contract could not be found!")
+            return redirect("industry:companies-industries-list")
+        
+    if request.method == "POST":
+        if is_user_permitted(request.user, "0014", 2):
+            payment_modality = request.POST.get("payment_modality")
+            payment_start_date = request.POST.get("payment_start_date")
+            irembo_application_number = request.POST.get("irembo_application_number", None)
+            contract_payment = IndustryContractPayment(
+                contract=contract,
+                total_amount_to_pay=contract.contract_amount,
+                total_amount_unpaid=contract.contract_amount,
+                payment_currency=contract.contract_currency,
+                payment_modality=payment_modality,
+                number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
+                irembo_application_number=irembo_application_number
+            )
+            contract_payment.save()
+            payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
+            payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
+
+            payment_dates = []
+            if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
+                payment_dates.append(payment_start_date)
+            elif payment_modality == "INSTALLMENTS": # create six payment installments
+                payment_dates.append(payment_start_date)
+                for i in range(5): # creating 6 installments dates
+                    payment_dates.append(
+                        payment_dates[i] + relativedelta(years=1)
+                    )
+            else:
+                message.info(request, message="Wrong payment modality selected")
+                redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+                return redirect(f"{redirect_url}#contract-detail")
+            
+            succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
+            if not succeeded:
+                contract_payment.delete()
+                messages.info(request, "Unable to create payment installments")
+            else:
+                if total_amount !=  contract_payment.total_amount_to_pay:
+                    contract_payment.total_amount_to_pay = total_amount
+                    contract_payment.total_amount_unpaid = total_amount
+                    contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
+                    contract_payment.save() 
+                    contract_payment.contract.save() # update the contract as well
+                messages.success(request, message="Payment isntallments created successfully!")
+            
+            redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
+        else:
+            messages.error(request, message="You don't have permission to modify contract/adding payment to the contract")
+        return redirect(f"{redirect_url}#contract-payments")
+
     payment = contract.contract_payments.first()
     if payment is not None:
         payment_installments = payment.payment_installments.all().order_by("expected_payment_date") if payment else ContractPaymentInstallment.objects.none()
@@ -677,60 +731,6 @@ def contracts_detail(request, contract_id):
         installment_payment_amount = None
         unpaid_installments = None
         transaction_to_refund = PaymentInstallmentTransaction.objects.filter(id=payment.transaction_to_refund).first()
-
-        if contract is None:
-            messages.info(request, message="contract could not be found!")
-            return redirect("industry:companies-industries-list")
-        
-        if request.method == "POST":
-            if is_user_permitted(request.user, "0014", 2):
-                payment_modality = request.POST.get("payment_modality")
-                payment_start_date = request.POST.get("payment_start_date")
-                irembo_application_number = request.POST.get("irembo_application_number", None)
-                contract_payment = IndustryContractPayment(
-                    contract=contract,
-                    total_amount_to_pay=contract.contract_amount,
-                    total_amount_unpaid=contract.contract_amount,
-                    payment_currency=contract.contract_currency,
-                    payment_modality=payment_modality,
-                    number_of_installments=1 if payment_modality.upper() == "SINGLE FULL PAYMENT" else 6,
-                    irembo_application_number=irembo_application_number
-                )
-                contract_payment.save()
-                payment_start_date = datetime.strptime(payment_start_date, "%Y-%m-%d")
-                payment_start_date = convert_datetime_timezone(payment_start_date).date() # convert to timezone time
-
-                payment_dates = []
-                if payment_modality == "SINGLE FULL PAYMENT": # create one payment installment
-                    payment_dates.append(payment_start_date)
-                elif payment_modality == "INSTALLMENTS": # create six payment installments
-                    payment_dates.append(payment_start_date)
-                    for i in range(5): # creating 6 installments dates
-                        payment_dates.append(
-                            payment_dates[i] + relativedelta(years=1)
-                        )
-                else:
-                    message.info(request, message="Wrong payment modality selected")
-                    redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-                    return redirect(f"{redirect_url}#contract-detail")
-                
-                succeeded, total_amount, message = create_payment_installment(contract_payment=contract_payment, installments_dates=payment_dates)
-                if not succeeded:
-                    contract_payment.delete()
-                    messages.info(request, "Unable to create payment installments")
-                else:
-                    if total_amount !=  contract_payment.total_amount_to_pay:
-                        contract_payment.total_amount_to_pay = total_amount
-                        contract_payment.total_amount_unpaid = total_amount
-                        contract_payment.contract.contract_amount = contract_payment.total_amount_to_pay  
-                        contract_payment.save() 
-                        contract_payment.contract.save() # update the contract as well
-                    messages.success(request, message="Payment isntallments created successfully!")
-                
-                redirect_url = reverse('industry:contracts-detail', args=(contract.id, ))
-            else:
-                messages.error(request, message="You don't have permission to modify contract/adding payment to the contract")
-            return redirect(f"{redirect_url}#contract-payments")
             
         unpaid_installment = payment_installments.filter(payment_status__in=("PARTIALLY PAID", "NOT PAID")).first()
         if unpaid_installment is None:
@@ -761,7 +761,6 @@ def contracts_detail(request, contract_id):
         installment_payment_amount = 0
         transactions = []
         transaction_to_refund = None
-        messages.info(request, message="Payment could not be found to create payment installments")
 
     context = {
         "contract": contract,

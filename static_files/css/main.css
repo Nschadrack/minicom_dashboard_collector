@@ -1,8 +1,8 @@
 /* variables declaration */
 :root{
-	--aside_bg: #222831;
+	--aside_bg: #083461;
 	--aside_fg: rgba(244,244,244, 0.9);
-	--aside_fg_hover_a: #111;
+	--aside_fg_hover_a: #1a4a7a;
 	--aside_bg_hover_a: #fff;
 	--aside_border_color: rgba(244, 244, 244, 0.3);
 	--main_bg: #e8e8e8;
@@ -10,13 +10,12 @@
 	--main_header_bg: white;
 	--scroll_bar_color: #c5c1c1;
 	--aside-navigation-span-bg: #55f;
-	--navy_blue: #000080;
 	--peru_car: #cd853f;
-	--darkGreen: #0a290a;
-	--darkBlue: #090030;
+	--darkGreen: #062c06;
+	--darkBlue: #02478d;
 	--darkRed:rgb(116, 24, 4);
-	--table_tr_background_color: rgb(230, 230, 230);
-	--table_header_background_color: #DAF1DE;
+	--table_tr_background_color: rgb(128, 168, 201);
+	--table_header_background_color: #a7bcf1;
 	--tr_hover_color: #b6d0ee;
 }
 *{
@@ -167,7 +166,7 @@ vertical-align: middle; /* Align label text with checkbox */
 .industry-action-btns, #view_price_archive_button_override{
 	color: black;
 	background-color: white;
-	border: 2px dotted var(--navy_blue);
+	border: 2px dotted var(--darkBlue);
 	padding: 10px;
 	text-decoration:none;
 	text-align: center;
@@ -187,7 +186,7 @@ vertical-align: middle; /* Align label text with checkbox */
 	color: white;
 }
 .industry-action-btns:hover{
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: white;
 	border: 2px dotted white;
 	padding: 10px;
@@ -229,7 +228,7 @@ body{
 
 #aside_navigation{
 	float: left;
-	width: 20%;
+	width: 14%;
 	height: 100vh;
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
@@ -241,7 +240,7 @@ body{
 }
 #main_load{
 	float: right;
-	width: 80%;
+	width: 86%;
 	height: 100vh;
 	background-color: white;
 	color: var(--main_fg);
@@ -250,18 +249,18 @@ body{
 }
 #main_load_header{
 	width: 100%;
-	height: 6%;
-	background-color: var(--darkBlue);
+	height: 4%;
+	background-color: var(--scroll_bar_color);
 	margin:0px;
 	margin-top: 0px;
-	padding: 5px;
+	padding: 0px;
 	position: fixed;
 	text-align: center;
 	z-index: 100;
 	top: 0px;
 	right: 0px;
-	left: 20%;
-	color: var(--aside_bg_hover_a);
+	left: 14%;
+	color: var(--darkBlue);
 	font-family: 'Times New Roman', Times, serif;
 }
 #main_load_header button{
@@ -274,13 +273,13 @@ body{
 }
 #main_load_data{
 	width: 100%;
-	height: 94%;
+	height: 96%;
 	background-color: var(--aside_bg_hover_a);
-	padding: 25px 15px;
+	padding: 0px 5px;
 }
 #sfjourney_aside_logo{
 	width: 100%;
-	height: 6%;
+	height: 4%;
 	font-size: 12px;
 	padding: 0px;
 	margin: 0px;
@@ -294,14 +293,14 @@ body{
 	float: left;
 }
 #sfjourney_aside_logo img{
-	width: 15%;
+	width: 12%;
 	height: 100%;
 }
 #sfjourney_aside_logo p{
-	width: 78%;
+	width: 88%;
 	color: var(--darkBlue);
-	font-size: 0.9rem;
-	padding-left: 10px;
+	font-size: 0.7rem;
+	padding-left: 7px;
 	font-weight: bold;
 }
 #aside_navigations{
@@ -387,7 +386,7 @@ body{
 }
 
 .tabs .tab-link.active {
-    background-color: var(--navy_blue);
+    background-color: var(--darkBlue);
 	color: white;
     border-bottom: 1px solid #fff;
 }
@@ -444,7 +443,7 @@ body{
 	float: right;
 	width: auto;
 	height: 100%;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	border: none;
 	color: var(--aside_fg);
 	font-weight: bold;
@@ -500,9 +499,9 @@ body{
 	/* border-bottom: 1px solid var(--aside_bg); */
 }
 .table-data table tr .view_button{
-	border: 1px solid var(--navy_blue);
+	border: 1px solid var(--darkBlue);
 	background-color: inherit;
-	color: var(--navy_blue);
+	color: var(--darkBlue);
 }
 .table-data .view_button_selected{
 	background-color: var(--darkRed);
@@ -516,7 +515,7 @@ body{
 	display: none;
 }
 .table-data table tr .view_button:hover {
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_bg_hover_a);
 }
 .table-data table tr button, .table-data table tr a{
@@ -659,7 +658,7 @@ body{
 	width: auto;
 	padding: 8px;
 	border: none;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	margin-top: 15px;
 	margin-left: 10px;
@@ -720,7 +719,7 @@ body{
 	font-weight: normal;
 	border: none;
 	border-radius: 0px;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -732,7 +731,7 @@ body{
 	font-weight: normal;
 	border: none;
 	border-radius: 0px;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -861,7 +860,7 @@ body{
 	font-weight: bold;
 	border: none;
 	border-radius: 3px;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	text-decoration: none;
 }
@@ -958,7 +957,7 @@ body{
 #add_new_car_location{
 	padding: 10px 25px;
 	font-weight: bold;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	border: none;
 	outline: none;
@@ -994,7 +993,7 @@ body{
 	border-radius: 3px;
 	outline: none;
 	border: none;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	font-size: 12px;
 	padding: 10px;
@@ -1016,7 +1015,7 @@ body{
 	border-radius: 3px;
 	outline: none;
 	border: none;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	font-size: 12px;
 	padding: 10px;
@@ -1129,7 +1128,7 @@ main:hover{
 	padding: 10px;
 	border-radius: 5px;
 	border: none;
-	background-color: var(--navy_blue);
+	background-color: var(--darkBlue);
 	width: 100%;
 	margin: auto;
 	margin-top: 20px;

@@ -19,11 +19,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from system_management.views import login_user
+from system_management.views import index
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", login_user),
+    path("", index, name="index"),
     path("dashboard/", include("dashboard.urls", namespace="dashboard")),
     path("system-management/", include("system_management.urls", namespace="system_management")),
     path("industry/", include("industry.urls", namespace="industry")),

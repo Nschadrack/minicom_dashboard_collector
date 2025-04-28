@@ -1,67 +1,253 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
-	<script src="{% static 'js/main.js' %}"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CentralData Insight Hub - Ministry of Trade and Industry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    <title>MINICOM</title>
-  </head>
-  <body>
-	<main class="index">
-        <div class="sections section-one">
-            <img src="{% static 'images/minicom_logo.png' %}" class="index-logo"/>
-            <p class="index-logo">Ministry of Trade and Industry (MINICOM)</p>
-            {% comment %} <h4>You're welcome to Equity Bank Rwanda Enterprise Asset Management</h4> {% endcomment %}
+        body {
+            background-color: #ffffff;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: #090030;
+            padding: 0.5rem 5%;
+            position: fixed;
+            right: 0;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #090030;
+        }
+
+        .logo img{
+            width: 100%;
+            height: 100%;
+        }
+
+        .ministry-title {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Navigation Styles */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        .login-btn {
+            background-color: #00ff88;
+            color: #090030 !important;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, #090030 60%, #1a1a4a);
+            color: white;
+            padding: 6rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color:rgba(0, 255, 136, 0.96);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .cta-btn {
+            background-color: #00ff88;
+            color: #090030;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 5%;
+            background-color: #f8f9fa;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        .footer{
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo"><img src="{% static 'images/minicom_logo.png' %}"/></div>
+            <h1 class="ministry-title">Ministry of Trade and Industry</h1>
         </div>
-        {% include "helpers/message_alert.html" %}
-        <div class="sections section-two">
-            <form class="onboarding-forms login-form" method="POST" action="{% url 'system_management:login' %}" id="login-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label class="form-group-label">E-mail</label><br/>
-                    <input type="email" name="username" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-group-label">Password</label><br/>
-                    <input type="password" name="password" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <input type="submit" value="Login"/>
-                {% comment %} <hr/>
-                <button onclick="showUserRegistrationForm()" id="open-registration" type="button">Open an account</button> {% endcomment %}
-            </form>
-            <form class="onboarding-forms register-form" method="POST" action="" id="registration-form">
-                {% csrf_token %}
-                <legend>Fill out the form below to open an account</legend>
-                <hr/>
-                <div class="form-group">
-                    <label class="form-group-label">E-mail(your username)</label><br/>
-                    <input type="email" name="username" maxlength="100" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-group-label">Firstname</label><br/>
-                    <input type="text" maxlength="60" name="first_name" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-group-label">Lastname</label><br/>
-                    <input type="text"  maxlength="60" name="last_name" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-group-label">Password</label><br/>
-                    <input type="password"  minlength="8" name="password" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <div class="form-group">
-                    <label class="form-group-label">Re-type password</label><br/>
-                    <input type="password"  minlength="8" name="password2" class="form-group-control-input" required autocomplete="off"/>
-                </div>
-                <input type="submit" value="Open an account"/>
-                <hr/>
-                <button onclick="showUserLoginForm()" id="login-button" type="button">Back to login</button>
-            </form>
+        <nav class="nav-links">
+            <a href="#features">Features</a>
+            <a href="{% url 'system_management:login' %}" class="login-btn">Login</a>
+        </nav>
+        <i class="menu-toggle fas fa-bars"></i>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Central Data Insight Hub <br/>- CDIH - </h1>
+            <p>Empowering strategic decisions through comprehensive industrial data intelligence and real-time analytics for enhanced trade management.</p>
+            <a href="{% url 'system_management:login' %}" class="cta-btn">Get Started</a>
         </div>
-	</main>
-  </body>
+        <div class="hero-image">
+            <!-- Add your illustration/image here -->
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3><i class="fas fa-database"></i> Central Data Repository</h3>
+                <p>Secure storage for all industrial and trade-related data</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-chart-line"></i> Advanced Analytics</h3>
+                <p>Real-time insights and predictive analysis tools</p>
+            </div>
+            <div class="feature-card">
+                <h3><i class="fas fa-shield-alt"></i> Secure Access</h3>
+                <p>Role-based access control with enterprise-grade security</p>
+            </div>
+        </div>
+    </section>
+    <section class="footer" id="footer">
+        <strong>Copyright &copy; Ministry of Trade and Industry
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+        </strong>
+    </section>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
 </html>
