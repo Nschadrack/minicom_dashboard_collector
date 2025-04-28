@@ -208,9 +208,9 @@ function toggleNavigations(e){
 
     if (displayCssNav === "none"){
         navigationDiv.style.display = "block";
-        navigationDiv.style.width = "20%";
-        mainLoadDiv.style.width = "80%";
-        mainLoadHeader.style.left = "20%";
+        navigationDiv.style.width = "14%";
+        mainLoadDiv.style.width = "86%";
+        mainLoadHeader.style.left = "14%";
     }else{
         navigationDiv.style.display = "none";
         mainLoadDiv.style.width = "100%";
