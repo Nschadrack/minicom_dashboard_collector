@@ -27,21 +27,26 @@
                         <p><strong>Industry TIN: </strong>{{ industry.tin_number }}</p>   
                         <p><strong>Industry Name: </strong>{{ industry.name|title }}</p>   
                         <p><strong>Category: </strong>{{ industry.category|upper }}</p>    
-                        <p><strong>Industry size: </strong>{{ industry.company_size|upper }}</p>   
+                        <p><strong>Industry Size: </strong>{{ industry.company_size|upper }}</p>
+                        <p><strong>Managing Director: </strong>{{ industry.managing_director_name|title }} </p>   
+                        <p><strong>Managing Director ID/Passport: </strong>{{ industry.managing_director_id }} </p> 
+                        <p><strong>RDB Registration Date: </strong>{{ industry.registeration_date|date:'d-m-Y' }}</p>
+                        <p><strong>Profile Created Date: </strong>{{ industry.profile_created_date|date:'d-m-Y H:i:s A' }}</p><br/><br/>
+ 
                     </div>
                     <div>
                         <p><strong>Phone Contact: </strong>{{ industry.phone_contact }}</p> 
                         <p><strong>E-mail Contact: </strong>{{ industry.email_contact|upper }}</p> 
                         <p><strong>Investor(s) Origin Countries: </strong>{{ industry.investor_origin_country|upper }}</p> 
-                        <p><strong>RDB Registration Date: </strong>{{ industry.registeration_date|date:'d-m-Y' }}</p>
-                        <p><strong>Profile Created Date: </strong>{{ industry.profile_created_date|date:'d-m-Y H:i:s A' }}</p><br/><br/>
+                        <br/>
+                        <h3 style="border-bottom: 2px double black; font-size: 0.9rem; margin-top: 5px;">HEADQUARTER LOCATION</h3>
+                        <p><strong>Province: </strong>{{ industry.headquaters_province|title }}</p> 
+                        <p><strong>District: </strong>{{ industry.headquaters_district|title }}</p> 
+                        <p><strong>Sector: </strong>{{ industry.headquaters_sector|title }}</p> 
+                        <p><strong>Cell: </strong>{{ industry.headquaters_cell|title }}</p> 
+                        <p><strong>Village: </strong>{{ industry.headquaters_village|title }}</p> 
                     </div>
                 </div>
-            </div>
-            <!-- New Assignment Form -->
-            <div class="new-assignment car_new_form_div">
-                <!-- form for recording an allocated plot-->
-                {% comment %} {% include 'industry/allocate_plot_form.html' %} {% endcomment %}
             </div>
         </div>
         <!-- branches Tab -->

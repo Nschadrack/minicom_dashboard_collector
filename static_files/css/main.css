@@ -8,15 +8,15 @@
 	--main_bg: #e8e8e8;
 	--main_fg: black;
 	--main_header_bg: white;
-	--scroll_bar_color: #c5c1c1;
+	--scroll_bar_color: #b9ddfd;
 	--aside-navigation-span-bg: #55f;
 	--peru_car: #cd853f;
 	--darkGreen: #062c06;
 	--darkBlue: #02478d;
 	--darkRed:rgb(116, 24, 4);
 	--table_tr_background_color: rgb(198, 220, 238);
-	--table_header_background_color: #a7bcf1;
-	--tr_hover_color: #b6d0ee;
+	--table_header_background_color: #d6ddf1;
+	--tr_hover_color: #d8e1ec;
 }
 *{
 	box-sizing: border-box;
@@ -171,9 +171,9 @@ vertical-align: middle; /* Align label text with checkbox */
 	text-decoration:none;
 	text-align: center;
 	display: block;
-	margin-bottom: 10px;
+	margin-bottom: 0;
 	width: 90%;
-	text-wrap: no-wrap;
+	text-wrap: nowrap;
 	border-radius: 10px;
 	font-weight: bold;
 }
@@ -237,7 +237,12 @@ body{
 	position: fixed;
 	top: 0px;
 	left: 0px;
+	transition: width 0.3s ease;
 }
+#aside_navigation.open {
+	width: 14%;
+}
+
 #main_load{
 	float: right;
 	width: 86%;
@@ -246,30 +251,36 @@ body{
 	color: var(--main_fg);
 	margin: 0px;
 	padding: 0px;
+	transition: width 0.3s ease;
 }
 #main_load_header{
 	width: 100%;
 	height: 4%;
+	transition: left 0.3s ease;
 	background-color: var(--scroll_bar_color);
-	margin:0px;
-	margin-top: 0px;
-	padding: 0px;
+	margin:0;
+	margin-top: 0;
+	padding: 0;
 	position: fixed;
 	text-align: center;
 	z-index: 100;
-	top: 0px;
-	right: 0px;
+	top: 0;
+	right: 0;
 	left: 14%;
 	color: var(--darkBlue);
 	font-family: 'Times New Roman', Times, serif;
 }
 #main_load_header button{
 	float: left;
+	height: 100%;
+	padding: 0 5px;
+	background-color: var(--scroll_bar_color);
 }
+
 #main_load_header p{
 	text-align: center;
-	font-size: 18px;
-	margin-top: 0px;
+	font-size: 1.2rem;
+	margin-top: 0;
 }
 #main_load_data{
 	width: 100%;
@@ -299,13 +310,12 @@ body{
 #sfjourney_aside_logo p{
 	width: 88%;
 	color: var(--darkBlue);
-	font-size: 0.7rem;
-	padding-left: 7px;
+	font-size: 0.6rem;
+	padding-left: 5px;
 	font-weight: bold;
 }
 #aside_navigations{
-	width: 100%;
-	height: 94%;	
+	height: 94%;
 }
 #aside_navigations:hover{
 	overflow-y: auto;
@@ -313,9 +323,9 @@ body{
 
 #aside_navigations a{
 	width: 100%;
-	padding: 12px;
+	padding: 8px;
 	display: block;
-	font-size: 12px;
+	font-size: 0.8rem;
 	border-top: 1px solid var(--aside_border_color);
 	text-decoration: none;
 	font-family: inherit;
@@ -332,10 +342,10 @@ body{
 }
 #aside_navigations button {
 	width: 100%;
-	padding: 12px;
+	padding: 8px;
 	display: block;
 	border: none;
-	font-size: 12px;
+	font-size: 0.8rem;
 	border-top: 1px solid var(--aside_border_color);
 	text-decoration: none;
 	font-family: inherit;
@@ -364,7 +374,7 @@ body{
 /* styling the tabs */
 /* Tabs Styling */
 #tabs-container {
-    margin-top: 20px;
+    margin-top: 23px;
 }
 
 .tabs {
@@ -373,32 +383,32 @@ body{
     padding: 0;
     margin: 0;
     border-bottom: 1px solid #ccc;
+	float: left;
 }
 
 .tabs .tab-link {
-    padding: 5px 10px;
+    padding: 5px;
     cursor: pointer;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     border-bottom: none;
     margin-right: 0;
     background-color: var(--table_header_background_color);
     border-radius: 0;
+	font-size: 0.8rem;
 }
 
 .tabs .tab-link.active {
     background-color: var(--darkBlue);
 	color: white;
-    border-bottom: 1px solid #fff;
 }
 
 .tab-content {
     display: none;
-	/* overflow: auto; */
     padding: 5px 0;
-    /* border: 1px solid #ccc; */
     border-top: none;
 	border-radius: 5px;
 	height: auto;
+	padding-bottom: 20px;
 }
 
 .tab-content.active {
@@ -429,10 +439,11 @@ body{
 	margin-top: 50px;
 }
 
+
 #car_title_header_and_new_btn p{
 	float: left;
 	padding-top: 5px;
-	font-size: 14px;
+	font-size: 0.9rem;
 	width: auto;
 	height: 100%;
 	margin-top: 0px;
@@ -447,7 +458,7 @@ body{
 	border: none;
 	color: var(--aside_fg);
 	font-weight: bold;
-	font-size: 12px;
+	font-size: 0.8rem;
 	border-radius: 0px;
 	outline: none;
 	margin-top: 0px;
@@ -466,22 +477,22 @@ body{
 }
 .table-data table{
 	border: 1px solid var(--scroll_bar_color);
-	/* border-bottom: 1px solid var(--scroll_bar_color); */
 }
 
 .table-data thead th{
 	background-color: var(--table_header_background_color);
 	color: var(--darkBlue);
-	font-size: 10px;
+	font-size: 0.8rem;
 	text-align: left;
+	font-weight: bold;
 }
 .table-data th,.table-data td, .table-data table{
 	text-align: center;
 	border-collapse: collapse;
 }
 .table-data table th, .table-data table td{
-	padding: 10px;
-	font-size: 12px;
+	padding: 6px;
+	font-size: 0.8rem;
 	white-space: nowrap;
 	text-align: left;
 }
@@ -494,10 +505,7 @@ body{
 	background-color: var(--tr_hover_color);
 	color: var(--darkBlue);
 }
-.table-data table tr:nth-child(even){
-	/* background-color: var(--main_bg); */
-	/* border-bottom: 1px solid var(--aside_bg); */
-}
+
 .table-data table tr .view_button{
 	border: 1px solid var(--darkBlue);
 	background-color: inherit;
@@ -527,7 +535,7 @@ body{
 	font-weight: normal;
 	text-decoration: none;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 0.8rem;
 }
 .table-data table tr .update_button{
 	background-color:inherit;
@@ -698,12 +706,13 @@ body{
 	font-weight: normal;
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	min-height: 250px;
-	max-height: 300px;
+	max-height: auto;
 }
 .car_viewed_for_services_prices div{
 	float: left;
 	width: 50%;
 	cursor: pointer;
+	padding-bottom: 20px;
 }
 .car_viewed_for_services_prices p{
 	font-size: 12px;
@@ -796,27 +805,30 @@ body{
 	width: 100%;
 	background-color: white;
 	padding: 5px 0;
-	margin-top: 5px;
+	padding-top: 0;
+	margin-top: 0;
 }
 .current_price_list h4{
 	border-bottom: 2px double var(--darkBlue);
 	text-align: center;
-	padding-right: 150px;
-	width: 98vw;
+	width: 100%;
+	font-size: 0.9rem;
+	margin-bottom: 2px;
 }
 
 #view_price_archive_button{
 	float: right;
-	font-weight: bold;
-	font-size: 12px;
+	font-weight: normal;
+	font-size: 0.8rem;
 	border-radius: 0px;
 	border: none;
 	outline: none;
 	padding: 5px 10px;
-	background-color: var(--aside-navigation-span-bg);
+	background-color: var(--darkBlue);
 	color: var(--aside_fg);
-	margin-right: 10px;
+	margin-right: 5px;
 	margin-top: 0px;
+	margin-bottom: 0;
 }
 #price_archive_list{
 	width: 100%;
