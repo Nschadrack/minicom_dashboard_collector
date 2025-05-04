@@ -33,8 +33,6 @@
                                 <th>EMAIL</th>
                                 <th>PHONE NUMBER</th>
                                 <th>MANAGING DIRECTOR</th>
-                                <th>MANAGING DIRECTOR(ID/PASSPORT)</th>
-                                <th>HEADQUARTER LOCATION</th>
                                 <th>RDB REGISTRATION</th>
                                 <th colspan="3">Action</th>
                             </thead>
@@ -49,8 +47,6 @@
                                         <td>{{ company_industry_profile.email_contact|lower }}</td>
                                         <td>{{ company_industry_profile.phone_contact|lower }}</td>
                                         <td>{{ company_industry_profile.managing_director_name|title }}</td>
-                                        <td>{{ company_industry_profile.managing_director_id }}</td>
-                                        <td>{{ company_industry_profile.headquaters_province }}, {{ company_industry_profile.headquaters_district }}, {{ company_industry_profile.headquaters_sector }}, {{ company_industry_profile.headquaters_cell }}, {{ company_industry_profile.headquaters_village }}</td>
                                         <td>{{ company_industry_profile.registeration_date|date:'d-m-Y' }}</td>
                                         <td><a href="{% url 'industry:industry-profile-details' company_industry_profile.id %}" class="view_button">view details</a></td>
                                         {% if request.user|is_user_permitted:"0013,2" %}

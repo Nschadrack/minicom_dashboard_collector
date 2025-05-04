@@ -1,13 +1,8 @@
 window.onload=function(){
     var car_title_header_button_clicked = document.getElementById("car_title_header_and_new_btn_button");
-    // var cancelOperation = document.getElementById("cancel_operation");
-    var groupCarRegisterForm = document.getElementsByClassName("car_new_form");
-
     /* Group car page function call */
     car_title_header_button_clicked.addEventListener('click', showNewGroupCarRegiseterForm);
-    // cancelOperation.addEventListener('click', showGroupCarList);
 }
-
 
 // Tabs
 document.addEventListener("DOMContentLoaded", function() {
@@ -80,6 +75,24 @@ document.addEventListener("DOMContentLoaded", function() {
             uploadContainer.style.backgroundColor = '#f8f9fa';
         }
     });
+
+    // aside navigations
+    const navState = localStorage.getItem("navState");
+    const navigationDiv = document.getElementById("aside_navigation");
+    const mainLoadDiv = document.getElementById("main_load");
+    const mainLoadHeader = document.getElementById("main_load_header");
+  
+    // Apply saved state immediately
+    if (navState === "open") {
+      navigationDiv.classList.add("open");
+      mainLoadDiv.style.width = "86%";
+      mainLoadHeader.style.left = "14%";
+    } else {
+      navigationDiv.classList.remove("open");
+      mainLoadDiv.style.width = "100%";
+      mainLoadHeader.style.left = "0";
+    }
+
 });
 
 function showNewGroupCarRegiseterForm(e){
@@ -204,7 +217,7 @@ function toggleNavigations(e){
     var mainLoadDiv = document.getElementById("main_load");
     var mainLoadHeader = document.getElementById("main_load_header");
     var styleNav = window.getComputedStyle(navigationDiv);
-    var displayCssNav = styleNav.getPropertyValue("display")
+    var displayCssNav = styleNav.getPropertyValue("display");
 
     if (displayCssNav === "none"){
         navigationDiv.style.display = "block";
@@ -216,8 +229,8 @@ function toggleNavigations(e){
         mainLoadDiv.style.width = "100%";
         mainLoadHeader.style.left = "0px";
     }
-
 }
+
 
 function showAssignmentTable(value){
     var assignmentTables = document.getElementsByClassName("new-assignment");

@@ -23,7 +23,7 @@ urlpatterns = [
     path("industries/<str:industry_id>/delete/", delete_industry, name="delete-industry"),
     path("industries/<str:industry_id>/add-economic-sector/", add_industry_economic_sectors, name="add-industry-economic-sector"),
     path("industries/<str:industry_id>/upload-attachment/", record_industry_attachment, name="upload-industry-attachment"),
-    path("industries/attachments<str:attachment_id>/delete/", delete_industry_attachment, name="delete-industry-attachment"),
+    path("industries/attachments/<str:attachment_id>/delete/", delete_industry_attachment, name="delete-industry-attachment"),
 
     # industry product
     path("industries/<str:industry_id>/add-product/", add_industry_product, name="add-industry-product"),

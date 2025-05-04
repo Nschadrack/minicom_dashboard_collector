@@ -1,6 +1,7 @@
 {% load custom_filters %}
 <div id="attachment-industry" class="tab-content">
     <div class="upper-detail-div">
+        {% include 'helpers/pup-up-modal.html' %}
         <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new attachment</button>
         <div class="current_price_list table-data">
             <h4>List of Attachments</h4>
@@ -33,7 +34,7 @@
                                 <input type="hidden" id="document-viewer-documentUrl-{{attachment.id}}" value="{{ attachment.document_url }}"/>
                                 <button onclick="DocumentViewerOne.loadDocument('{{ attachment.id }}')"  class="view_button">View Attachment</button>
                             </td>
-                            <td><a href="{% url 'industry:delete-industry-attachment' attachment.id %}" class="delete_button">remove</a></td>
+                            <td><a onclick="openModal('{% url 'industry:delete-industry-attachment' attachment.id %}', 'delete', 'this document: {{ attachment.name|title }}?')" class="delete_button">remove</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
