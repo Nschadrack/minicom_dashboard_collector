@@ -8,6 +8,7 @@
 	<meta http-equiv="Permissions-Policy" content="clipboard-write">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/pagination.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/document_viewer.css' %}"/>
     <title>Ministry of Trade and Industry</title>
   </head>
@@ -15,7 +16,7 @@
     <div id="aside_navigation">
 		<div id="sfjourney_aside_logo">
 			<img src="{% static 'images/minicom_logo.png' %}" id="aside_logo" class="aside-header-data"/>
-			<p class="aside-header-data">Ministry of Trade and Industry</p>
+			<p class="aside-header-data">MINICOM</p>
 		</div>
 		<div id="aside_navigations">
 			<a href="">Overview</a>
@@ -87,7 +88,8 @@
 	<div id="main_load">
 		<div id="main_load_header">
 			<button onclick="toggleNavigations()"><img src="{% static 'images/icon.png' %}" width="20" height="10"/></button>
-			<p>Welcome, {{ request.user.first_name|capfirst }} {{ request.user.last_name|lower|capfirst }}</p>
+			{% comment %} <p>Welcome, {{ request.user.first_name|capfirst }} {{ request.user.last_name|lower|capfirst }}</p> {% endcomment %}
+			<p>Ministry of Trade and Industry || Central Data Insight Hub
 		</div>
 		<div id="main_load_data">
 			{% block main_data_load %}
@@ -97,6 +99,7 @@
 	</div>
 
 	<script src="{% static 'js/main.js' %}" defer></script>
+	<script src="{% static 'js/pagination.js' %}" defer></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" 
 	integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" 
 	crossorigin="anonymous" referrerpolicy="no-referrer"></script>

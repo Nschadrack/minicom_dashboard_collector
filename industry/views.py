@@ -5,8 +5,11 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.conf import settings
 from django.contrib import messages
 from django.db.models import Prefetch
+from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from system_management.models import (User, AdministrativeUnit, 
                                       EconomicSector, EconomicSubSector)
@@ -34,7 +37,9 @@ from  system_management.permissions import (check_role_permission_on_module_deco
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0012", 3)
 def industrial_parks_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0012", 1):
             name = request.POST.get("name")
             category = request.POST.get("category")
@@ -62,19 +67,47 @@ def industrial_parks_list(request):
         else:
             messages.error(request, message="You don't have permission to register industrial park/special economic zone")
         return redirect("industry:parks-list")
-    industrial_parks = IndustryEconomicZone.objects.all().order_by("category", "name")
+    
     provinces = AdministrativeUnit.objects.filter(category="PROVINCE").order_by("name")
     districts = AdministrativeUnit.objects.filter(category="DISTRICT").order_by("name")
     sectors = AdministrativeUnit.objects.filter(category="SECTOR").order_by("name")
     cells = AdministrativeUnit.objects.filter(category="CELL").order_by("name")
+
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'industrial_parks_list')
+    page_number = request.GET.get('page', 1)
+    ordering = ("category", "name")
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(IndustryEconomicZone.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    industrial_parks = IndustryEconomicZone.objects.filter(id__in=current_ids).order_by(*ordering)
+    
     context = {
         "industrial_parks": industrial_parks,
+        "page": current_page,
+        'tab_type': active_tab,
         "provinces": provinces,
         "districts": json.dumps(list(districts.values())),
         "sectors": json.dumps(list(sectors.values())),
         "cells": json.dumps(list(cells.values())),
     }
-    return render(request, "industry/industrial_parks_list.html", context)
+    return render(request, "industry/park/industrial_parks_list.html", context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -99,7 +132,7 @@ def industrial_park_detail(request, park_id):
 
     }
 
-    return render(request, "industry/industrial_park_details.html", context=context)
+    return render(request, "industry/park/industrial_park_details.html", context=context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -139,7 +172,9 @@ def record_partitioned_plot(request, park_id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0013", 3)
 def companies_industries_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0013", 1):
             try:
                 name = request.POST.get("name", "").strip()
@@ -215,16 +250,56 @@ def companies_industries_list(request):
         redirect_url = reverse('industry:companies-industries-list')
         return redirect(f"{redirect_url}#companies-industries-profiles")
         
-    companies_industries_profiles = CompanyProfile.objects.all().order_by("name")
-    park_industries = CompanySite.objects.all().order_by("company__name")
     provinces = AdministrativeUnit.objects.filter(category="PROVINCE").order_by("name")
     districts = AdministrativeUnit.objects.filter(category="DISTRICT").order_by("name")
     sectors = AdministrativeUnit.objects.filter(category="SECTOR").order_by("name")
     cells = AdministrativeUnit.objects.filter(category="CELL").order_by("name")
     villages = AdministrativeUnit.objects.filter(category="VILLAGE").order_by("name")
+
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    industry_profiles_tab_type = "industry_profiles_tab"
+    industries_tab_type = "industries_tab"
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_profile_ids = f"{industry_profiles_tab_type}_ids"
+    cache_key_industries_ids = f"{industries_tab_type}_ids"
+    ordered_profile_ids = cache.get(cache_key_profile_ids)
+    ordered_industry_ids = cache.get(cache_key_industries_ids)
+
+    if page_number == 1 or not ordered_profile_ids or not ordered_industry_ids:
+        ordered_profile_ids = list(CompanyProfile.objects.values_list('id', flat=True))
+        ordered_industry_ids = list(CompanySite.objects.values_list('id', flat=True))
+        cache.set(cache_key_profile_ids, ordered_profile_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_industries_ids, ordered_industry_ids, CACHE_TIMEOUT)
+    
+
+    # Paginate IDs
+    profile_paginator = Paginator(ordered_profile_ids, PAGE_SIZE)
+    industry_paginator = Paginator(ordered_industry_ids, PAGE_SIZE)
+    try:
+        current_profile_page = profile_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_profile_page = profile_paginator.page(1)
+
+    try:
+        current_industry_page = industry_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_industry_page = industry_paginator.page(1)
+
+    current_profile_ids = current_profile_page.object_list
+    current_industry_ids = current_industry_page.object_list
+
+    companies_industries_profiles = CompanyProfile.objects.filter(id__in=current_profile_ids).order_by("name")
+    park_industries = CompanySite.objects.filter(id__in=current_industry_ids).order_by("company__name")
+
     context = {
         "companies_industries_profiles": companies_industries_profiles,
         "park_industries": park_industries,
+        "industries_tab_type": industries_tab_type,
+        "industry_profile_tab_type": industry_profiles_tab_type,
+        "industry_page": current_industry_page,
+        "industry_profile_page": current_profile_page,
         "search_items": json.dumps(load_countries()),
         "parent": "none",
         "provinces": provinces,
@@ -233,7 +308,7 @@ def companies_industries_list(request):
         "cells": json.dumps(list(cells.values())),
         "villages": json.dumps(list(villages.values()))
     }
-    return render(request, "industry/industries_companies.html", context=context)
+    return render(request, "industry/industries/industries_companies.html", context=context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -520,7 +595,9 @@ def delete_industry_attachment(request, attachment_id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0015", 3)
 def land_request(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0015", 1):
             try:
                 land_owner = request.POST.get("land_owner")
@@ -564,19 +641,44 @@ def land_request(request):
         else:
             messages.error(request, message="You don't have permission to add land information request")
 
-    land_requests = LandRequestInformation.objects.all().order_by("request_date", "recorded_date")
     company_profiles = CompanyProfile.objects.all().order_by("name")
     parks = IndustryEconomicZone.objects.all()
 
     zones, _ = get_zones_and_partitioned_plots_in_park()
 
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'land_information_list')
+    page_number = request.GET.get('page', 1)
+    ordering = ("request_date", "recorded_date")
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(LandRequestInformation.objects.order_by(*ordering).values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+    
+    current_ids = current_page.object_list
+    land_requests = LandRequestInformation.objects.filter(id__in=current_ids).order_by(*ordering)
+
     context = {
         "zones": json.dumps(zones),
         "parks": parks,
+        "page": current_page,
         "company_profiles": company_profiles,
         "land_requests": land_requests
     }
-    return render(request, "industry/land_request_list.html", context)
+    return render(request, "industry/land_request/land_request_list.html", context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -616,7 +718,7 @@ def land_request_detail(request, land_request_id, flag=None):
         "zones": json.dumps(zones),
         "partitioned_plots": json.dumps(partitioned_plots)
     }
-    return render(request, "industry/land_request_details.html", context)
+    return render(request, "industry/land_request/land_request_details.html", context)
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -799,16 +901,84 @@ def make_payment_transaction(request):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0014", 3)
 def main_indstry_contracts(request):
-    contracts = list(IndustryContract.objects.all().order_by("signing_date"))
-    payments = list(IndustryContractPayment.objects.all().order_by("next_payment_date"))
-    payment_installments = list(ContractPaymentInstallment.objects.all().order_by("expected_payment_date"))
-    transactions = list(PaymentInstallmentTransaction.objects.all().order_by("payment_date"))
+    page_number = request.GET.get('page', 1)
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    contract_tab_type = "main_contracts_tab"
+    payments_tab_type = "main_payments_tab"
+    payment_installments_tab_type = "main_payment_installments_tab"
+    transactions_tab_type = "main_transactions_tab"
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_contract_ids = f"{contract_tab_type}_ids"
+    cache_key_payment_ids = f"{payments_tab_type}_ids"
+    cache_key_payment_installments_ids = f"{payment_installments_tab_type}_ids"
+    cache_key_transactions_ids = f"{transactions_tab_type}_ids"
+
+    ordered_contract_ids = cache.get(cache_key_contract_ids)
+    ordered_payment_ids = cache.get(cache_key_payment_ids)
+    ordered_payment_installment_ids = cache.get(cache_key_payment_installments_ids)
+    ordered_transactions_ids = cache.get(cache_key_transactions_ids)
+
+    if page_number == 1 or not ordered_contract_ids or not ordered_payment_ids or not ordered_payment_installment_ids or not ordered_transactions_ids:
+        ordered_contract_ids = list(IndustryContract.objects.values_list('id', flat=True))
+        ordered_payment_ids = list(IndustryContractPayment.objects.values_list('id', flat=True))
+        ordered_payment_installment_ids = list(ContractPaymentInstallment.objects.values_list('id', flat=True))
+        ordered_transactions_ids = list(PaymentInstallmentTransaction.objects.values_list('id', flat=True))
+        cache.set(cache_key_contract_ids, ordered_contract_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_payment_ids, ordered_payment_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_payment_installments_ids, ordered_payment_installment_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_transactions_ids, ordered_transactions_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    contract_paginator = Paginator(ordered_contract_ids, PAGE_SIZE)
+    payment_paginator = Paginator(ordered_payment_ids, PAGE_SIZE)
+    payment_installment_paginator = Paginator(ordered_payment_installment_ids, PAGE_SIZE)
+    transaction_paginator = Paginator(ordered_transactions_ids, PAGE_SIZE)
+
+    try:
+        current_contract_page = contract_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_contract_page = contract_paginator.page(1)
+
+    try:
+        current_payment_page = payment_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_payment_page = payment_paginator.page(1)
+
+    try:
+        current_payment_installment_page = payment_installment_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_payment_installment_page = payment_installment_paginator.page(1)
+
+    try:
+        current_transaction_page = transaction_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_transaction_page = transaction_paginator.page(1)
+
+    current_contract_ids = current_contract_page.object_list
+    current_payment_ids = current_payment_page.object_list
+    current_payment_installment_ids = current_payment_installment_page.object_list
+    current_transaction_ids = current_transaction_page.object_list
+
+    contracts = IndustryContract.objects.filter(id__in=current_contract_ids).order_by("signing_date")
+    payments = IndustryContractPayment.objects.filter(id__in=current_payment_ids).order_by("next_payment_date")
+    payment_installments = ContractPaymentInstallment.objects.filter(id__in=current_payment_installment_ids).order_by("expected_payment_date")
+    transactions = PaymentInstallmentTransaction.objects.filter(id__in=current_transaction_ids).order_by("payment_date")
 
     context = {
         "contracts": contracts,
         "payments": payments,
         "payment_installments": payment_installments,
-        "transactions": transactions
+        "transactions": transactions,
+        "contract_page": current_contract_page,
+        "contract_tab_type": contract_tab_type,
+        "payment_tab_type": payments_tab_type,
+        "payment_page": current_payment_page,
+        "installments_tab_type": payment_installments_tab_type,
+        "installments_page": current_payment_installment_page,
+        "transaction_tab_type": transactions_tab_type,
+        "transaction_page": current_transaction_page
     }
 
     return render(request, "industry/contract/main_contracts_information.html", context)

@@ -26,6 +26,9 @@ class IndustryEconomicZone(models.Model):
 
     class Meta:
         db_table = "IndustryEconomicZones"
+        indexes = [
+            models.Index(fields=['category', 'name', 'id']),
+        ]
     
     def __str__(self):
         return f"{self.name} {self.category.lower()}"
@@ -315,8 +318,5 @@ class PaymentInstallmentTransaction(models.Model):
 
     class Meta:
         db_table = "PaymentInstallmentTransactions"
-
-
-
 
 

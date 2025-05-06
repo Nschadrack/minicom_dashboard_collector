@@ -56,9 +56,9 @@
                         </tr>
                     {% endfor %}
                 </tbody>
-            </table>
-            
+            </table> 
         </div>
+        {% include 'helpers\pagination\single_tab.html' %}
         <div class="car_new_form_div">
             <form class="car_new_form" method="post" action="">
                 {% csrf_token %}
