@@ -115,20 +115,70 @@ def industrial_parks_list(request):
 def industrial_park_detail(request, park_id):
     industrial_park = IndustryEconomicZone.objects.filter(id=park_id).first()
     zones = IndustrialZone.objects.all().order_by("name")
-    park_partitioned_plots = PartitionedPlot.objects.filter(park=industrial_park).order_by("plot_number", "zone__name", "-is_allocated")
 
     if industrial_park is None:
         return redirect("industry:parks-list") 
     
-    allocated_plots = AllocatedPlot.objects.filter(park=industrial_park).order_by("-recorded_date")
-    park_industries = CompanySite.objects.filter(allocated_plot__in=allocated_plots).order_by("company__name")
+    page_number = request.GET.get('page', 1)
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    partitioned_plots_tab_type = "partitioned_plots_tab"
+    allocated_plots_tab_type = "allocated_plots_tab"
+    industries_in_park_tab_type = "industries_in_park_tab"
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_partitioned_plots_ids = f"{partitioned_plots_tab_type}_ids"
+    cache_key_allocated_plots_ids = f"{allocated_plots_tab_type}_ids"
+    cache_key_industries_in_park_ids = f"{industries_in_park_tab_type}_ids"
+    ordered_partitioned_plots_ids = cache.get(cache_key_partitioned_plots_ids)
+    ordered_allocated_plots_ids = cache.get(cache_key_allocated_plots_ids)
+    ordered_industry_in_park_ids = cache.get(cache_key_industries_in_park_ids)
+
+    if page_number == 1 or not ordered_partitioned_plots_ids or not ordered_allocated_plots_ids or not ordered_industry_in_park_ids:
+        ordered_partitioned_plots_ids = list(PartitionedPlot.objects.filter(park=industrial_park).values_list('id', flat=True))
+        ordered_allocated_plots_ids = list(AllocatedPlot.objects.filter(park=industrial_park).values_list('id', flat=True))
+        ordered_industry_in_park_ids = list(CompanySite.objects.filter(allocated_plot__id__in=ordered_allocated_plots_ids).values_list('id', flat=True))
+        cache.set(cache_key_partitioned_plots_ids, ordered_partitioned_plots_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_allocated_plots_ids, ordered_allocated_plots_ids, CACHE_TIMEOUT)
+        cache.set(cache_key_industries_in_park_ids, ordered_industry_in_park_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    partitioned_plot_paginator = Paginator(ordered_partitioned_plots_ids, PAGE_SIZE)
+    allocated_plot_paginator = Paginator(ordered_allocated_plots_ids, PAGE_SIZE)
+    industry_paginator = Paginator(ordered_industry_in_park_ids, PAGE_SIZE)
+
+    try:
+        current_partitioned_plot_page = partitioned_plot_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_partitioned_plot_page = partitioned_plot_paginator.page(1)
+    
+    try:
+        current_allocated_plot_page = allocated_plot_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_allocated_plot_page = allocated_plot_paginator.page(1)
+
+    try:
+        current_industry_page = industry_paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_industry_page = industry_paginator.page(1)
+
+    current_partitioned_plot_ids = current_partitioned_plot_page.object_list
+    current_allocated_plot_ids = current_allocated_plot_page.object_list
+    current_industry_ids = current_industry_page.object_list
+
+    park_partitioned_plots = PartitionedPlot.objects.filter(id__in=current_partitioned_plot_ids).order_by("plot_number", "zone__name", "-is_allocated")
+    allocated_plots = AllocatedPlot.objects.filter(id__in=current_allocated_plot_ids).order_by("-recorded_date")
+    park_industries = CompanySite.objects.filter(id__in=current_industry_ids).order_by("company__name")
 
     context = {
         "industrial_park": industrial_park,
         "park_partitioned_plots": park_partitioned_plots,
+        "partitioned_plots_page": current_partitioned_plot_page,
         "zones": zones,
         "allocated_plots": allocated_plots,
+        "allocated_plots_page": current_allocated_plot_page,
         "park_industries": park_industries,
+        "industries_in_park_page": current_industry_page
 
     }
 
