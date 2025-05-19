@@ -85,8 +85,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Apply saved state immediately
     if (navState === "open") {
       navigationDiv.classList.add("open");
-      mainLoadDiv.style.width = "86%";
-      mainLoadHeader.style.left = "14%";
+      mainLoadDiv.style.width = "89%";
+      mainLoadHeader.style.left = "11%";
     } else {
       navigationDiv.classList.remove("open");
       mainLoadDiv.style.width = "100%";
@@ -221,9 +221,9 @@ function toggleNavigations(e){
 
     if (displayCssNav === "none"){
         navigationDiv.style.display = "block";
-        navigationDiv.style.width = "14%";
-        mainLoadDiv.style.width = "86%";
-        mainLoadHeader.style.left = "14%";
+        navigationDiv.style.width = "11%";
+        mainLoadDiv.style.width = "89%";
+        mainLoadHeader.style.left = "11%";
     }else{
         navigationDiv.style.display = "none";
         mainLoadDiv.style.width = "100%";

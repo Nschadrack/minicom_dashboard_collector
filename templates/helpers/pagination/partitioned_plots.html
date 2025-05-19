@@ -1,0 +1,27 @@
+{% if partitioned_plots_page.has_previous or partitioned_plots_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if partitioned_plots_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ partitioned_plots_tab_type }}&page=1#partitioned-plots" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ partitioned_plots_tab_type }}&page={{ partitioned_plots_page.previous_page_number }}#partitioned-plots" 
+                   data-page="{{ partitioned_plots_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ partitioned_plots_page.number }} of {{ partitioned_plots_page.paginator.num_pages }}
+            </span>
+
+            {% if partitioned_plots_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ partitioned_plots_tab_type }}&page={{ partitioned_plots_page.next_page_number }}#partitioned-plots" 
+                   data-page="{{ partitioned_plots_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ partitioned_plots_tab_type }}&page={{ partitioned_plots_page.paginator.num_pages }}#partitioned-plots" 
+                   data-page="{{ partitioned_plots_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}

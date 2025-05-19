@@ -70,11 +70,12 @@
                         {% endif %}
                     {% endif %}						
                 </div>
+                {% include 'helpers\pagination\industry_profiles_tab.html' %}
             </div>
             <!-- New Assignment Form -->
             <div class="new-assignment car_new_form_div">
                 <!-- form for recording a company/industry-->
-                {% include 'industry/company_industry_form.html' %}
+                {% include 'industry/industries/company_industry_form.html' %}
             </div>
         </div>
 
@@ -143,11 +144,12 @@
                         </tbody>
                     </table>
                 </div>
+                {% include 'helpers\pagination\industries_tab.html' %}
             </div>
             <!-- New Assignment Form -->
             <div class="new-assignment car_new_form_div">
                 <!-- form for recording a company/industry-->
-                {% include 'industry/add_industry_out_of_park.html' %}
+                {% include 'industry/industries/add_industry_out_of_park.html' %}
             </div>
         </div>
     </div>

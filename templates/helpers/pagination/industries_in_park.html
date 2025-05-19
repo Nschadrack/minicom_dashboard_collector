@@ -1,0 +1,27 @@
+{% if industries_in_park_page.has_previous or industries_in_park_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if industries_in_park_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ industries_in_park_tab_type }}&page=1#company-industries" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ industries_in_park_tab_type }}&page={{ industries_in_park_page.previous_page_number }}#company-industries" 
+                   data-page="{{ industries_in_park_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ industries_in_park_page.number }} of {{ industries_in_park_page.paginator.num_pages }}
+            </span>
+
+            {% if industries_in_park_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ industries_in_park_tab_type }}&page={{ industries_in_park_page.next_page_number }}#company-industries" 
+                   data-page="{{ industries_in_park_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ industries_in_park_tab_type }}&page={{ industries_in_park_page.paginator.num_pages }}#company-industries" 
+                   data-page="{{ industries_in_park_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}

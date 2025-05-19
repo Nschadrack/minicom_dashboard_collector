@@ -1,6 +1,9 @@
 import json
 import os
 from datetime import datetime, timedelta
+from django.conf import settings
+from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -75,7 +78,9 @@ def logout_user(request):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0002", 3)
 def users_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0002", 1):
             user_category = request.POST.get("user_category").strip()
             first_name = request.POST.get("first_name").strip()
@@ -104,10 +109,34 @@ def users_list(request):
             messages.error(request, message="You don't have permission to create user")
         return redirect("system_management:users-list")
 
-    users = User.objects.all().order_by("-date_joined")
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'users_list')
+    ordering = ("-date_joined", )
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(User.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    users = User.objects.filter(id__in=current_ids).order_by(*ordering)
     
     context = {
-        "users": users
+        "users": users,
+        "page": current_page,
+        'tab_type': active_tab,
     }
     return render(request, "systems_management/users.html", context=context)
 
@@ -132,7 +161,9 @@ def user_detail(request, user_id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0003", 3)
 def roles_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0003", 1):
             role_name = request.POST.get("role_name", "").strip()
             role = Role.objects.filter(name__iexact=role_name).first()
@@ -145,9 +176,34 @@ def roles_list(request):
             messages.error(request, message="You don't have permission to create the system role")
         return redirect("system_management:roles-list")
 
-    roles = Role.objects.all().order_by("name")
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'roles_list')
+    ordering = ("name", )
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(Role.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    roles = Role.objects.filter(id__in=current_ids).order_by(*ordering)
+
     context = {
         "roles": roles,
+        "page": current_page,
+        'tab_type': active_tab,
     }
 
     return render(request, "systems_management/roles.html", context)
@@ -232,7 +288,9 @@ def assign_role_permissions(request, role_id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0004", 3)
 def zones_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0004", 1):
             zone_name = request.POST.get("zone_name")
             zone = IndustrialZone.objects.filter(name__iexact=zone_name).first()
@@ -246,9 +304,33 @@ def zones_list(request):
 
         return redirect("system_management:zones-list")
 
-    zones = IndustrialZone.objects.all().order_by("name")
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'industrial_zonings_list')
+    ordering = ("name", )
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(IndustrialZone.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    zones = IndustrialZone.objects.filter(id__in=current_ids).order_by(*ordering)
     context = {
         "zones": zones,
+        "page": current_page,
+        'tab_type': active_tab,
     }
 
     return render(request, "systems_management/zones.html", context)
@@ -257,7 +339,9 @@ def zones_list(request):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0005", 3)
 def economic_sectors_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0005", 1):
             name = request.POST.get("name")
             sector = EconomicSector.objects.filter(name__iexact=name).first()
@@ -271,9 +355,33 @@ def economic_sectors_list(request):
 
         return redirect("system_management:economic-sectors-list")
 
-    economic_sectors = EconomicSector.objects.all().order_by("name")
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'economic_sectors_list')
+    ordering = ("name", )
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(EconomicSector.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    economic_sectors = EconomicSector.objects.filter(id__in=current_ids).order_by(*ordering)
     context = {
         "economic_sectors": economic_sectors,
+        "page": current_page,
+        'tab_type': active_tab,
     }
 
     return render(request, "systems_management/economic_sectors.html", context)
@@ -301,7 +409,9 @@ def delete_economic_sector(request, id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0006", 3)
 def economic_sub_sectors_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0006", 1):
             name = request.POST.get("name")
             isic_code = request.POST.get("isic_code")
@@ -319,11 +429,37 @@ def economic_sub_sectors_list(request):
             messages.error(request, message="You don't have permission to record sub economic sector")
         return redirect("system_management:economic-sub-sectors-list")
 
-    economic_sub_sectors = EconomicSubSector.objects.all().order_by("economic_sector__name", "name")
     economic_sectors = EconomicSector.objects.all().order_by("name")
+
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'economic_sub_sectors_list')
+    ordering = ("economic_sector__name", "name")
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(EconomicSubSector.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    economic_sub_sectors = EconomicSubSector.objects.filter(id__in=current_ids).order_by(*ordering)
+
     context = {
         "economic_sub_sectors": economic_sub_sectors,
-        "economic_sectors": economic_sectors
+        "economic_sectors": economic_sectors,
+        "page": current_page,
+        'tab_type': active_tab,
     }
 
     return render(request, "systems_management/economic_sub_sector.html", context)
@@ -351,7 +487,9 @@ def delete_sub_economic_sector(request, id):
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0016", 3)
 def products_list(request):
+    page_number = request.GET.get('page', 1)
     if request.method == "POST":
+        page_number = 1
         if is_user_permitted(request.user, "0016", 1):
             name = request.POST.get("name")
             economic_sector = request.POST.get("economic_sector", "-1||").split("||")[0]
@@ -388,11 +526,37 @@ def products_list(request):
 
     economic_sub_sectors = EconomicSubSector.objects.all().order_by("economic_sector__name", "name")
     economic_sectors = EconomicSector.objects.all().order_by("name")
-    products = Product.objects.all().order_by("sub_sector__economic_sector__name", "sub_sector__name", "product_code", "name")
+
+    CACHE_TIMEOUT = settings.CACHE_TIMEOUT
+    PAGE_SIZE = settings.PAGE_SIZE
+    active_tab = request.GET.get('tab', 'economic_sub_sectors_list')
+    ordering = ("sub_sector__economic_sector__name", "sub_sector__name", "product_code", "name")
+
+    # Layer 1: Cache ordered ID list with versioning
+    cache_key_ids = f"{active_tab}_ids"
+    ordered_ids = cache.get(cache_key_ids)
+    
+    if not ordered_ids or page_number == 1:
+        # Fetch IDs with proper ordering
+        ordered_ids = list(Product.objects.values_list('id', flat=True))
+        cache.set(cache_key_ids, ordered_ids, CACHE_TIMEOUT)
+    
+    # Paginate IDs
+    paginator = Paginator(ordered_ids, PAGE_SIZE)
+    try:
+        current_page = paginator.page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        current_page = paginator.page(1)
+
+    current_ids = current_page.object_list
+    products = Product.objects.filter(id__in=current_ids).order_by(*ordering)
+
     context = {
         "economic_sub_sectors": economic_sub_sectors,
         "economic_sectors": economic_sectors,
-        "products": products
+        "products": products,
+        "page": current_page,
+        'tab_type': active_tab
     }
 
     return render(request, "systems_management/products.html", context)

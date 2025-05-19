@@ -1,0 +1,27 @@
+{% if installments_page.has_previous or installments_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if installments_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ installments_tab_type }}&page=1#installments" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ installments_tab_type }}&page={{ installments_page.previous_page_number }}#installments" 
+                   data-page="{{ installments_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ installments_page.number }} of {{ installments_page.paginator.num_pages }}
+            </span>
+
+            {% if installments_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ installments_tab_type }}&page={{ installments_page.next_page_number }}#installments" 
+                   data-page="{{ installments_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ installments_tab_type }}&page={{ installments_page.paginator.num_pages }}#installments" 
+                   data-page="{{ installments_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
