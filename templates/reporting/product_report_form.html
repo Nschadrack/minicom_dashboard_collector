@@ -159,7 +159,15 @@
                             {% endif %}
                         </div>
                     </div>
-
+                    <div class="form-section">
+                        <h3>Raw Materials Used In Production</h3>
+                        <div class="input-group">
+                            <label>How many percentage(%) of imported raw materials used in this production? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" min="0" max="100" required name="imported_raw_material_perc">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-grid">
                     {% if enable_justification %}
                         <div class="form-section">
                             <h3 style="color: red;">Reported Production Capacity Exceeded Production Installed Capacity</h3>
@@ -169,6 +177,30 @@
                             </div>
                         </div>
                     {% endif %}
+                </div>
+                <div class="form-grid">
+                    <div class="form-section">
+                        <h3>Production Sales</h3>
+                        <div class="input-group">
+                            <label>What is the volume of this production was sold locally? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" min="0" required name="production_local_sales_volume">
+                        </div>
+                        <div class="input-group">
+                            <label>What is the volume of this production was exported? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" min="0" required name="production_export_volume">
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <h3>Unsold Production</h3>
+                        <div class="input-group">
+                            <label>What is the volume of this production was not sold? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" min="0" required name="production_not_sold_yet_volume">
+                        </div>
+                        <div class="input-group">
+                            <label>What is the volume of this production was disposed? <b>[Required]</b></label><br/>
+                            <input type="number" step="0.01" min="0" required name="production_disposed">
+                        </div>
+                    </div>
                 </div>
                 <div class="input-group" style="text-align: center; margin-top: 2rem;">
                     <button type="submit" class="submit-btn">Submit Report</button>

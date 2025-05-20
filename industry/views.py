@@ -15,12 +15,12 @@ from system_management.models import (User, AdministrativeUnit,
                                       EconomicSector, EconomicSubSector)
 from system_management.utils import generate_random_code
 from .models import (IndustryEconomicZone, PartitionedPlot, 
-                     CompanyProfile, CompanySite, 
-                     LandRequestInformation, IndustryProduct,
-                     AllocatedPlot, IndustryAttachment, 
-                     IndustryEconomicSector, ContractPaymentInstallment,
-                     IndustryContract, IndustryContractPayment, 
-                     PaymentInstallmentTransaction)
+                    CompanyProfile, CompanySite, 
+                    LandRequestInformation, IndustryProduct,
+                    AllocatedPlot, IndustryAttachment, 
+                    IndustryEconomicSector, ContractPaymentInstallment,
+                    IndustryContract, IndustryContractPayment, 
+                    PaymentInstallmentTransaction)
 from system_management.models import IndustrialZone, Product
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
@@ -529,6 +529,7 @@ def add_industry_product(request, industry_id):
             production_installed_capacity = request.POST.get("production_installed_capacity")
             production_installed_capacity_unit = request.POST.get("production_installed_capacity_unit")
             production_installed_capacity_period = request.POST.get("production_installed_capacity_period")
+            production_line_tech = request.POST.get("production_line_tech")
 
             
             if product and len(product.strip()) > 5 and len(product.split("||")) > 1:
@@ -546,7 +547,8 @@ def add_industry_product(request, industry_id):
                         packaging_material=packaging_material,
                         production_installed_capacity=production_installed_capacity,
                         production_installed_capacity_unit=production_installed_capacity_unit,
-                        production_installed_capacity_period=production_installed_capacity_period
+                        production_installed_capacity_period=production_installed_capacity_period,
+                        production_line_tech=production_line_tech
                     )
                     message = f"New product has been added for {industry.company.name}"
                     messages.success(request, message=message)

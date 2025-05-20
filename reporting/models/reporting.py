@@ -27,6 +27,11 @@ class IndustryProductReport(models.Model):
     reported_on = models.DateTimeField(auto_now_add=True)
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     justification_production_capacity = models.TextField(blank=True, null=True)
+    imported_raw_material_perc = models.DecimalField(decimal_places=2, max_digits=6, null=False, blank=False)
+    production_local_sales_volume = models.DecimalField(decimal_places=2, max_digits=12,  null=False, blank=False)
+    production_export_volume = models.DecimalField(decimal_places=2, max_digits=12,  null=False, blank=False)
+    production_not_sold_yet_volume = models.DecimalField(decimal_places=2, max_digits=12,  null=False, blank=False)
+    production_disposed = models.DecimalField(decimal_places=2, max_digits=12,  null=False, blank=False)
 
     class Meta:
         db_table = "IndustryProductReports"

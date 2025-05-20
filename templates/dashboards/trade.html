@@ -56,7 +56,7 @@
                 </tbody>
             </table>
         </div>
-        {% include 'helpers\pagination\single_tab.html' %}
+        {% include 'helpers/pagination/single_tab.html' %}
         <div class="car_new_form_div">
             <form class="car_new_form" method="post" action="{% url 'minicom_dashboards:trade-dashboards' %}">
                 {% csrf_token %}

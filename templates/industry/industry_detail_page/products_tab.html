@@ -16,6 +16,7 @@
                     <th>MEASURE VALUE</th>
                     <th>PACKAGING MATERIAL</th>
                     <th>INSTALLED PRODUCTION CAPACITY</th>
+                    <th>PRODUCTION LINE TECHNOLOGY</th>
                     <th>RECORDED DATE</th>
                     <th colspan="3">ACTION</th>
                 </thead>
@@ -30,6 +31,7 @@
                             <th>{{ product.quantity|format_number }} {{ product.quantity_measure_unit }}</td>
                             <td>{{ product.packaging_material|title }}</td>
                             <td>{{ product.production_installed_capacity|format_number }} {{ product.production_installed_capacity_unit }} / {{ product.production_installed_capacity_period }}</td>
+                            <td>{{ product.production_line_tech }}</td>
                             <td>{{ product.recorded_date|date:'d-m-Y H:i:s A' }}</td>
                             <td><a href="" class="view_button">view details</a></td>
                             <td><a href="" class="update_button">update</a></td>
