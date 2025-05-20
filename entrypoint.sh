@@ -6,11 +6,7 @@ NUM_CPUS=$(nproc)
 # Calculate the number of workers (2 * CPUs + 1)
 NUM_WORKERS=$((NUM_CPUS + 0))
 
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
-
 python manage.py makemigrations --no-input
-
 
 python manage.py migrate --no-input --verbosity 3
 

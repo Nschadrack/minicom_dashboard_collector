@@ -1,11 +1,21 @@
 system_management/__pycache__
+system_management/models/__pycache__
+system_management/migrations/__pycache__
 industry/__pycache__
+industry/models/__pycache__
+industry/migrations/__pycache__
 minicom_dashboard/__pycache__
 dashboard/__pycache__/
+dashboard/migrations/__pycache__/
 minicom_dashboards/__pycache__/
+minicom_dashboards/models/__pycache__/
+minicom_dashboards/migrations/__pycache__/
 automation/__pycache__/
+automation/migrations/__pycache__/
 automation/templatetags/__pycache__/
 reporting/__pycache__/
+reporting/models/__pycache__/
+reporting/migrations/__pycache__/
 
 database.sqlite3
 .gitignore
