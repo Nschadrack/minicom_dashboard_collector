@@ -202,6 +202,25 @@
             </div>
         </div>
 
+        <!-- production_line_tech -->
+        <div class="category-group">
+            <div class="form-row">
+                <div class="form-row">
+                    <div class="form-column">
+                        <label>What is the production line technology level on this product do you utilize? <b>[required]</b></label>
+                        <select name="production_line_tech" required>
+                            <option value="" disabled selected>Select production line technology level</option>
+                            <option value="Low (manual/basic tools)">Low (manual/basic tools)</option>
+                            <option value="Medium-low (partially mechanized)">Medium-low (partially mechanized)</option>
+                            <option value="Medium-high (mostly automated)">Medium-high (mostly automated)</option>
+                            <option value="High (fully automated/smart systems)">High (fully automated/smart systems)</option>
+                            <option value="Very High (fully automated/ incorporating AI)">Very High (fully automated/ incorporating AI)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <input type="submit" value="Save Product"/>
         <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel</button>
     </fieldset>						

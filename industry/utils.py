@@ -5,10 +5,11 @@ from django.http import HttpRequest
 from django.conf import settings
 
 from .models import (IndustrialZone, PartitionedPlot, 
-                     IndustryEconomicZone, AllocatedPlot,
-                     CompanyProfile, CompanySite, IndustryContractPayment,
-                     PaymentInstallmentTransaction,
-                     ContractPaymentInstallment)
+                    IndustryEconomicZone, AllocatedPlot,
+                    CompanyProfile, CompanySite, 
+                    IndustryContractPayment,
+                    PaymentInstallmentTransaction,
+                    ContractPaymentInstallment)
 from django.utils import timezone
 
 

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from system_management.models import (IndustrialZone, User, 
                                       EconomicSubSector, Product)
-from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, 
+from ..fixtures import (PRODUCT_QUANTITIES, PRODUCT_QUANTITY_UNITS, 
                        PRODUCT_PRODUCTION_CAPACITY_UNIT, PRODUCT_PACKAGING_MATERIAL, 
                        PRODUCT_PRODUCTION_CAPACITY_PERIOD)
 
@@ -206,6 +206,7 @@ class IndustryProduct(models.Model):
     production_installed_capacity = models.DecimalField(decimal_places=2, max_digits=16, blank=False, null=False)
     production_installed_capacity_unit = models.CharField(max_length=25, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_UNIT)
     production_installed_capacity_period = models.CharField(max_length=20, null=False, blank=False, choices=PRODUCT_PRODUCTION_CAPACITY_PERIOD)
+    production_line_tech = models.CharField(max_length=60, null=True, blank=True)
     recorded_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

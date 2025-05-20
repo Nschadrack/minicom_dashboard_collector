@@ -1,14 +1,17 @@
 system_management/migrations/*
 system_management/__pycache__
+system_management/models/__pycache__
 !system_management/migrations/__init__.py
 
 industry/migrations/*
 industry/__pycache__
+industry/models/__pycache__
 !industry/migrations/__init__.py
 
 minicom_dashboard/__pycache__
 dashboard/__pycache__/
 minicom_dashboards/__pycache__/
+minicom_dashboards/models/__pycache__/
 minicom_dashboards/migrations/*
 !minicom_dashboards/migrations/__init__.py
 
@@ -20,6 +23,7 @@ automation/migrations/*
 !automation/migrations/__init__.py
 
 reporting/__pycache__/
+reporting/models/__pycache__/
 reporting/migrations/*
 !reporting/migrations/__init__.py
 

@@ -175,6 +175,11 @@ def add_product_report(request, product_id, start_date, end_date):
         end_date = request.POST.get("end_date")
         production_volume = request.POST.get("production_volume")
         justification_production_capacity = request.POST.get("justification_production_capacity", "")
+        imported_raw_material_perc = request.POST.get("imported_raw_material_perc")
+        production_local_sales_volume = request.POST.get("production_local_sales_volume")
+        production_export_volume = request.POST.get("production_export_volume")
+        production_not_sold_yet_volume = request.POST.get("production_not_sold_yet_volume")
+        production_disposed = request.POST.get("production_disposed")
 
         if float(production_volume) > float(product.production_installed_capacity) and len(justification_production_capacity.strip()) < 10:
             enable_justification = True
@@ -183,6 +188,9 @@ def add_product_report(request, product_id, start_date, end_date):
             message += "You can provide more information why you exceeded the installed production capacity or if you have extended your production line, please edit the production installed capacity under products module"
             message += " and resume the report on this product."
             reported_capacity = production_volume
+            messages.error(request, message=message)
+        elif float(production_volume) < (float(production_local_sales_volume) + float(production_export_volume) + float(production_not_sold_yet_volume) + float(production_disposed)):
+            message = "The sum of local sales volume, export volume, unsold volume and disposed volume cannot exceed reported production"
             messages.error(request, message=message)
         else:
             try:
@@ -195,7 +203,12 @@ def add_product_report(request, product_id, start_date, end_date):
                     production_volume=production_volume,
                     current_installed_production=product.production_installed_capacity,
                     reported_by=request.user,
-                    justification_production_capacity=justification_production_capacity
+                    justification_production_capacity=justification_production_capacity,
+                    imported_raw_material_perc=imported_raw_material_perc,
+                    production_local_sales_volume=production_local_sales_volume,
+                    production_export_volume=production_export_volume,
+                    production_not_sold_yet_volume=production_not_sold_yet_volume,
+                    production_disposed=production_disposed
                 )
                 message = f"Report for the period from {start_date.strftime('%d-%m-%Y')} to {end_date.strftime('%d-%m-%Y')} on the product: {product.product.product_code} - {product.product.name} - {product.product_brand_name} added successfully"
                 messages.success(request, message=message)
