@@ -13,9 +13,10 @@ from .models import (IndustrialZone, PartitionedPlot,
 from django.utils import timezone
 
 
-def get_base_domain(request):
+def get_base_domain(request=None, return_domain_name=False):
     # scheme = 'https' if request.is_secure() else 'http'
     host = settings.PUBLIC_IP
+    DOMAIN_NAME = settings.DOMAIN_NAME
     scheme = "http"
     base_domain = f"{scheme}://{host}:{settings.WEBSERVER_PORT}"
     try:
@@ -23,6 +24,9 @@ def get_base_domain(request):
             base_domain = f"{scheme}://{host}"
     except:
         pass
+
+    if return_domain_name and DOMAIN_NAME:
+        return f"{scheme}://{DOMAIN_NAME}"
     return base_domain
 
 def load_countries():

@@ -396,5 +396,54 @@
     "name": "Economic Sub-Sector",
     "action_value": 3,
     "action": "View"
+},
+{
+    "permission_id": 57,
+    "module_id": "0019",
+    "name": "Trade",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 58,
+    "module_id": "0020",
+    "name": "ICBT",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 59,
+    "module_id": "0020",
+    "name": "ICBT",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 60,
+    "module_id": "0020",
+    "name": "ICBT",
+    "action_value": 4,
+    "action": "Delete"
+},
+{
+    "permission_id": 61,
+    "module_id": "0021",
+    "name": "Formal Trade",
+    "action_value": 3,
+    "action": "View"
+},
+{
+    "permission_id": 62,
+    "module_id": "0021",
+    "name": "Formal Trade",
+    "action_value": 1,
+    "action": "Create"
+},
+{
+    "permission_id": 63,
+    "module_id": "0021",
+    "name": "Formal Trade",
+    "action_value": 4,
+    "action": "Delete"
 }
 ]

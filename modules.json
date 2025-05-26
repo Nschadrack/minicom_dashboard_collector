@@ -87,5 +87,20 @@
     "module_id": "0018",
     "name": "Reporting",
     "parent_id": null
+},
+{
+    "module_id": "0019",
+    "name": "Trade",
+    "parent_id": null
+},
+{
+    "module_id": "0020",
+    "name": "ICBT",
+    "parent_id": "0019"
+},
+{
+    "module_id": "0021",
+    "name": "Formal Trade",
+    "parent_id": "0019"
 }
 ]

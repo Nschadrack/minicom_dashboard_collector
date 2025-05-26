@@ -1,6 +1,5 @@
 import random
 import string
-from collections import defaultdict
 import csv
 import os
 import traceback
@@ -10,8 +9,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from django.conf import settings
 from .models import AdministrativeUnit, IndustrialZone
-from django.db import transaction
 from background_task import background
+from industry.utils import get_base_domain
 
 
 def generate_random_code(length=10):
@@ -199,6 +198,7 @@ def build_default_password_email_template(user, password):
                         <p>Your account username is <b>%s<b></p>
                         <p>Here is your random generated default password to login, you will be prompted to change your password</p>
                         <p style="text-align: center; background-color: #773377; color: white; padding: 10px; font-weight: bold; margin-bottom:10px;">%s</p>
+                        <p>Platform link: %s</p>
                         <p>You will need some system permissions to start using the system</p>
                         <p>If you have any question, don't hesitate to contact the system administrator for support</p>
     
@@ -207,7 +207,7 @@ def build_default_password_email_template(user, password):
                 </div>
             </body>
             </html>
-            ''' % (user.get_full_name(), user.email, password)
+            ''' % (user.get_full_name(), user.email, password, get_base_domain(return_domain_name=True))
 
 
 def build_default_account_creation_email_template(user, password):

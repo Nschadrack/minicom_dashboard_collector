@@ -1,0 +1,27 @@
+{% if all_icbts_page.has_previous or all_icbts_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if all_icbts_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ all_icbts_tab_type }}&page=1#icbt-records" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ all_icbts_tab_type }}&page={{ all_icbts_page.previous_page_number }}#icbt-records" 
+                   data-page="{{ all_icbts_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ all_icbts_page.number }} of {{ all_icbts_page.paginator.num_pages }}
+            </span>
+
+            {% if all_icbts_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ all_icbts_tab_type }}&page={{ all_icbts_page.next_page_number }}#icbt-records" 
+                   data-page="{{ all_icbts_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ all_icbts_tab_type }}&page={{ all_icbts_page.paginator.num_pages }}#icbt-records" 
+                   data-page="{{ all_icbts_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}

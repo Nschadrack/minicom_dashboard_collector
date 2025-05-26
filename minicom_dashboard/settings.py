@@ -35,6 +35,7 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
 EMAIL_ID = os.getenv("EMAIL_ID")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 PUBLIC_IP = os.getenv("IP_PUBLIC")
+DOMAIN_NAME = os.getenv("DOMAIN_NAME", None)
 PRIVATE_IP = os.getenv("IP_PRIVATE")
 WEBSERVER_PORT = os.getenv("WEBSERVER_PORT")
 REPORTING_ALERT_DAYS_TO_ACTUAL_REPORTING = os.getenv("REPORTING_ALERT_DAYS_TO_ACTUAL_REPORTING", 7)
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
     "dashboard",
     "system_management",
     "industry",
+    "trade",
     "minicom_dashboards",
     "automation",
     "reporting",

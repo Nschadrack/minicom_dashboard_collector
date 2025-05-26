@@ -1,0 +1,35 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <br/>
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link active" data-tab="icbt-records" id="tab-icbt-records">ICBT Records</li>
+            <li class="tab-link" data-tab="icbt-export" id="tab-icbt-export">ICBT Exports</li>
+            <li class="tab-link" data-tab="icbt-import" id="tab-icbt-import">ICBT Imports</li>
+            <li class="tab-link" data-tab="icbt-upload-job" id="tab-icbt-upload-job">ICBT Upload Jobs</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
+        <div id="icbt-records" class="tab-content active">
+           {% include 'trade/icbt/all_records_tab.html' %}
+        </div>
+
+        <div id="icbt-export" class="tab-content">
+            {% include 'trade/icbt/export.html' %}
+        </div>
+
+        <div id="icbt-import" class="tab-content">
+            {% include 'trade/icbt/import.html' %}
+        </div>
+
+        <div id="icbt-upload-job" class="tab-content">
+            {% include 'trade/icbt/icbt_upload_jobs.html' %}
+        </div>
+    </div>
+{% endblock %}

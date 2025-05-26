@@ -1,0 +1,62 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p"># BULK {{ upload_job.category|upper }} UPLOAD INITIATED ON {{ upload_job.created_at|date:'d-m-Y H:i' }}: {{ upload_job.status|upper }}</p>
+        {% if upload_job.category == "ICBT" %}
+            <a href="{% url 'trade:icbt-list' %}#icbt-upload-job" id="price_back_to_car_list">Back to the list</a>
+        {% endif %}
+    </div>
+    <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
+        <div class="upper-detail-div">
+            {% if upload_job %}
+                <div id="car_viewed_for_prices" class="car_viewed_for_services_prices" style="margin-bottom: -140px;">
+                    <div>
+                        <p><strong>Upload Job Owner: </strong>{{ upload_job.user.first_name|title }} {{ upload_job.user.last_name|title }}</p>   
+                        <p><strong>Status: </strong>{{ upload_job.status|upper }}</p>   
+                        <p><strong>Category: </strong>{{ upload_job.category|upper }}</p>                
+                    </div>
+                    <div>
+                        <p><strong>Succeeded records: </strong>{{ upload_job.success_count|format_number }}</p>
+                        <p><strong>Failed records: </strong>{{ upload_job.failure_count|format_number }}</p>  
+                        <p><strong>Upload created date: </strong>{{ upload_job.created_at|date:'d-m-Y H:i' }}</p>
+                    </div>
+                </div>
+                {% if job_data|length > 0 %}
+                    {% if request.user == upload_job.user %}
+                        {% if upload_job.status|lower == "completed" or upload_job.status|lower == "failed" %}
+                            <button id="view_price_archive_button" style="background-color: rgb(145, 24, 3);" onclick="openModal('{% url 'automation:clear_job_data' upload_job.id %}', 'clear upload job', ' failed {{ upload_job.category }} records?')">Clear Failed Records</button>	
+                        {% endif %}
+                    {% endif %}	
+                    <div  class="current_price_list table-data">
+                        <h4>List of Failed {{ category }} Records</h4>		
+                        <table class="table-data">
+                            <thead>
+                                <th>#</th>
+                                {%  for col in job_columns%}
+                                    <th>{{ col }}</th>
+                                {% endfor %}
+                            </thead>
+                            <tbody>
+                                {% for row in job_data %}
+
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        {% for data in row %}
+                                            <td>{{ data }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% include 'helpers/pup-up-modal.html' %}
+                {% else %}
+                    <p>There are no failed {{ category }} records</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
