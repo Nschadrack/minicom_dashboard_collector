@@ -1,0 +1,60 @@
+.upload-container {
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    width: 50vw !important;
+}
+
+.file-input-wrapper {
+    position: relative;
+    margin: 1rem 0;
+}
+
+.file-label {
+    display: block;
+    padding: 1rem;
+    background: #202831;
+    color: white;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #dc3545;
+    margin: 0.5rem 0;
+    display: none;
+}
+
+.submit-btn{
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #023977;
+    color: white;
+}
+.cancel{
+    text-decoration: none;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #dc3545;
+}
+
+.progress-container {
+    margin: 1rem 0;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    display: none;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #28a745;
+    transition: width 0.3s ease;
+}

@@ -1,0 +1,83 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+
+{% block main_data_load %}
+    <div id="tabs-container">
+        <br/><br/>
+        <div class="current_price_list table-data">     
+            <h4 style="font-size: 1.2rem;">Informal Cross Border Trade Data Bulk Upload: CSV File with Below Required Columns and Format(Both Import and Export)</h4>			
+            <table style="margin:auto;">
+                <thead>
+                    <th>form_code</th>
+                    <th>start_time</th>
+                    <th>end_time</th>
+                    <th>date_period</th>
+                    <th>month</th>
+                    <th>cross_point</th>
+                    <th>district</th>
+                    <th>sex</th>
+                    <th>profession</th>
+                    <th>trader_residence</th>
+                    <th>product_origin</th>
+                    <th>product_destination</th>
+                    <th>transport_mode</th>
+                    <th>product</th>
+                    <th>unit</th>
+                    <th>quantity</th>
+                    <th>unit_price</th>
+                    <th>total_price</th>
+                    <th>total_price_usd</th>
+                    <th>latitude</th>
+                    <th>longitude</th>
+                    <th>accuracy</th>
+                </thead>
+                <tbody>
+                    {% for i in range_10 %}
+                        <tr>
+                            <td>uuid:bb9b1f72-61b1-488c-8315-38fc607639bf</td>
+                            <td>28/02/2025 16:21</td>
+                            <td>28/02/2025 17:21</td>
+                            <td>28/02/2025</td>
+                            <td>February</td>
+                            <td>RUSUMO</td>
+                            <td>Kirehe</td>
+                            <td>Female</td>
+                            <td>Trader</td>
+                            <td>Rwanda</td>
+                            <td>Rwanda</td>
+                            <td>DRC</td>
+                            <td>Bicycle</td>
+                            <td>Tomato</td>
+                            <td>KG</td>
+                            <td>100</td>
+                            <td>1200</td>
+                            <td>120000</td>
+                            <td>80.89</td>
+                            <td>-2.3800771</td>
+                            <td>30.7778109</td>
+                            <td>3.9</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             {% include "helpers/message_alert.html" %}
+            <br/><br/>
+            <div class="upload-container">
+                <form id="uploadForm" method="post" action="{% url 'trade:upload-icbt' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="file-input-wrapper">
+                        <input type="file" id="csvFile" name="csv_file" accept=".csv" required/>
+                        <label for="csvFile" class="file-label">Choose ICBT CSV File</label>
+                    </div>
+                    <div class="error-message"></div>
+                    <button type="submit" class="submit-btn">Upload</button>
+                    <a class="cancel" href="{% url 'trade:icbt-list' %}">Cancel</a>
+                </form>
+
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

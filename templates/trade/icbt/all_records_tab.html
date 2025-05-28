@@ -1,0 +1,64 @@
+{% load custom_filters %}
+<div class="upper-detail-div">
+    {% if request.user|is_user_permitted:"0020,1" %}
+        <a id="view_price_archive_button" href="{% url 'trade:upload-icbt' %}">Upload New ICBT Data</a>	
+    {% endif %}
+    <div class="current_price_list table-data">     
+        {% if all_icbts|length > 0 %}	
+            <h4>List of Informal Cross Border Trade Records</h4>			
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>DATE</th>
+                    <th>MONTH</th>
+                    <th>CROSS-POINT</th>
+                    <th>DISTRICT</th>
+                    <th>SEX</th>
+                    <th>PROFESSION</th>
+                    <th>TRADER RESIDENCE</th>
+                    <th>PRODUCT ORIGIN</th>
+                    <th>PRODUCT DESTINATION</th>
+                    <th>TRANSPORT MODE</th>
+                    <th>PRODUCT</th>
+                    <th>QUANTITY</th>
+                    <th>UNIT</th>
+                    <th>UNIT PRICE(RWF)</th>
+                    <th>TOTAL PRICE(RWF)</th>
+                    <th>TOTAL PRICE(USD)</th>
+                    <th>LATITUDE</th>
+                    <th>LONGITUDE</th>
+                    <th>COORDINATES ACCURACY</th>
+                </thead>
+                <tbody>
+                    {% for record in all_icbts %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ record.date_period|date:'d-m-Y' }}</td>
+                            <td>{{ record.month|title }}</td>
+                            <td>{{ record.cross_point|upper }}</td>
+                            <td>{{ record.district|title }}</td>
+                            <td>{{ record.sex|title }}</td>
+                            <td>{{ record.profession|upper }}</td>
+                            <td>{{ record.trader_residence|upper }}</td>
+                            <td>{{ record.product_origin|upper }}</td>
+                            <td>{{ record.product_destination|upper }}</td>
+                            <td>{{ record.transport_mode|title }}</td>
+                            <td>{{ record.product|title }}</td>
+                            <td>{{ record.quantity|format_number }}</td>
+                            <td>{{ record.unit|upper }}</td>
+                            <td>{{ record.unit_price|format_number }}</td>
+                            <td>{{ record.total_price|format_number }}</td>
+                            <td>{{ record.total_price_usd|format_number }}</td>
+                            <td>{{ record.latitude|format_number:10 }}</td>
+                            <td>{{ record.longitude|format_number:10 }}</td>
+                            <td>{{ record.accuracy|format_number:7 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h4>There are no informal cross border trade records</h4>
+        {% endif %}						
+    </div>
+    {% include 'helpers/pagination/icbt_all_records.html' %}
+</div>

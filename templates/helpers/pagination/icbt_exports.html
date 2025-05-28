@@ -1,0 +1,27 @@
+{% if export_icbts_page.has_previous or export_icbts_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if export_icbts_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ export_icbts_tab_type }}&page=1#icbt-export" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ export_icbts_tab_type }}&page={{ export_icbts_page.previous_page_number }}#icbt-export" 
+                   data-page="{{ export_icbts_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ export_icbts_page.number }} of {{ export_icbts_page.paginator.num_pages }}
+            </span>
+
+            {% if export_icbts_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ export_icbts_tab_type }}&page={{ export_icbts_page.next_page_number }}#icbt-export" 
+                   data-page="{{ export_icbts_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ export_icbts_tab_type }}&page={{ export_icbts_page.paginator.num_pages }}#icbt-export" 
+                   data-page="{{ export_icbts_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}

@@ -184,6 +184,17 @@ function toggleDashboardsSection(e){
     }
 }
 
+function toggleTradeSection(e){
+    var tradeSection = document.getElementById("trade-section");
+    var style = window.getComputedStyle(tradeSection);
+    var displayCss = style.getPropertyValue("display")
+    if (displayCss === "none"){
+        tradeSection.style.display = "block";
+    }else{
+        tradeSection.style.display = "none";
+    }
+}
+
 function toggleUsersManagementAssetSection(e){
     var users_management_section = document.getElementById("users-management-section");
     var style = window.getComputedStyle(users_management_section);

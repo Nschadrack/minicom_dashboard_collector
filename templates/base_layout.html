@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/pagination.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/document_viewer.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bulk_upload.css' %}"/>
     <title>Ministry of Trade and Industry</title>
   </head>
   <body>
@@ -21,7 +22,7 @@
 		<div id="aside_navigations">
 			<a href="">Overview</a>
 			{% if request.user|is_user_permitted:"0011,3" %}
-				<button onclick="toggleAssetRegistrySection()">Industry management</button>
+				<button onclick="toggleAssetRegistrySection()">Industry Module</button>
 				<section id="assets-registry-section">
 					{% if request.user|is_user_permitted:"0012,3" %}
 						<a href="{% url 'industry:parks-list' %}">Industrial Parks</a>
@@ -37,8 +38,19 @@
 					{% endif %}
 				</section>
 			{% endif %}
+			{% if request.user|is_user_permitted:"0019,3" %}
+				<button onclick="toggleTradeSection()">Trade Module</button>
+				<section id="trade-section">
+					{% if request.user|is_user_permitted:"0020,3" %}
+						<a href="{% url 'trade:icbt-list' %}">ICBT</a>
+					{% endif %}
+					{% if request.user|is_user_permitted:"0021,3" %}
+						<a href="">Formal Trade</a>
+					{% endif %}
+				</section>
+			{% endif %}
 			{% if request.user|is_user_permitted:"0008,3" %}
-				<button onclick="toggleDashboardsSection()">Dashboard management</button>
+				<button onclick="toggleDashboardsSection()">Dashboard Module</button>
 				<section id="dashboards-section">
 					{% if request.user|is_user_permitted:"0009,3" %}
 						<a href="{% url 'minicom_dashboards:industry-dashboards' %}">Industry dashboards</a>
@@ -78,7 +90,7 @@
 				</section>
 			{% endif %}
 			{% if request.user|is_user_permitted:"0018,3" %}
-				<a href="{% url 'reporting:reporting' %}">Reporting</a>
+				<a href="{% url 'reporting:reporting' %}">Reporting Module</a>
 			{% endif %}
 			<a href="{% url 'system_management:logout' %}">Sign out</a>
 			{% comment %} <a href="#">Notifications <span class="aside-navigation-spans">0</span></a> {% endcomment %}
@@ -100,6 +112,7 @@
 
 	<script src="{% static 'js/main.js' %}" defer></script>
 	<script src="{% static 'js/pagination.js' %}" defer></script>
+	<script src="{% static 'js/bulk_upload.js' %}" defer></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" 
 	integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" 
 	crossorigin="anonymous" referrerpolicy="no-referrer"></script>

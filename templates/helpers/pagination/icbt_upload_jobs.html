@@ -1,0 +1,27 @@
+{% if upload_jobs_icbts_page.has_previous or upload_jobs_icbts_page.has_next %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if upload_jobs_icbts_page.has_previous %}
+                <a class="page-link" 
+                   href="?tab={{ upload_jobs_icbts_tab_type }}&page=1#icbt-upload-job" 
+                   data-page="1">&laquo; First</a>
+                <a class="page-link" 
+                   href="?tab={{ upload_jobs_icbts_tab_type }}&page={{ upload_jobs_icbts_page.previous_page_number }}#icbt-upload-job" 
+                   data-page="{{ upload_jobs_icbts_page.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ upload_jobs_icbts_page.number }} of {{ upload_jobs_icbts_page.paginator.num_pages }}
+            </span>
+
+            {% if upload_jobs_icbts_page.has_next %}
+                <a class="page-link" 
+                   href="?tab={{ upload_jobs_icbts_tab_type }}&page={{ upload_jobs_icbts_page.next_page_number }}#icbt-upload-job" 
+                   data-page="{{ upload_jobs_icbts_page.next_page_number }}">Next</a>
+                <a class="page-link" 
+                   href="?tab={{ upload_jobs_icbts_tab_type }}&page={{ upload_jobs_icbts_page.paginator.num_pages }}#icbt-upload-job" 
+                   data-page="{{ upload_jobs_icbts_page.paginator.num_pages }}">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}

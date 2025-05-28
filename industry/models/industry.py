@@ -26,9 +26,6 @@ class IndustryEconomicZone(models.Model):
 
     class Meta:
         db_table = "IndustryEconomicZones"
-        indexes = [
-            models.Index(fields=['category', 'name', 'id']),
-        ]
     
     def __str__(self):
         return f"{self.name} {self.category.lower()}"
@@ -65,6 +62,10 @@ class CompanyProfile(models.Model):
 
     class Meta:
         db_table = "CompanyProfiles"
+        indexes = [
+            models.Index(fields=['tin_number']),
+            models.Index(fields=['name']),
+        ]
 
 
 class LandRequestInformation(models.Model):
@@ -127,6 +128,9 @@ class PartitionedPlot(models.Model):
 
     class Meta:
         db_table = "PartitionedPlots"
+        indexes = [
+            models.Index(fields=['plot_number', 'partitioned_plot_upi']),
+        ]
 
 
 class CompanySite(models.Model):

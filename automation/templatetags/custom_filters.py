@@ -13,3 +13,10 @@ def is_user_allowed_access(user, args):
     module_id, permission_value = args.split(",")
     permission_value = int(permission_value)
     return is_user_permitted(user, module_id, permission_value)
+
+@register.filter(name="list_loop")
+def loop_list(sequence, position):
+    try:
+        return sequence[position]
+    except:
+        return None

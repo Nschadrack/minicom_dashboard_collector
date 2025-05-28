@@ -27,5 +27,10 @@ reporting/models/__pycache__/
 reporting/migrations/*
 !reporting/migrations/__init__.py
 
+trade/__pycache__/
+trade/models/__pycache__/
+trade/migrations/*
+!trade/migrations/__init__.py
+
 database.sqlite3
 .env

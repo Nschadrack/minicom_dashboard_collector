@@ -824,6 +824,7 @@ body{
 	border-radius: 0px;
 	border: none;
 	outline: none;
+	text-decoration: none;
 	padding: 5px 10px;
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
