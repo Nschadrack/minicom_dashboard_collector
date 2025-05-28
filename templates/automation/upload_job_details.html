@@ -26,7 +26,7 @@
                 </div>
                 {% if job_data|length > 0 %}
                     {% if request.user == upload_job.user %}
-                        {% if upload_job.status|lower == "completed" or upload_job.status|lower == "failed" %}
+                        {% if upload_job.status|lower == "completed" or upload_job.status|lower == "failed" or upload_job.status|lower == "completed_with_errors" %}
                             <button id="view_price_archive_button" style="background-color: rgb(145, 24, 3);" onclick="openModal('{% url 'automation:clear_job_data' upload_job.id %}', 'clear upload job', ' failed {{ upload_job.category }} records?')">Clear Failed Records</button>	
                         {% endif %}
                     {% endif %}	

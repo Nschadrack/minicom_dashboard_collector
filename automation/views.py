@@ -19,15 +19,15 @@ def view_job_detail(request, id):
         job_columns = []
         job_data = []
         error_logs = job.error_log
-        print(f"\nError log: {error_logs}\n")
         if len(error_logs) > 0:
-            job_columns += [ col for col in error_logs[0].keys() if col not in ("data", "row")]
+            job_columns += [ col for col in error_logs[0].keys() if col not in ("data")]
         
             sample_data = error_logs[0]['data']
             other_cols = [col for col in sample_data.keys()]
 
             for error_log in error_logs:
                 row_data = []
+                row_data.append(error_log['row'])
                 row_data.append(error_log['error'])
                 data = error_log['data']
                 for key in other_cols:

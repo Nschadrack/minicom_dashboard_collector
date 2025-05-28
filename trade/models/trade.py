@@ -16,12 +16,12 @@ class ICBTRecord(models.Model):
     transport_mode = models.CharField(max_length=50, null=False, blank=False)
     product = models.CharField(max_length=100, null=False, blank=False)
     unit = models.CharField(max_length=30, null=False, blank=False)
-    quantity = models.DecimalField(decimal_places=2, max_digits=7, null=False, blank=False)
-    unit_price = models.DecimalField(decimal_places=2, max_digits=8, null=False, blank=False)
-    total_price = models.DecimalField(decimal_places=2, max_digits=12, null=False, blank=False)
+    quantity = models.DecimalField(decimal_places=2, max_digits=10, null=False, blank=False)
+    unit_price = models.DecimalField(decimal_places=2, max_digits=15, null=False, blank=False)
+    total_price = models.DecimalField(decimal_places=2, max_digits=16, null=False, blank=False)
     total_price_usd = models.DecimalField(decimal_places=2, max_digits=12, null=False, blank=False)
-    latitude = models.DecimalField(decimal_places=10, max_digits=13, null=False, blank=False)
-    longitude = models.DecimalField(decimal_places=10, max_digits=13, null=False, blank=False)
+    latitude = models.DecimalField(decimal_places=10, max_digits=15, null=False, blank=False)
+    longitude = models.DecimalField(decimal_places=10, max_digits=15, null=False, blank=False)
     accuracy = models.DecimalField(decimal_places=7, max_digits=12, null=False, blank=False)
 
 

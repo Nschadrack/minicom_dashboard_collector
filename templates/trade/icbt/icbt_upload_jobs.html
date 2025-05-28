@@ -8,6 +8,7 @@
                     <th>#</th>
                     <th>UPLOAD CREATED BY</th>
                     <th>UPLOAD STATUS</th>
+                    <th>UPLOADED FILE</th>
                     <th>UPLOAD CREATED ON</th>
                     <th>RECORDS SUCCEEDED</th>
                     <th>RECORDS FAILED</th>
@@ -19,12 +20,13 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{ record.user.first_name|title }} {{ record.user.last_name|title }}</td>
                             <td>{{ record.status|upper }}</td>
+                            <td>{{ record.uploaded_file }}</td>
                             <td>{{ record.created_at|date:'d-m-Y H:i' }}</td>
                             <td>{{ record.success_count }}</td>
                             <td>{{ record.failure_count }}</td>
                             <td><a href="{% url 'automation:job_detail' record.id %}" class="view_button">view details</a></td>
                             {% if request.user|is_user_permitted:"0020,4" or request.user == record.user %}
-                                {% if record.status|lower == "completed" or record.status|lower == "failed" %}
+                                {% if record.status|lower == "completed" or record.status|lower == "failed" or record.status|lower == "completed_with_errors" %}
                                     <td><a class="delete_button" onclick="openModal('{% url 'automation:delete_job' record.id %}', 'delete upload job', ' for {{ record.category }}?')">delete</a></td>
                                 {% endif %}
                             {% endif %}

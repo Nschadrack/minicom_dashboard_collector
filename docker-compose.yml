@@ -3,7 +3,7 @@ services:
         image: postgres:latest
         volumes:
             - postgres_data:/var/lib/postgresql/data:Z  # Container data (persisting data)
-            - ../postgres_data:/var/lib/postgresql/data  # Host-accessible data
+            # - ../postgres_data:/var/lib/postgresql/data  # Host-accessible data
             - ./postgres/initdb:/docker-entrypoint-initdb.d  # Init scripts
         environment:
             - POSTGRES_DB=${DB_NAME}
@@ -33,7 +33,7 @@ services:
             - DB_USER=${DB_USER}
             - DB_PASSWORD=${DB_PASSWORD}
         expose:
-            - 8080
+            - 8000
         ports:
             - "8080:8080"
         volumes:
