@@ -16,6 +16,9 @@ automation/templatetags/__pycache__/
 reporting/__pycache__/
 reporting/models/__pycache__/
 reporting/migrations/__pycache__/
+trade/migrations/__pycache__
+trade/__pycache__
+trade/models/__pycache__
 
 database.sqlite3
 .gitignore

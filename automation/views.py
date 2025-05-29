@@ -19,7 +19,7 @@ def view_job_detail(request, id):
         job_columns = []
         job_data = []
         error_logs = job.error_log
-        if len(error_logs) > 0:
+        if error_logs and len(error_logs) > 0:
             job_columns += [ col for col in error_logs[0].keys() if col not in ("data")]
         
             sample_data = error_logs[0]['data']

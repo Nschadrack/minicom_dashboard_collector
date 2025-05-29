@@ -1,0 +1,118 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <div id="card_body_data">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Quick Links -->
+            <div class="quick-links">
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-industry"></i>
+                    <h3>Industrial Dashboards</h3>
+                    <a href="{% url 'minicom_dashboards:industry-dashboards' %}" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-industry"></i>
+                    <h3>Trade Dashboards</h3>
+                    <a href="{% url 'minicom_dashboards:trade-dashboards' %}" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-industry"></i>
+                    <h3>Industrial Zones</h3>
+                    <a href="{% url 'industry:parks-list' %}" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-industry"></i>
+                    <h3>Industries</h3>
+                    <a href="{% url 'industry:companies-industries-list' %}" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-file-export"></i>
+                    <h3>Formal Trade</h3>
+                    <a href="" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>ICBT</h3>
+                    <a href="{% url 'trade:icbt-list' %}" class="view_button_dashboard">view details</a>
+                </div>
+                <div class="quick-link" onclick="location.href='#'">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Reporting</h3>
+                    <a href="{% url 'reporting:reporting' %}" class="view_button_dashboard">view details</a>
+                </div>
+            </div>
+
+            <!-- Formal Trade Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3>Formal Trade Overview</h3>
+                    <div class="time-filter">
+                        <select>
+                            <option>Last 7 Days</option>
+                            <option selected>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">Exports by Product Category</div>
+                        <canvas id="exportsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Imports vs Exports (Last 6 Months)</div>
+                        <canvas id="tradeComparisonChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Re-Export Distribution</div>
+                        <canvas id="reExportChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informal Trade Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3>Informal Cross-Border Trade</h3>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">Trade Value by Border Point</div>
+                        <canvas id="borderTradeChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Monthly Trade Volume</div>
+                        <canvas id="tradeVolumeChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Commodity Distribution</div>
+                        <canvas id="commodityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Industrial Parks Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3>Industrial Parks & Economic Zones</h3>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-title">Zone Occupancy Rate</div>
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Investment by Sector</div>
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Employment Distribution</div>
+                        <canvas id="employmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

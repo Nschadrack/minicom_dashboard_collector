@@ -5,13 +5,12 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def dashboard(request):
-
-    return render(request, "base_layout.html")
+    return render(request, "welcome/internal_overview.html")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def welcome(request):
-    today = datetime.datetime.now()
+    today = datetime.now()
     hour = today.hour
 
     # Determine the appropriate greeting based on the time
@@ -30,4 +29,4 @@ def welcome(request):
         "greeting": f"{greeting}, {request.user.get_full_name()}"
     }
 
-    return render(request, "base_layout.html", context=context)
+    return render(request, "welcome/welcome.html", context=context)

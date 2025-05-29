@@ -10,6 +10,7 @@
                     <th>UPLOAD STATUS</th>
                     <th>UPLOADED FILE</th>
                     <th>UPLOAD CREATED ON</th>
+                    <th>PROCESSING TIME</th>
                     <th>RECORDS SUCCEEDED</th>
                     <th>RECORDS FAILED</th>
                     <th colspan="2">ACTION</th>
@@ -22,6 +23,11 @@
                             <td>{{ record.status|upper }}</td>
                             <td>{{ record.uploaded_file }}</td>
                             <td>{{ record.created_at|date:'d-m-Y H:i' }}</td>
+                            {% if record.processing_minutes %}
+                                <td>{{ record.processing_minutes }} minutes</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
                             <td>{{ record.success_count }}</td>
                             <td>{{ record.failure_count }}</td>
                             <td><a href="{% url 'automation:job_detail' record.id %}" class="view_button">view details</a></td>

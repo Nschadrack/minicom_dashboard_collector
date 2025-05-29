@@ -1,0 +1,11 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <div id="card_body_data">
+        <br/><br/>
+        {% include 'helpers/message_alert.html' %}
+        <p>{{ greeting }}</p>
+        <p>{{ today }}</p>
+    </div>
+{% endblock %}

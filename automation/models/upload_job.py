@@ -1,4 +1,4 @@
-# models.py
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from system_management.models import User
 
@@ -13,10 +13,11 @@ class BulkUploadJob(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     uploaded_file = models.FileField(upload_to='bulk_uploads/')
     category = models.CharField(max_length=40)
-    error_log = models.JSONField(default=list, blank=True)
+    error_log = models.JSONField(blank=True, null=True, encoder=DjangoJSONEncoder)
     created_at = models.DateTimeField(auto_now_add=True)
     success_count = models.IntegerField(default=0)
     failure_count = models.IntegerField(default=0)
+    processing_minutes = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
 
     class Meta:
         db_table = "BulkUploadJobs"

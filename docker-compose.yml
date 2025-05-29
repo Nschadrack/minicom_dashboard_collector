@@ -43,6 +43,9 @@ services:
             - ./industry/migrations:/app/industry/migrations
             - ./minicom_dashboards/migrations:/app/minicom_dashboards/migrations
             - ./system_management/migrations:/app/system_management/migrations
+            - ./trade/migrations:/app/trade/migrations
+            - ./reporting/migrations:/app/reporting/migrations
+            - ./dashboard/migrations:/app/dashboard/migrations
         env_file:
             - .env
         depends_on:

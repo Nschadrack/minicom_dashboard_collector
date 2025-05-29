@@ -5,5 +5,5 @@ app_name = "dashboard"
 
 urlpatterns = [
     path("", dashboard, name="dashboard"),
-    path("welcome/", dashboard, name="welcome"),
+    path("welcome/", welcome, name="welcome"),
 ]
