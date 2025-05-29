@@ -108,15 +108,26 @@ WSGI_APPLICATION = "minicom_dashboard.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if bool(int(os.getenv('DEVELOPMENT'))):
-    DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": BASE_DIR / "database.sqlite3",
-            }
-    }
-else:
-    DATABASES = {
+# if bool(int(os.getenv('DEVELOPMENT'))):
+#     DATABASES = {
+#             "default": {
+#                 "ENGINE": "django.db.backends.sqlite3",
+#                 "NAME": BASE_DIR / "database.sqlite3",
+#             }
+#     }
+# else:
+#     DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'HOST': os.environ.get('DB_HOST'),
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'PORT':  int(os.environ.get("DB_PORT")),
+#     }
+# }
+
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': os.environ.get('DB_HOST'),
@@ -126,6 +137,7 @@ else:
         'PORT':  int(os.environ.get("DB_PORT")),
     }
 }
+
 
 
 # Password validation
