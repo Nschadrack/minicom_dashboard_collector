@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        if (!file.name.endsWith('.csv')) {
-            showError('Only CSV files are allowed');
+        if (!file.name.endsWith('.csv') && !file.name.endsWith('.geojson') ) {
+            showError('Only CSV files are allowed for normal uploads and GEOJSON for uploading plots');
             return false;
         }
 

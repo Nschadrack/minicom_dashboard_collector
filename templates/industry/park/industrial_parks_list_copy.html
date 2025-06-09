@@ -1,0 +1,119 @@
+{% extends 'base_layout.html' %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <div id="car_title_header_and_new_btn">
+        <p id="car_title_header_and_new_btn_p">List of Industrial Parks/Economic Zones</p>
+        {% if request.user|is_user_permitted:"0012,1" %}
+            <button id="car_title_header_and_new_btn_button">+ new industrial park/economic zone</button>
+        {% endif %}
+
+         {% if request.user|is_user_permitted:"0012,1" %}
+            <a id="car_title_header_and_new_btn_button" href="{% url 'industry:upload-plots' %}">upload plots</a>
+        {% endif %}
+    </div>
+    <div id="card_body_data">
+        {% include 'helpers/message_alert.html' %}
+        <div id="car_table_data" class="table-data">
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>NAME</th>
+                    <th>CATEGORY</th>
+                    <th>TOTAL AREA(M<sup>2</sup>)</th>
+                    <th>LEASABLE AREA(M<sup>2</sup>)</th>
+                    <th>PROVINCE</th>
+                    <th>DISTRICT</th>
+                    <th>SECTOR</th>
+                    <th>CELL</th>
+                    <th colspan="3">ACTIONS</th>
+                </thead>
+                <tbody>
+                    {% for industrial_park in industrial_parks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{industrial_park.name|title}}</td>
+                            <td>{{industrial_park.category|title}}</td>
+                            <td>
+                                {% with value=industrial_park.total_land_size|floatformat:5 %}
+                                    {{ value|format_number:5 }}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                {% with value=industrial_park.leasable_land|floatformat:5 %}
+                                    {{ value|format_number:5 }}
+                                {% endwith %}
+                            </td>
+                            <td>{{ industrial_park.province|title}}</td>
+                            <td>{{ industrial_park.district|title}}</td>
+                            <td>{{ industrial_park.sector|title}}</td>      
+                            <td>{{ industrial_park.cell|title}}</td>                      
+                            <td><a href="{% url 'industry:park-details' industrial_park.id %}" class="view_button">view details</a></td>
+                            <td><a href="" class="update_button">update</a></td>
+                            <td><a href="" class="delete_button">delete</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Pagination Bottom -->
+            {% include "helpers/pagination/single_tab.html" %}
+        </div>
+        <div class="car_new_form_div">
+            <form class="car_new_form" method="post" action="">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Registering a new industrial park/economic zone in the system</legend>	
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select required name="category">
+                            <option selected value="Industrial Park">Industrial Park</option>
+                            <option value="Special Economic Zone">Special Economic Zone</option>
+                            <option value="Light Industrial Zone">Light Industrial Zone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" maxlength="60" name="name" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Area(M<sup>2</sup>)</label>
+                        <input type="number" min="0" name="total_area" step=".00001" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Leasable Area(M<sup>2</sup>)</label>
+                        <input type="number" min="0" name="leasable_area" step=".00001" required/>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputProvince">Province</label>
+                        <select id="exampleInputProvince" name="province" required onchange="fillInDistricts('{{ districts|escapejs }}');">
+                            <option disabled selected>choose province</option>
+                            {% for province in provinces %}
+                                <option value="{{ province.id }}">{{ province.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputDistrict">District</label>
+                        <select id="exampleInputDistrict" name="district" required onchange="fillInSectors('{{ sectors|escapejs }}');">
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputSector">Sector</label>
+                        <select id="exampleInputSector" name="sector" required onchange="fillInCells('{{ cells|escapejs }}');">
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputCell">Cell</label>
+                        <select id="exampleInputCell" name="cell" required>
+
+                        </select>
+                    </div>
+                    <input type="submit" value="Save"/>
+                    <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+                </fieldset>						
+            </form>
+        </div>
+    </div>
+{% endblock %}
