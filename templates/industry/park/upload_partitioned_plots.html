@@ -1,0 +1,38 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+
+{% block main_data_load %}
+    <div id="tabs-container">
+        <br/><br/>
+        <div class="current_price_list table-data">     
+            <h4 style="font-size: 1.2rem;">Uploading the partitioned plots of industrial park/ special economic zone</h4>			
+            
+             {% include "helpers/message_alert.html" %}
+            <br/>
+            <div class="upload-container">
+                <form id="uploadForm" method="post" action="{% url 'industry:upload-plots' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-weight: bold;">SELECT PARK/ECONOMIC ZONE</label>
+                        <select required name="park" style="padding: 10px; border-radius: 5px; width: 100%; border:2px solid darkblue;" required>
+                            {% for park in parks %}
+                                <option value="{{ park.id }}">{{ park.name }} {{ park.category|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="csvFile" name="geojson_file" accept=".geojson" required/>
+                        <label for="csvFile" class="file-label">Choose GEOJSON File Containing Plots</label>
+                    </div>
+                    <div class="error-message"></div>
+                    <button type="submit" class="submit-btn">Upload</button>
+                    <a class="cancel" href="{% url 'industry:parks-list' %}#upload-plots-in-parks">Cancel</a>
+                </form>
+
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

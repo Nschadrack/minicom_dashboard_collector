@@ -21,11 +21,13 @@ from .models import (IndustryEconomicZone, PartitionedPlot,
                     IndustryEconomicSector, ContractPaymentInstallment,
                     IndustryContract, IndustryContractPayment, 
                     PaymentInstallmentTransaction)
+from automation.models import BulkUploadJob
 from system_management.models import IndustrialZone, Product
 from .utils import (load_countries, get_zones_and_partitioned_plots_in_park,
                     record_allocated_plot_from_request, record_industry_in_plot_from_request,
                     get_base_domain, create_payment_installment, convert_datetime_timezone,
                     record_payment_transaction)
+from .tasks import process_geojson_plots
 from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_PACKAGING_MATERIAL,
                        PRODUCT_QUANTITIES_UNITS_MAP, PRODUCT_PRODUCTION_CAPACITY_PERIOD,
                        PRODUCT_PRODUCTION_CAPACITY_UNIT)
@@ -72,6 +74,7 @@ def industrial_parks_list(request):
     districts = AdministrativeUnit.objects.filter(category="DISTRICT").order_by("name")
     sectors = AdministrativeUnit.objects.filter(category="SECTOR").order_by("name")
     cells = AdministrativeUnit.objects.filter(category="CELL").order_by("name")
+    jobs = BulkUploadJob.objects.filter(category="PARTITIONED_PLOTS").order_by("-created_at")
 
     CACHE_TIMEOUT = settings.CACHE_TIMEOUT
     PAGE_SIZE = settings.PAGE_SIZE
@@ -99,6 +102,7 @@ def industrial_parks_list(request):
     industrial_parks = IndustryEconomicZone.objects.filter(id__in=current_ids).order_by(*ordering)
     
     context = {
+        "jobs": jobs,
         "industrial_parks": industrial_parks,
         "page": current_page,
         'tab_type': active_tab,
@@ -217,6 +221,41 @@ def record_partitioned_plot(request, park_id):
         
         redirect_url = reverse("industry:park-details", args=(park.id, ))
         return redirect(f"{redirect_url}#partitioned-plots")
+    
+
+def clean_geojson_file(request):
+    MAX_SIZE = 50 * 1024 * 1024 # 50MB
+    file =  request.FILES.get('geojson_file', None)
+    if not file.name.endswith('.geojson'):
+        return None, 'Only GEOJSON files are allowed'
+    
+    if file.size > MAX_SIZE:
+        return None, f'File size exceeds {MAX_SIZE} MBs. Split the file into chuncks and upload one by one'
+    
+    return file, None
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0012", 3)
+def partitioned_plots_upload_view(request):
+    if request.method == "POST":
+        file, message = clean_geojson_file(request)
+        park = request.POST.get("park", -1)
+        if file:
+            upload_job = BulkUploadJob.objects.create(user=request.user, category="PARTITIONED_PLOTS", uploaded_file=file)
+            process_geojson_plots(upload_job.id, park_id=park)
+            messages.info(request, "Bulk upload has started. You can monitor the status here.")
+
+            redirect_url = reverse('industry:parks-list')
+            return redirect(f"{redirect_url}#upload-plots-in-parks")
+        else:
+            messages.error(request, f"Invalid form submission. Please check the file. {message}")
+            return redirect("industry:parks-list")
+        
+    parks = IndustryEconomicZone.objects.all().order_by("name")
+    context = {
+        'parks': parks
+    }
+    return render(request, 'industry/park/upload_partitioned_plots.html', context)
     
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")

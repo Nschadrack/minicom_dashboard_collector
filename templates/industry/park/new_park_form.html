@@ -1,0 +1,55 @@
+<form class="car_new_form" method="post" action="">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Registering a new industrial park/economic zone in the system</legend>	
+        <div class="form-group">
+            <label>Category</label>
+            <select required name="category">
+                <option selected value="Industrial Park">Industrial Park</option>
+                <option value="Special Economic Zone">Special Economic Zone</option>
+                <option value="Light Industrial Zone">Light Industrial Zone</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" maxlength="60" name="name" required/>
+        </div>
+        <div class="form-group">
+            <label>Total Area(M<sup>2</sup>)</label>
+            <input type="number" min="0" name="total_area" step=".00001" required/>
+        </div>
+        <div class="form-group">
+            <label>Leasable Area(M<sup>2</sup>)</label>
+            <input type="number" min="0" name="leasable_area" step=".00001" required/>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputProvince">Province</label>
+            <select id="exampleInputProvince" name="province" required onchange="fillInDistricts('{{ districts|escapejs }}');">
+                <option disabled selected>choose province</option>
+                {% for province in provinces %}
+                    <option value="{{ province.id }}">{{ province.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputDistrict">District</label>
+            <select id="exampleInputDistrict" name="district" required onchange="fillInSectors('{{ sectors|escapejs }}');">
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputSector">Sector</label>
+            <select id="exampleInputSector" name="sector" required onchange="fillInCells('{{ cells|escapejs }}');">
+
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputCell">Cell</label>
+            <select id="exampleInputCell" name="cell" required>
+
+            </select>
+        </div>
+        <input type="submit" value="Save"/>
+        <button type="button" onclick="hideNewGroupCarRegiseterForm()">Cancel this action</button>
+    </fieldset>						
+</form>

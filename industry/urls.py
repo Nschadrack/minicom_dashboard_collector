@@ -6,13 +6,15 @@ from .views import (industrial_parks_list, industrial_park_detail,
                     record_industry_attachment, add_industry_economic_sectors,
                     contracts_list, contracts_detail, make_payment_transaction,
                     main_indstry_contracts, record_refund, add_industry_product,
-                    delete_industry_product, delete_industry_attachment, delete_industry)
+                    delete_industry_product, delete_industry_attachment, delete_industry,
+                    partitioned_plots_upload_view)
 
 
 app_name = "industry"
 urlpatterns = [
     # parks
     path("parks/", industrial_parks_list, name="parks-list"),
+    path("parks/upload-plots/", partitioned_plots_upload_view, name="upload-plots"),
     path("parks/<str:park_id>/", industrial_park_detail, name="park-details"),
     path("parks/<str:park_id>/partitioned-plot/", record_partitioned_plot, name="add-partitioned-plot"),
 

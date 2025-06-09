@@ -87,7 +87,7 @@ def clean_csv_file(request):
         return None, 'Only CSV files are allowed'
     
     if file.size > MAX_SIZE:
-        return None, f'File size exceeds {MAX_SIZE//1024} MBs. Split the file into chuncks and upload one by one'
+        return None, f'File size exceeds {MAX_SIZE} MBs. Split the file into chuncks and upload one by one'
     
     return file, None
 

@@ -123,6 +123,7 @@ class PartitionedPlot(models.Model):
     plot_size = models.DecimalField(decimal_places=5, max_digits=13, null=False, blank=False)
     park = models.ForeignKey(IndustryEconomicZone, on_delete=models.CASCADE, related_name="park_partitioned_plots")
     allocated_plot = models.ForeignKey(AllocatedPlot, on_delete=models.CASCADE, related_name="partitioned_plots", null=True, blank=True)
+    coordinates = models.JSONField(null=True, blank=True)
     is_allocated = models.BooleanField(default=False)
     recorded_date = models.DateTimeField(auto_now_add=True)
 
