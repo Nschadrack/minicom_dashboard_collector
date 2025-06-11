@@ -728,6 +728,7 @@ body{
 }
 .car_viewed_for_services_prices p{
 	font-size: 12px;
+	padding: 5px 0;
 }
 #car_services .car_services_list_new_form{
 	float: left;

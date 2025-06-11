@@ -7,7 +7,7 @@ from .views import (industrial_parks_list, industrial_park_detail,
                     contracts_list, contracts_detail, make_payment_transaction,
                     main_indstry_contracts, record_refund, add_industry_product,
                     delete_industry_product, delete_industry_attachment, delete_industry,
-                    partitioned_plots_upload_view)
+                    partitioned_plots_upload_view, bulk_industry_profiles_upload)
 
 
 app_name = "industry"
@@ -26,6 +26,7 @@ urlpatterns = [
     path("industries/<str:industry_id>/add-economic-sector/", add_industry_economic_sectors, name="add-industry-economic-sector"),
     path("industries/<str:industry_id>/upload-attachment/", record_industry_attachment, name="upload-industry-attachment"),
     path("industries/attachments/<str:attachment_id>/delete/", delete_industry_attachment, name="delete-industry-attachment"),
+    path("companies-profiles/bulk-upload/industry-profiles/", bulk_industry_profiles_upload, name="bulk-upload-industry-profiles"),
 
     # industry product
     path("industries/<str:industry_id>/add-product/", add_industry_product, name="add-industry-product"),

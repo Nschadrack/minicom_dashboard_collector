@@ -3,7 +3,7 @@
 {% load custom_filters %}
 {% block main_data_load %}
     <div id="car_title_header_and_new_btn">
-        <p id="car_title_header_and_new_btn_p">#LAND INFORMATION: REQUEST BY {{ land_request.land_owner.user.first_name|upper }}</p>
+        <p id="car_title_header_and_new_btn_p">#LAND INFORMATION: REQUEST BY {{ land_request.land_owner.name|upper }}</p>
         <a href="{% url 'industry:land-requests' %}" id="price_back_to_car_list">Back to the list</a>
     </div>
 
@@ -23,8 +23,8 @@
             <div class="upper-detail-div">
                 <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
                     <div>
-                        <p><strong>Land Requester Name: </strong>{{ land_request.land_owner.user.first_name|title }}</p>   
-                        <p><strong>Land Requester E-mail: </strong>{{ land_request.land_owner.user.email|upper }}</p>   
+                        <p><strong>Land Requester Name: </strong>{{ land_request.land_owner.name|title }}</p>   
+                        <p><strong>Land Requester E-mail: </strong>{{ land_request.land_owner.email_contact|upper }}</p>   
                         <p><strong>Land Requester phone: </strong>{{ land_request.land_owner.phone_contact }}</p>                
                         <p><strong>Total Requested Land Area: </strong>
                             {% with value=land_request.requested_land_size|floatformat:5 %}
@@ -67,8 +67,8 @@
                 {% if allocated_plot %}
                     <div id="car_viewed_for_prices" class="car_viewed_for_services_prices">
                         <div>
-                            <p><strong>Plot Owner Name: </strong>{{ allocated_plot.land_owner.user.first_name|title }}</p>   
-                            <p><strong>Plot Owner E-mail: </strong>{{ land_request.land_owner.user.email|upper }}</p>   
+                            <p><strong>Plot Owner Name: </strong>{{ allocated_plot.land_owner.name|title }}</p>   
+                            <p><strong>Plot Owner E-mail: </strong>{{ land_request.land_owner.email_contact|upper }}</p>   
                             <p><strong>Plot owner phone: </strong>{{ land_request.land_owner.phone_contact }}</p>                
                             <p><strong>Total Requested Land Area: </strong>
                                 {% with value=land_request.requested_land_size|floatformat:5 %}
