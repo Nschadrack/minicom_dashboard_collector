@@ -10,7 +10,7 @@ class BulkUploadJob(models.Model):
         ('failed', 'Failed'),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='pending')
     uploaded_file = models.FileField(upload_to='bulk_uploads/')
     category = models.CharField(max_length=40)
     error_log = models.JSONField(blank=True, null=True, encoder=DjangoJSONEncoder)

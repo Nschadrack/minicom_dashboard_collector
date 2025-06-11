@@ -81,7 +81,7 @@ def icbt_view(request):
 
 
 def clean_csv_file(request):
-    MAX_SIZE = 50 * 1024 * 1024 # 50MB
+    MAX_SIZE = 60 * 1024 * 1024 # 50MB
     file =  request.FILES.get('csv_file', None)
     if not file.name.endswith('.csv'):
         return None, 'Only CSV files are allowed'

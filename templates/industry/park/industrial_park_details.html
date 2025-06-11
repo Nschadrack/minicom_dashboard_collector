@@ -31,6 +31,7 @@
                         {% endwith %}
                         <b>m<sup>2</sup></b>
                     </p>
+                    <p><strong>Nbr of Available Plots: </strong>{{ available_plots|format_number }}</p>   
                     <br/>
                     <b><h3 style="border-bottom: 1px solid black;">Location</h3></b>
                     <p><strong>Province: </strong>{{ industrial_park.province|title }}</p>
@@ -46,6 +47,7 @@
                         {% endwith %}
                         <b>m<sup>2</sup></b>
                     </p>
+                    <p><strong>Total Nbr of Plots: </strong>{{ all_plots|format_number }}</p>  
                 </div>
             </div>
         </div>
@@ -120,11 +122,11 @@
                             <thead>
                                 <th>#</th>
                                 <th>PLOT OWNER</th>
+                                <th>ZONING</th>
+                                <th>PLOT SIZE</th>
                                 <th>ALLOCATED PLOT UPI</th>
                                 <th>UPI STATUS</th>
-                                <th>PLOT SIZE</th>
                                 <th>LAND TITLE STATUS</th>
-                                <th>ZONING</th>
                                 <th>RECORDED DATE</th>
                                 <th colspan="1">Action</th>
                             </thead>
@@ -132,16 +134,16 @@
                                 {% for allocated_plot in allocated_plots %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ allocated_plot.land_owner.user.first_name|title }}</td>
-                                        <td>{{ allocated_plot.allocated_plot_upi }}</td>
-                                        <td>{{ allocated_plot.upi_status|title }}</td>
+                                        <td>{{ allocated_plot.land_owner.name|title }}</td>
+                                        <td>{{ allocated_plot.zone.name|title }}</td>
                                         <td>
                                             {% with value=allocated_plot.plot_size|floatformat:5 %}
                                                 {{ value|format_number:5 }}
                                             {% endwith %}
                                             <b>m<sup>2</sup></b>
                                         </td>
-                                        <td>{{ allocated_plot.zone.name|title }}</td>
+                                        <td>{% if allocated_plot.allocated_plot_upi %}{{ allocated_plot.allocated_plot_upi }}{% endif %}</td>
+                                        <td>{{ allocated_plot.upi_status|title }}</td>
                                         <td>{{ allocated_plot.land_title_status|title }}</td>
                                         <td>{{ allocated_plot.recorded_date|date:"d-m-Y H:i:s A" }}</td>
                                         <td><a href="{% url 'industry:land-request-detail' allocated_plot.land_request.id %}#land-request-allocated-plot" class="view_button">view</a></td>

@@ -9,8 +9,40 @@ from django.db import transaction, IntegrityError
 from automation.models import BulkUploadJob
 from .models import ICBTRecord
 import warnings
+import numpy as np
 
 warnings.simplefilter("ignore")
+
+def clean_data(df):
+    df["month"] = df["month"].str.strip()
+    df['quantity'] = df['quantity'].astype(str)
+    df['unit_price'] = df['unit_price'].astype(str)
+    df['total_price'] = df['total_price'].astype(str)
+    df['total_price_usd'] = df['total_price_usd'].astype(str)
+
+    df['quantity'] = pd.to_numeric(df['quantity'].str.replace(',', ''))
+    df['unit_price'] = pd.to_numeric(df['unit_price'].str.replace(',', ''))
+    df['total_price'] = pd.to_numeric(df['total_price'].str.replace(',', ''))
+    df['total_price_usd'] = pd.to_numeric(df['total_price_usd'].str.replace(',', ''))
+
+    df['quantity'] = df['quantity'].astype(np.float64)
+    df['unit_price'] = df['unit_price'].astype(np.float64)
+    df['total_price'] = df['total_price'].astype(np.float64)
+    df['total_price_usd'] = df['total_price_usd'].astype(np.float64)
+
+    df['quantity'] = np.abs(df['quantity'])
+    df['unit_price'] = np.abs(df['unit_price'])
+    df['total_price'] = np.abs(df['total_price'])
+    df['total_price_usd'] = np.abs(df['total_price_usd'])
+
+    infinity = [np.inf, -np.inf]
+
+    df['quantity'] = df['quantity'].replace(infinity, 0)
+    df['unit_price'] = df['unit_price'].replace(infinity, 0)
+    df['total_price'] = df['total_price'].replace(infinity, 0)
+    df['total_price_usd'] = df['total_price_usd'].replace(infinity, 0)
+    
+    return df
 
 @background(schedule=0)
 def process_csv_icbt(upload_job_id):
@@ -19,6 +51,7 @@ def process_csv_icbt(upload_job_id):
     job.save()
     errors = []
     row_count = 0
+    row_to_consider = None
 
     start_time = time.time()
     try:
@@ -36,6 +69,9 @@ def process_csv_icbt(upload_job_id):
                         'total_price_usd'], inplace=True)
             chunk.dropna(subset=['form_code', 'start_time', 'end_time', 'date_period', 'month', 
                         'cross_point', 'district', 'sex', 'profession'], inplace=True)
+            
+            row_to_consider = chunk
+            chunk = clean_data(chunk)
             try:
                 with transaction.atomic():
                     # Convert dataframe rows to model instances
@@ -110,20 +146,25 @@ def process_csv_icbt(upload_job_id):
         total_time = time.time() - start_time
         minutes = round(total_time / 60, 2)
         job.processing_minutes = minutes
-        print("\nBefore Saving\n")
         job.save()
-        print("\nAfter saving\n")
         
     except Exception as e:
         print(f"ERROR: {str(e)}")
         job.status = 'failed'
-        # Create safe error structure
-        job.error_log = [{
-            'row': 0,
-            'error': f"Global processing error: {str(e)}",
-            'data': {}
-        }]
-        print(f"\n{errors[:10]}\n")
+        if row_to_consider is not None and len(row_to_consider) > 0:
+            for i, (_, row) in enumerate(row_to_consider.iterrows()):
+                    errors.append({
+                        'row': row_count + i + 1,
+                        'error': str(e),
+                        'data': row.to_dict()
+                    })
+            job.failure_count += len(row_to_consider)
+        else:
+            job.error_log = [{
+                'row': 0,
+                'error': f"Global processing error: {str(e)}",
+                'data': {}
+            }]
         total_time = time.time() - start_time
         minutes = round(total_time / 60, 2)
         job.processing_minutes = minutes
@@ -132,6 +173,7 @@ def process_csv_icbt(upload_job_id):
     # File cleanup in finally block
     finally:
         try:
+            pass
             if os.path.exists(job.uploaded_file.path):
                 os.remove(job.uploaded_file.path)
         except Exception as e:

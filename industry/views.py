@@ -34,6 +34,8 @@ from .fixtures import (PRODUCT_QUANTITIES, PRODUCT_PACKAGING_MATERIAL,
 
 from  system_management.permissions import (check_role_permission_on_module_decorator, 
                                             is_user_permitted)
+from trade.views import clean_csv_file
+from .tasks import process_industry_profile
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -123,6 +125,10 @@ def industrial_park_detail(request, park_id):
     if industrial_park is None:
         return redirect("industry:parks-list") 
     
+    plots = PartitionedPlot.objects.filter(park=industrial_park)
+    available_plots = len(plots.filter(is_allocated=False))
+    all_plots = len(plots)
+
     page_number = request.GET.get('page', 1)
     CACHE_TIMEOUT = settings.CACHE_TIMEOUT
     PAGE_SIZE = settings.PAGE_SIZE
@@ -182,7 +188,9 @@ def industrial_park_detail(request, park_id):
         "allocated_plots": allocated_plots,
         "allocated_plots_page": current_allocated_plot_page,
         "park_industries": park_industries,
-        "industries_in_park_page": current_industry_page
+        "industries_in_park_page": current_industry_page,
+        "available_plots": available_plots,
+        "all_plots": all_plots
 
     }
 
@@ -224,10 +232,10 @@ def record_partitioned_plot(request, park_id):
     
 
 def clean_geojson_file(request):
-    MAX_SIZE = 50 * 1024 * 1024 # 50MB
+    MAX_SIZE = 60 * 1024 * 1024 # 50MB
     file =  request.FILES.get('geojson_file', None)
-    if not file.name.endswith('.geojson'):
-        return None, 'Only GEOJSON files are allowed'
+    if not file.name.endswith('.geojson') and not file.name.endswith('.json'):
+        return None, 'Only GEOJSON and JSON files are allowed'
     
     if file.size > MAX_SIZE:
         return None, f'File size exceeds {MAX_SIZE} MBs. Split the file into chuncks and upload one by one'
@@ -381,6 +389,7 @@ def companies_industries_list(request):
 
     companies_industries_profiles = CompanyProfile.objects.filter(id__in=current_profile_ids).order_by("name")
     park_industries = CompanySite.objects.filter(id__in=current_industry_ids).order_by("company__name")
+    jobs = BulkUploadJob.objects.filter(category="INDUSTRY_PROFILE").order_by("-created_at")
 
     context = {
         "companies_industries_profiles": companies_industries_profiles,
@@ -395,9 +404,29 @@ def companies_industries_list(request):
         "districts": json.dumps(list(districts.values())),
         "sectors": json.dumps(list(sectors.values())),
         "cells": json.dumps(list(cells.values())),
-        "villages": json.dumps(list(villages.values()))
+        "villages": json.dumps(list(villages.values())),
+        "jobs": jobs
     }
     return render(request, "industry/industries/industries_companies.html", context=context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+@check_role_permission_on_module_decorator("0013", 1)
+def bulk_industry_profiles_upload(request):
+    if request.method == "POST":
+        file, message = clean_csv_file(request)
+        if file:
+            upload_job = BulkUploadJob.objects.create(user=request.user, category="INDUSTRY_PROFILE", uploaded_file=file)
+            process_industry_profile(upload_job.id)
+            messages.info(request, "Bulk upload has started. You can monitor the status here.")
+
+            redirect_url = reverse('industry:companies-industries-list')
+            return redirect(f"{redirect_url}#upload-inudstry-profiles")
+        else:
+            messages.error(request, f"Invalid form submission. Please check the file. {message}")
+            return redirect("industry:companies-industries-list")
+        
+    return render(request, "industry/industries/upload_profiles.html")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
