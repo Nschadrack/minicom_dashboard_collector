@@ -32,7 +32,6 @@
                             <th>TOTAL AREA(SQUARE M)</th>
                             <th>LEASABLE AREA(SQUARE M)</th>
                             <th>NBR OF PLOTS</th>
-                            <th>NBR OF INDUSTRIES</th>
                             <th>PROVINCE</th>
                             <th>DISTRICT</th>
                             <th>SECTOR</th>
@@ -56,7 +55,6 @@
                                         {% endwith %}
                                     </td>
                                     <td>{{industrial_park.park_partitioned_plots.all|length|format_number}}</td>
-                                    <td>{{industrial_park.company_profile_sites.all|length|format_number}}</td>
                                     <td>{{ industrial_park.province|title}}</td>
                                     <td>{{ industrial_park.district|title}}</td>
                                     <td>{{ industrial_park.sector|title}}</td>      
