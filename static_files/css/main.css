@@ -20,7 +20,7 @@
 }
 *{
 	box-sizing: border-box;
-	font-family:Verdana, Geneva, Tahoma, sans-serif;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	font-size: 12px;
 }
 html {
@@ -268,7 +268,7 @@ body{
 	right: 0;
 	left: 11%;
 	color: var(--darkBlue);
-	font-family: 'Times New Roman', Times, serif;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	display: flex;
 	align-items: center;      /* Vertical alignment */
 	/* justify-content: center;  Optional: horizontal alignment */
@@ -285,12 +285,13 @@ body{
 }
 #main_load_header p{
 	text-align: center;
-	font-size: 1.1rem;
+	font-size: 1rem;
 	font-weight: bold;
 	font-style: italic;
 	border: 1px double var(--darkBlue);
 	padding: 3px 10px;
 	margin-left: 10px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #main_load_data{
 	width: 100%;
@@ -301,7 +302,7 @@ body{
 #sfjourney_aside_logo{
 	width: 100%;
 	height: 4%;
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 0px;
 	margin: 0px;
 	margin-top: 0px;
@@ -323,6 +324,7 @@ body{
 	font-size: 0.9rem;
 	padding-left: 2px;
 	font-weight: bold;
+	font-size: 1rem;
 }
 #aside_navigations{
 	height: 94%;
@@ -335,7 +337,7 @@ body{
 	width: 100%;
 	padding: 8px;
 	display: block;
-	font-size: 0.8rem;
+	font-size: 1rem;
 	border-top: 1px solid var(--aside_border_color);
 	text-decoration: none;
 	font-family: inherit;
@@ -355,7 +357,7 @@ body{
 	padding: 8px;
 	display: block;
 	border: none;
-	font-size: 0.8rem;
+	font-size: 1rem;
 	border-top: 1px solid var(--aside_border_color);
 	text-decoration: none;
 	font-family: inherit;
@@ -379,7 +381,7 @@ body{
 	padding: 3px 6px;
 	font-weight: bold;
 	font-family: sans-serif;
-	font-size: 12px;
+	font-size: 1rem;
 }
 /* styling the tabs */
 /* Tabs Styling */
@@ -404,7 +406,8 @@ body{
     margin-right: 0;
     background-color: var(--table_header_background_color);
     border-radius: 0;
-	font-size: 0.8rem;
+	font-size: 1rem;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .tabs .tab-link.active {
@@ -454,13 +457,14 @@ body{
 	float: left;
 	padding-top: 5px;
 	padding-bottom: 0;
-	font-size: 0.9rem;
+	font-size: 1rem;
 	width: auto;
 	height: 2rem;
 	margin-bottom: 0;
 	margin-top: 0px;
 	font-weight: bold;
 	border-bottom: 2px double var(--darkBlue);
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_title_header_and_new_btn button{
 	float: right;
@@ -470,10 +474,11 @@ body{
 	border: none;
 	color: var(--aside_fg);
 	font-weight: bold;
-	font-size: 0.8rem;
+	font-size: 1rem;
 	border-radius: 0px;
 	outline: none;
 	margin-top: 0px;
+	padding: 5px 10px;
 }
 
 #car_table_data{
@@ -494,9 +499,10 @@ body{
 .table-data thead th{
 	background-color: var(--table_header_background_color);
 	color: var(--darkBlue);
-	font-size: 0.8rem;
+	font-size: 1rem;
 	text-align: left;
 	font-weight: bold;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .table-data th,.table-data td, .table-data table{
 	text-align: center;
@@ -504,9 +510,10 @@ body{
 }
 .table-data table th, .table-data table td{
 	padding: 6px;
-	font-size: 0.8rem;
+	font-size: 1rem;
 	white-space: nowrap;
 	text-align: left;
+	font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .table-data table tr {
 	background-color: var(--aside_bg_hover_a);
@@ -546,8 +553,8 @@ body{
 	color: var(--aside_fg);
 	font-weight: normal;
 	text-decoration: none;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 0.8rem;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: 1rem;
 }
 .table-data table tr .update_button{
 	background-color:inherit;
@@ -634,7 +641,7 @@ body{
 	border: none;
 	border-bottom: 1px solid var(--scroll_bar_color);
 	width: 100%;
-	font-size: 12px;
+	font-size: 1rem;
 	color: #888;
 	margin-top: 2px;
 }
@@ -643,7 +650,7 @@ body{
 	width: 100%;
 	height: 150px;
 	color: #888;
-	font-size: 12px;
+	font-size: 1rem;
 	border: 2px solid var(--scroll_bar_color);
 	border-radius: 5px;
 	outline: none;
@@ -652,13 +659,15 @@ body{
 .car_new_form_div legend, .car_new_form_div_edit legend{
 	font-weight: bold;
 	margin-bottom: 0px;
-	font-size: 14px;
+	font-size: 1rem;
 	margin-left: 5px;
 	text-align: center;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .car_new_form_div label, .car_new_form_div_edit label{
 	font-weight: normal;
-	font-size: 12px;
+	font-size: 1rem;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .car_new_form .form-group{
 	margin-bottom: 0px;
@@ -671,7 +680,8 @@ body{
 }
 .car_new_form_div legend, .car_new_form_div_edit legend{
 	border-bottom: 2px double var(--darkBlue);
-	font-size: 12px;
+	font-size: 1rem;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .car_new_form input[type="submit"], .car_new_form  button{
@@ -716,7 +726,7 @@ body{
 	padding: 1px 10px;
 	color: var(--aside_fg_hover_a);
 	font-weight: normal;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	min-height: 250px;
 	max-height: auto;
 }
@@ -725,17 +735,19 @@ body{
 	width: 50%;
 	cursor: pointer;
 	padding-bottom: 20px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .car_viewed_for_services_prices p{
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 5px 0;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_services .car_services_list_new_form{
 	float: left;
 }
 #price_back_to_car_list{
 	float: right;
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 8px 10px;
 	margin-top: 0px;
 	font-weight: normal;
@@ -747,7 +759,7 @@ body{
 }
 .system_settings_button_feed{
 	/* float: left; */
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 8px 10px;
 	margin: 10px;
 	font-weight: normal;
@@ -756,6 +768,7 @@ body{
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	text-decoration: none;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
  #car_services_list{
 	width: 55%;
@@ -782,6 +795,7 @@ body{
 	border: 1px solid var(--scroll_bar_color);
 	font-size: 14px;
 	padding: 10px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_services_new_form input{
 	margin: 10px auto;
@@ -794,6 +808,7 @@ body{
 	padding: 10px;
 	background-color: var(--peru_car);
 	font-weight: bold;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* styling car prices page */
@@ -812,6 +827,7 @@ body{
 	font-size: 14px;
 	font-weight: bold;
 	outline: none;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .current_price_list{
@@ -825,14 +841,14 @@ body{
 	border-bottom: 2px double var(--darkBlue);
 	text-align: center;
 	width: 100%;
-	font-size: 0.9rem;
+	font-size: 1rem;
 	margin-bottom: 2px;
 }
 
 #view_price_archive_button{
 	float: right;
 	font-weight: normal;
-	font-size: 0.8rem;
+	font-size: 1rem;
 	border-radius: 0px;
 	border: none;
 	outline: none;
@@ -854,7 +870,7 @@ body{
 #hide_price_archives{
 	float: right;
 	font-weight: bold;
-	font-size: 12px;
+	font-size: 1rem;
 	border-radius: 0px;
 	border: none;
 	outline: none;
@@ -863,6 +879,7 @@ body{
 	color: var(--aside_fg);
 	margin-right: 10px;
 	margin-top: -30px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* styling group car detailed info */
@@ -877,6 +894,7 @@ body{
 	margin: 0px;
 	margin-top: -4px;
 	font-weight: bold;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #paid_car_registration_fee{
 	float: right;
@@ -889,6 +907,7 @@ body{
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	text-decoration: none;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_detailed_info{
 	width: 47%;
@@ -912,6 +931,7 @@ body{
 #car_actual_detailed_info p{
 	font-weight: bold;
 	font-size: 16px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	
 }
 #car_actual_detailed_info span{
@@ -921,12 +941,14 @@ body{
 	margin-left: 0px;
 	font-size: 1.1em;
 	white-space: nowrap;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_description_div{
 	padding-top: 10px;
 }
 #car_description_div h4{
 	text-align: center;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_description_div p{
 	margin-top: -15px;
@@ -935,6 +957,7 @@ body{
 	white-space: collapse;
 	background-color: var(--main_header_bg);
 	padding: 10px;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #car_approval_declined_comments{
 	border-top: 3px solid var(--scroll_bar_color);
@@ -968,6 +991,7 @@ body{
 	text-decoration: none;
 	font-size: 18px;
 	font-weight: bold;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #address_location_table .delete{
 	background-color: var(--darkBlue);
@@ -1021,7 +1045,7 @@ body{
 	border: none;
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 10px;
 }
 #car_images_div  .update_car_picture_btn, #car_plate_number_image .update_car_picture_btn{
@@ -1043,7 +1067,7 @@ body{
 	border: none;
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
-	font-size: 12px;
+	font-size: 1rem;
 	padding: 10px;
 }
 
