@@ -31,7 +31,8 @@
                         {% endwith %}
                         <b>m<sup>2</sup></b>
                     </p>
-                    <p><strong>Nbr of Available Plots: </strong>{{ available_plots|format_number }}</p>   
+                    <p><strong>Nbr of Available Plots: </strong>{{ available_plots|format_number }}</p> 
+                    <p><strong>Nbr of Industries: </strong>{{ industrial_park.company_profile_sites.all|format_number }}</p>  
                     <br/>
                     <b><h3 style="border-bottom: 1px solid black;">Location</h3></b>
                     <p><strong>Province: </strong>{{ industrial_park.province|title }}</p>
