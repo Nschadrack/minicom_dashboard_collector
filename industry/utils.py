@@ -30,7 +30,7 @@ def get_base_domain(request=None, return_domain_name=False):
     return base_domain
 
 def load_countries():
-    DATA_PATH_FILE = os.path.join(os.getcwd(), "all_countries.csv")
+    DATA_PATH_FILE = os.path.join(os.getcwd(), "fixtures", "all_countries.csv")
     with open(DATA_PATH_FILE, mode='r', newline='', encoding='utf-8') as file_reader:
         csv_reader = csv.reader(file_reader)
         countries = []

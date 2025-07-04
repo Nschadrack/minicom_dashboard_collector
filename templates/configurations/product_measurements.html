@@ -1,0 +1,22 @@
+{% load custom_filters %}
+<h4>Product Measurments</h4>			
+<table class="table-data">
+    <thead>
+        <th>#</th>
+        <th>Short Form</th>
+        <th>RRA Form</th>
+        <th>Full Form</th>
+        <th>Description</th>
+    </thead>
+    <tbody>
+        {% for measurment in measurments %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ measurment.short_abbr|upper }}</td>
+                <td>{{ measurment.long_abbr|upper }}</td>
+                <td>{{ measurment.full_form|title }}</td>
+                <td>{{ measurment.description }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

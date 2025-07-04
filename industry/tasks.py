@@ -52,11 +52,18 @@ def create_land_information_request(profile, tin_plots):
 def allocate_plot(land_request, request_plots):
     plot_size = 0.0
     plot_ = None
+    is_land_title_issued = True
     for plot_key in request_plots:
         plot = plot_key['plot']
-        plot_ = plot
         if not plot.is_allocated:
             plot_size += plot.plot_size
+        
+        if len(plot.partitioned_plot_upi) < 6:
+            plot_ = plot
+            is_land_title_issued = False
+        
+        if plot_ is None:
+            plot_ = plot
 
     if plot_size > 0:
         allocated_plot = AllocatedPlot.objects.create(
@@ -64,7 +71,11 @@ def allocate_plot(land_request, request_plots):
             land_request=land_request,
             zone=plot_.zone,
             plot_size=plot_size,
-            park=plot_.park
+            park=plot_.park,
+            allocated_plot_upi=plot_.partitioned_plot_upi,
+            upi_status=plot_.upi_status,
+            is_land_title_issued=is_land_title_issued,
+            land_title_status=plot_.upi_status
         )
 
         for plot_key in request_plots:
@@ -90,8 +101,6 @@ def add_industry_in_park(allocated_plot, plots):
                                construction_status=status,
                                allocated_plot=allocated_plot
                                )
-
-
 
 @background(schedule=0)
 def process_geojson_plots(upload_job_id, park_id):
@@ -255,7 +264,7 @@ def validate_phone_number(phone):
     phone = str(phone)
     if any(sub in phone for sub in ['78', '79', '72', '73']):
         if not phone.startswith('07'):
-            phone = '0' + phone.lstrip('0')
+            phone = '+250' + phone.lstrip('0')
     elif 'nan' in phone.lower():
         phone = ''
     return phone

@@ -1,0 +1,62 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+
+{% block main_data_load %}
+    <div id="tabs-container">
+        <br/><br/>
+        <div class="current_price_list table-data">     
+            <h4 style="font-size: 1.2rem;">Before Uploading Formal Trade Imports. The CSV File Must Have The Following Columns</h4>			
+            <table style="margin:auto;">
+                <thead>
+                    {% for col in import_columns %}
+                        <th style="border-left: 1px solid black;">{{ col }}</th>
+                    {% endfor %}
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <h4 style="font-size: 1.2rem; margin-top: 6rem;">Before Uploading Formal Trade Exports. The CSV File Must Have The Following Columns</h4>			
+            <table style="margin:auto;">
+                <thead>
+                    {% for col in export_columns %}
+                        <th style="border-left: 1px solid black;">{{ col }}</th>
+                    {% endfor %}
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <h4 style="font-size: 1.2rem; margin-top: 6rem;">Before Uploading Formal Trade Re-Exports. The CSV File Must Have The Following Columns</h4>			
+            <table style="margin:auto;">
+                <thead>
+                    {% for col in re_export_columns %}
+                        <th style="border-left: 1px solid black;">{{ col }}</th>
+                    {% endfor %}
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+             {% include "helpers/message_alert.html" %}
+            <br/><br/>
+            <div class="upload-container">
+                <form id="uploadForm" method="post" action="{% url 'trade:formal-trade-list' %}" enctype="multipart/form-data" class="car_new_form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Choose Category Of Formal Trade</label>
+                        <select name="category" required class="form-control">
+                            <option value="IMPORT">Import</option>
+                            <option value="EXPORT">Export</option>
+                            <option value="RE-EXPORT">Re-Export</option>
+                        </select>
+                    </div>
+                    <div class="file-input-wrapper form-group">
+                        <input type="file" id="csvFile" name="csv_file" accept=".csv" required/>
+                        <label for="csvFile" class="file-label">Choose Formal Trade DATA CSV File</label>
+                    </div>
+                    <div class="error-message"></div><br/>
+                    <button type="submit" class="submit-btn">Upload</button><br/>
+                    <a class="cancel" href="{% url 'trade:formal-trade-list' %}">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

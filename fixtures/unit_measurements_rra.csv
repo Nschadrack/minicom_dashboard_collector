@@ -1,0 +1,12 @@
+﻿short_abbr,full_abbr,full_form,description
+KG,KGM,Kilogram,Unit of mass/weight
+NBR,NMB,Number,Count of items or units
+MTK,MTK,Square Meter (m²),Unit of area
+L,LTR,Liter,Unit of volume (mainly for liquids)
+M3,MTQ,Cubic Meter (m³),Unit of volume (space/solid measure)
+NPR,NPR,Number of Pairs,"Used for paired items (e.g., shoes, gloves)"
+MIL,MIL,Thousand,"Numeric multiplier, often in production stats"
+G,GM,Gram,Unit of mass/weight (smaller than kg)
+CM,CTM,Centimeter,Unit of length
+M,MTR,Meter,Unit of length
+NUL,NUL,Number of Litres,Sometimes used as a unit for liquid quantity

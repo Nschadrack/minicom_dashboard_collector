@@ -1,0 +1,20 @@
+{% load custom_filters %}
+<h4>BNR Monthly US Dollar Average Rates</h4>			
+<table class="table-data">
+    <thead>
+        <th>#</th>
+        <th>MONTH</th>
+        <th>YEAR</th>
+        <th>AVERAGE RATE</th>
+    </thead>
+    <tbody>
+        {% for usd_rate in usd_rates %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ usd_rate.month|title }}</td>
+                <td>{{ usd_rate.year }}</td>
+                <td>{{ usd_rate.rate|format_number:6 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

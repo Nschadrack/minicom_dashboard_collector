@@ -44,10 +44,10 @@
 				<button onclick="toggleTradeSection()">Trade Module</button>
 				<section id="trade-section">
 					{% if request.user|is_user_permitted:"0020,3" %}
-						<a href="{% url 'trade:icbt-list' %}">ICBT</a>
+						{% comment %} <a href="{% url 'trade:icbt-list' %}">ICBT</a> {% endcomment %}
 					{% endif %}
 					{% if request.user|is_user_permitted:"0021,3" %}
-						<a href="">Formal Trade</a>
+						<a href="{% url 'trade:formal-trade-list' %}">Formal Trade</a>
 					{% endif %}
 				</section>
 			{% endif %}

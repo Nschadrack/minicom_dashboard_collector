@@ -6,14 +6,16 @@
     <div id="tabs-container">
         <ul class="tabs">
             <li class="tab-link active" data-tab="reporting-months">Reporting months</th>
-                <li class="tab-link" data-tab="reporting-periods">Reporting Periods</th>
-            <li class="tab-link" data-tab="others">Others</li>
+            <li class="tab-link" data-tab="reporting-periods">Reporting Periods</th>
+            <li class="tab-link" data-tab="usd_rates">USD Rates</li>
+            <li class="tab-link" data-tab="rra_customs">RRA Customs</li>
+            <li class="tab-link" data-tab="product_measurements">Product Measurments</li>
+            <li class="tab-link" data-tab="world_countries">World Countries</li>
         </ul>
     </div>
 
     <!-- Tab Content -->
     <div id="card_body_data">
-        <!-- Role users Tab -->
         <div id="reporting-months" class="tab-content active">
             <div class="upper-detail-div">
                 <div class="current_price_list table-data"> 
@@ -21,11 +23,38 @@
                 </div>
             </div>
         </div>
-        <!-- permissions Tab -->
         <div id="reporting-periods" class="tab-content">
             <div class="upper-detail-div">
                 <div class="current_price_list table-data">     
                     {% include 'configurations/reporting_periods.html' %}				
+                </div>
+            </div>
+        </div>
+        <div id="usd_rates" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% include 'configurations/usd_average_rates.html' %}				
+                </div>
+            </div>
+        </div>
+        <div id="rra_customs" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% include 'configurations/rra_customs.html' %}				
+                </div>
+            </div>
+        </div>
+        <div id="product_measurements" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% include 'configurations/product_measurements.html' %}				
+                </div>
+            </div>
+        </div>
+        <div id="world_countries" class="tab-content">
+            <div class="upper-detail-div">
+                <div class="current_price_list table-data">     
+                    {% include 'configurations/world_countries.html' %}				
                 </div>
             </div>
         </div>
