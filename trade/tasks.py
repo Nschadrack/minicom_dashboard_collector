@@ -1,4 +1,5 @@
 import os
+import hashlib
 from background_task import background
 import pandas as pd
 from django.conf import settings
@@ -16,7 +17,7 @@ warnings.simplefilter("ignore")
 
 
 def add_month(row, column):
-    value = row[column].dt.strftime('%B')
+    value = row[column].strftime('%B')
     if value:
         value = value.title()
     row["MONTH"] = value
@@ -24,29 +25,29 @@ def add_month(row, column):
 
 def add_usd(row, date_col, amount_col, target_col, rates):
     if row[date_col]:
-        year = row[date_col].dat.year
-        month = row[date_col].dt.strftime('%B')
+        year = row[date_col].year
+        month = row[date_col].strftime('%B')
     else:
         year = 1998
         month = ""
 
     rate = rates.get(f"{month.upper()}_{year}", 0)
-    row[target_col] = row[amount_col] / rate
+    row[target_col] = row[amount_col] / float(rate)
     return row
 
-def add_more_columns(row, date_col, amount_rw_col, amount_rw_cif_col, target_usd_col, target_cif_usd_col, hs_code_col, rates, countries, measurements, customs):
+def add_more_columns(row, date_col, amount_rw_fob_col, amount_rw_cif_col, target_fob_usd_col, target_cif_usd_col, hs_code_col, rates, countries, measurements, customs):
     if row[date_col]:
-        year = row[date_col].dat.year
-        month = row[date_col].dt.strftime('%B')
+        year = row[date_col].year
+        month = row[date_col].strftime('%B')
         month = month.title()
     else:
         year = 1998
         month = ""
 
-    year = row[date_col].dat.year
+    year = row[date_col].year
     rate = rates.get(f"{month.upper()}_{year}", 0)
-    row[target_usd_col] = row[amount_rw_col] / rate
-    row[target_cif_usd_col] = row[amount_rw_cif_col] / rate
+    row[target_fob_usd_col] = row[amount_rw_fob_col] / float(rate)
+    row[target_cif_usd_col] = row[amount_rw_cif_col] / float(rate)
 
     row["MONTH"] = month
     row["HS2"] = row[hs_code_col][:2]
@@ -243,20 +244,23 @@ def clean_tin(tin):
         if tin.isnumeric():
             tin = (int(tin))
         else:
-            tin = ""
+            tin = None
     else:
-        tin = ""
-    return tin
+        tin = None
+    return tin    
         
 def clean_formal_trade_data(df, rates, countries, measurements, customs, category):
-    df["DATE"] = pd.to_datetime(df["DATE"])
+    df["DATE"] = pd.to_datetime(df["DATE"], format='mixed', dayfirst=True)
     df["MONTH"] = [""] * len(df)
     df["TIN"] = df["TIN"].astype(str)
     df["TIN"] = df["TIN"].apply(clean_tin)
 
+    df['NAME OF TAXPAYER'] = df['NAME OF TAXPAYER'].fillna('')
     df['NAME OF TAXPAYER'] = df['NAME OF TAXPAYER'].astype(str)
+    df['NAME OF SUPPLIER'] = df['NAME OF SUPPLIER'].fillna('')
     df['NAME OF SUPPLIER'] = df['NAME OF SUPPLIER'].astype(str)
-    df['ITEM NBR'] = df['ITEM NBR'].astype(np.float64)
+    df['ITEM NBR'] = df['ITEM NBR'].fillna(0)
+    df['ITEM NBR'] = df['ITEM NBR'].astype(np.int64)
     df['OFFICE'] = df['OFFICE'].astype(str)
     df['REGIME'] = df['REGIME'].astype(str)
     df['NBR SAD'] = df['NBR SAD'].astype(int)
@@ -274,7 +278,6 @@ def clean_formal_trade_data(df, rates, countries, measurements, customs, categor
     df['QUANTITY'] = df['QUANTITY'].astype(np.float64)
     df['NET WEIGHT'] = df['NET WEIGHT'].astype(np.float64)
     df['FOB'] = df['FOB'].astype(np.float64)
-    df['CIF'] = df['CIF'].astype(np.float64)
     df["FOB_USD"] = [0.0] * len(df)
     df["CIF_USD"] = [0.0] * len(df)
 
@@ -290,10 +293,26 @@ def clean_formal_trade_data(df, rates, countries, measurements, customs, categor
         df['DEST'] = df['DEST'].astype(str)
         df['ORIG'] = ["RW"] * len(df)
         df['PROV'] = [""] * len(df)
+        df['CIF'] = [0.0] * len(df)
+        df['CIF'] = df['CIF'].astype(np.float64)
+        df['FREIGHT'] = [0.0] * len(df)
+        df['FREIGHT'] = df['FREIGHT'].astype(np.float64)
+        df['INSURANCE'] = [0.0] * len(df)
+        df['INSURANCE'] = df['INSURANCE'].astype(np.float64)
+        df['OTHER COSTS'] = [0.0] * len(df)
+        df['OTHER COSTS'] = df['OTHER COSTS'].astype(np.float64)
     elif category.upper() == "RE-EXPORT":
         df['ORIG'] = df['ORIG'].astype(str)
         df['DEST'] = df['DEST'].astype(str)
         df['PROV'] = [""] * len(df)
+        df['CIF'] = [0.0] * len(df)
+        df['CIF'] = df['CIF'].astype(np.float64)
+        df['FREIGHT'] = [0.0] * len(df)
+        df['FREIGHT'] = df['FREIGHT'].astype(np.float64)
+        df['INSURANCE'] = [0.0] * len(df)
+        df['INSURANCE'] = df['INSURANCE'].astype(np.float64)
+        df['OTHER COSTS'] = [0.0] * len(df)
+        df['OTHER COSTS'] = df['OTHER COSTS'].astype(np.float64)
     
     df["ORIGINE"] = [""] * len(df)
     df["DESTINATION"] = [""] * len(df)
@@ -302,8 +321,8 @@ def clean_formal_trade_data(df, rates, countries, measurements, customs, categor
     df["CUSTOM POST NAME"] = [""] * len(df)
     df["STAT UNIT NEW"] = [""] * len(df)
     
-    df = df.apply(add_more_columns, date_col="DATE", amount_col="FOB", 
-                  target_col="FOB_USD", hs_code_col="HS CODE", 
+    df = df.apply(add_more_columns, date_col="DATE", amount_rw_fob_col="FOB", 
+                  target_fob_usd_col="FOB_USD", hs_code_col="HS CODE", 
                   amount_rw_cif_col="CIF", target_cif_usd_col="CIF_USD",
                   rates=rates, countries=countries, measurements=measurements,
                   customs=customs, axis=1)
@@ -311,8 +330,15 @@ def clean_formal_trade_data(df, rates, countries, measurements, customs, categor
 
     return df
 
+def create_row_hash(row):
+    values = [str(v) for v in list(row.values())]
+    combined_string = '|'.join(values)
+    combined_string = combined_string.lower().replace(" ", "")
+    return combined_string
+
 def build_formal_trade(row):
     trade = FormalTrade(
+        row_key=create_row_hash(row),
         tin_number=row["TIN"],
         tax_payer_name=row["NAME OF TAXPAYER"],
         supplier_name=row["NAME OF SUPPLIER"],
@@ -398,14 +424,15 @@ def process_csv_formal_trade(upload_job_id, category):
             for chunk in pd.read_csv(job.uploaded_file.path, chunksize=batch_size):
                 chunk_start_row = row_count  # Track starting row for this chunk
                 chunk_length = len(chunk)
+                chunck_columns = chunk.columns
+                chunck_columns = sorted([ col.upper() for col in chunck_columns])
                 
                 row_to_consider = chunk
                 chunk = clean_formal_trade_data(df=chunk, countries=countries_dict,
                                                 measurements=measurements_dict,
                                                 customs=customs_dict,
+                                                rates=rates_dict,
                                                 category=category)
-                chunck_columns = chunk.columns
-                chunck_columns = sorted([ col.upper() for col in chunck_columns])
 
                 if category.upper() == "IMPORT":
                     if import_columns != chunck_columns:
@@ -422,29 +449,32 @@ def process_csv_formal_trade(upload_job_id, category):
                 for _, row in chunk.iterrows():
                     row_count += 1
                     job.processed_count += 1
+                    cleaned_row = {k: None if pd.isna(v) else v for k, v in row.to_dict().items()}
                     try:
-                        trade = build_formal_trade(row)
+                        trade = build_formal_trade(cleaned_row)
                         trade.save()
                         job.success_count += 1
                     except IntegrityError as e:
+
                         errors.append({
                             'row': row_count,
                             'error': f"This record cannot be inserted, there is already same record in the system:{str(e)}",
-                            'data': row.to_dict()
+                            'data': cleaned_row
                         })
                         job.failure_count += 1
                     except ValueError as e:
+
                         errors.append({
                             'row': row_count,
                             'error': f"Same values in this record have errors:{str(e)}",
-                            'data': row.to_dict()
+                            'data': cleaned_row
                         })
                         job.failure_count += 1
                     except Exception as e:
                         errors.append({
                             'row': row_count,
                             'error': f"Error while processing this record: {str(e)}",
-                            'data': row.to_dict()
+                            'data': cleaned_row
                         })
                         job.failure_count += 1
 
@@ -458,13 +488,14 @@ def process_csv_formal_trade(upload_job_id, category):
             job.global_message = "All records processed successfully!"
         except Exception as exc:
             job.status = "failed"
-            if row_to_consider:
+            if row_to_consider is not None and len(row_to_consider) > 0:
                 for _, row in row_to_consider.iterrows():
                     row_count +=1
+                    cleaned_row = {k: None if pd.isna(v) else v for k, v in row.to_dict().items()}
                     errors.append({
                         'row': row_count,
                         'error': str(exc),
-                        'data': row.to_dict()
+                        'data': cleaned_row
                     })
                     job.failure_count += 1
                     job.processed_count += 1
@@ -476,16 +507,16 @@ def process_csv_formal_trade(upload_job_id, category):
                 }]
             
             job.global_message = f"Processing encountered error: {str(exc)}"
-    except Exception as gexc:
-        job.failure_count = 0
-        job.processed_count = 0
-        job.success_count = 0
-        errors = [{
-                    'row': 0,
-                    'error': f"Processing error: {str(gexc)}",
-                    'data': {}
-                }]
-        job.global_message = str(gexc)
+        except Exception as gexc:
+            job.failure_count = 0
+            job.processed_count = 0
+            job.success_count = 0
+            errors = [{
+                        'row': 0,
+                        'error': f"Processing error: {str(gexc)}",
+                        'data': {}
+                    }]
+            job.global_message = str(gexc)
     finally:
         job.error_log = errors
         total_time = time.time() - start_time

@@ -58,7 +58,7 @@ class FormalTrade(models.Model):
        ("EXPORT", "EXPORT"),
        ("RE-EXPORT", "RE-EXPORT"),
    )
-
+   row_key = models.TextField(unique=True, null=False, blank=False)
    tin_number = models.PositiveIntegerField(null=True, blank=True)
    tax_payer_name = models.CharField(max_length=100, null=True, blank=True)
    supplier_name = models.CharField(max_length=100, null=True, blank=True)
@@ -103,20 +103,6 @@ class FormalTrade(models.Model):
             models.Index(fields=['origin_country_name', 'destination_country_name']),
             models.Index(fields=['rra_recorded_date']),
             models.Index(fields=['month']),
-        ]
-       constraints = [
-            models.UniqueConstraint(
-                fields=['tin_number', 'tax_payer_name', 
-                        'supplier_name', 'rra_custom_office_code', 
-                        'rra_recorded_date', 'regime', 'nbr_sad', 
-                        'item_nbr', 'hs_code', 'product_description', 
-                        'local_product_description', 'custom_border_post_code', 
-                        'origin_country_name', 'destination_country_name', 
-                        'provenance_country_name', 'stat_unit_rra',
-                        'quantity', 'net_weight', 'fob', 'freight',
-                        'insurance', 'other_costs', 'cif', 'cif_usd', 'category'],
-                name='formal_trade_unique_all_fields_combined'
-            )
         ]
 
        

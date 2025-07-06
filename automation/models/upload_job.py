@@ -14,12 +14,12 @@ class BulkUploadJob(models.Model):
     uploaded_file = models.FileField(upload_to='bulk_uploads/')
     category = models.CharField(max_length=40)
     error_log = models.JSONField(blank=True, null=True, encoder=DjangoJSONEncoder)
-    processed_count = models.IntegerField(blank=True, null=True)
+    processed_count = models.IntegerField(default=0)
     global_message = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     success_count = models.IntegerField(default=0)
     failure_count = models.IntegerField(default=0)
-    processing_minutes = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    processing_minutes = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     class Meta:
         db_table = "BulkUploadJobs"

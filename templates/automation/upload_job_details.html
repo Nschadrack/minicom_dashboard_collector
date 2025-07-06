@@ -14,12 +14,14 @@
             {% if upload_job %}
                 <div id="car_viewed_for_prices" class="car_viewed_for_services_prices" style="margin-bottom: -140px;">
                     <div>
-                        <p><strong>Upload Job Owner: </strong>{{ upload_job.user.first_name|title }} {{ upload_job.user.last_name|title }}</p>   
+                        <p><strong>Upload job owner: </strong>{{ upload_job.user.first_name|title }} {{ upload_job.user.last_name|title }}</p>   
                         <p><strong>Status: </strong>{{ upload_job.status|upper }}</p>   
                         <p><strong>Uploaded file: </strong>{{ upload_job.uploaded_file }}</p>  
-                        <p><strong>Category: </strong>{{ upload_job.category|upper }}</p>                
+                        <p><strong>Category: </strong>{{ upload_job.category|upper }}</p> 
+                        <p><strong>Global message: </strong>{{ upload_job.global_message }}</p>               
                     </div>
                     <div>
+                        <p><strong>Processed records: </strong>{{ upload_job.processed_count|format_number }}</p>
                         <p><strong>Succeeded records: </strong>{{ upload_job.success_count|format_number }}</p>
                         <p><strong>Failed records: </strong>{{ upload_job.failure_count|format_number }}</p>  
                         <p><strong>Upload created date: </strong>{{ upload_job.created_at|date:'d-m-Y H:i' }}</p>
