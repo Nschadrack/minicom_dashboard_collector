@@ -624,6 +624,8 @@ def activate_months_reporting_period(request, month_id):
 
         message = f"Reporting period plan has been modified to restart from {start_date} with {months} month(s) range"
         messages.success(request, message=message)
+        redirect_url = reverse('system_management:configurations')
+        return redirect(f"{redirect_url}#reporting-periods")
     except MonthsReportingPeriodConfig.DoesNotExist:
         message = "Unable to activate the reporting period"
         messages.info(request, message=message)
@@ -631,7 +633,7 @@ def activate_months_reporting_period(request, month_id):
         message = f"Unexpected error ocurred: {str(e)}"
         messages.error(request, message=message)
     redirect_url = reverse('system_management:configurations')
-    return redirect(f"{redirect_url}#add-report")
+    return redirect(f"{redirect_url}#reporting-months")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")

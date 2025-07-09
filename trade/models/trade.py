@@ -2,21 +2,24 @@ from django.db import models
 
 
 class ICBTRecord(models.Model):
+    row_key = models.TextField(unique=True, null=False, blank=False)
     date_period = models.DateField(null=False, blank=False)
     date_period_time = models.TimeField(null=True, blank=True)
     month = models.CharField(null=False, blank=False, max_length=20)
     cross_point = models.CharField(max_length=50, null=False, blank=False)
+    enumerator_code = models.CharField(max_length=20, null=True, blank=True)
+    enumerator_name = models.CharField(max_length=160, null=True, blank=True)
+    cross_point_code = models.CharField(max_length=20, null=True, blank=True)
     cross_point_code = models.CharField(max_length=20, null=True, blank=True)
     district = models.CharField(max_length=30, null=False, blank=False)
     sex = models.CharField(max_length=30, null=False, blank=False)
-    age_range = models.CharField(max_length=10, null=True, blank=True)
+    age_range = models.CharField(max_length=60, null=True, blank=True)
     profession = models.CharField(max_length=60, null=False, blank=False)
     trader_residence_country = models.CharField(max_length=80, null=False, blank=False)
     product_origin = models.CharField(max_length=50, null=False, blank=False)
     product_destination = models.CharField(max_length=50, null=False, blank=False)
     transport_mode = models.CharField(max_length=50, null=False, blank=False)
     product = models.CharField(max_length=100, null=False, blank=False)
-    product_code = models.CharField(max_length=20, null=True, blank=True)
     product_hscode = models.CharField(max_length=25, null=True, blank=True)
     main_category = models.IntegerField(null=True, blank=True)
     sub_category = models.IntegerField(null=True, blank=True)
@@ -38,17 +41,6 @@ class ICBTRecord(models.Model):
             models.Index(fields=['date_period', 'date_period_time']),
             models.Index(fields=['cross_point']),
             models.Index(fields=['product_origin', 'product']),
-        ]
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=['date_period_time', 'date_period', 'month', 
-                        'cross_point', 'district', 'sex', 'profession', 'trader_residence_country', 
-                        'product_origin', 'product_destination', 'transport_mode', 
-                        'product', 'unit', 'quantity', 'unit_price', 'total_price', 
-                        'total_price_usd'],
-                name='icbt_unique_all_fields_combined'
-            )
         ]
         
 
@@ -87,13 +79,13 @@ class FormalTrade(models.Model):
    stat_unit_common = models.CharField(max_length=10, null=True, blank=True)
    quantity = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
    net_weight = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-   fob = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-   fob_usd = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-   freight = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-   insurance = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-   other_costs = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+   fob = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
+   fob_usd = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
+   freight = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
+   insurance = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
+   other_costs = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
    cif = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
-   cif_usd = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+   cif_usd = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
    category = models.CharField(choices=CATEGORIES, max_length=20)
 
    class Meta:

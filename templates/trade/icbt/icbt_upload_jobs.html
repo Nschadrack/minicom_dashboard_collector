@@ -11,6 +11,7 @@
                     <th>UPLOADED FILE</th>
                     <th>UPLOAD CREATED ON</th>
                     <th>PROCESSING TIME</th>
+                    <th>RECORDS PROCESSED</th>
                     <th>RECORDS SUCCEEDED</th>
                     <th>RECORDS FAILED</th>
                     <th colspan="2">ACTION</th>
@@ -28,6 +29,7 @@
                             {% else %}
                                 <td></td>
                             {% endif %}
+                            <td>{{ record.processed_count }}</td>
                             <td>{{ record.success_count }}</td>
                             <td>{{ record.failure_count }}</td>
                             <td><a href="{% url 'automation:job_detail' record.id %}" class="view_button">view details</a></td>

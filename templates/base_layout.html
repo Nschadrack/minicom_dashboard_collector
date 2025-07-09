@@ -11,8 +11,14 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/pagination.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/document_viewer.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/bulk_upload.css' %}"/>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/internal_overview.css' %}"/>
+	<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+	<link rel="stylesheet" href="{% static 'css/reporting.css' %}">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+	<script src="https://unpkg.com/jspdf-autotable@3.5.22/dist/jspdf.plugin.autotable.js"></script>
+
     <title>Ministry of Trade and Industry</title>
   </head>
   <body>
@@ -44,7 +50,7 @@
 				<button onclick="toggleTradeSection()">Trade Module</button>
 				<section id="trade-section">
 					{% if request.user|is_user_permitted:"0020,3" %}
-						{% comment %} <a href="{% url 'trade:icbt-list' %}">ICBT</a> {% endcomment %}
+						<a href="{% url 'trade:icbt-list' %}">ICBT</a>
 					{% endif %}
 					{% if request.user|is_user_permitted:"0021,3" %}
 						<a href="{% url 'trade:formal-trade-list' %}">Formal Trade</a>
@@ -92,7 +98,7 @@
 				</section>
 			{% endif %}
 			{% if request.user|is_user_permitted:"0018,3" %}
-				<a href="{% url 'reporting:reporting' %}">Reporting Module</a>
+				<a href="{% url 'reporting:admin-reporting' %}">Reporting Module</a>
 			{% endif %}
 			<a href="{% url 'system_management:logout' %}">Sign out</a>
 			{% comment %} <a href="#">Notifications <span class="aside-navigation-spans">0</span></a> {% endcomment %}
@@ -115,11 +121,7 @@
 	<script src="{% static 'js/main.js' %}" defer></script>
 	<script src="{% static 'js/pagination.js' %}" defer></script>
 	<script src="{% static 'js/bulk_upload.js' %}" defer></script>
-	<script src="{% static 'js/internal_overview.js' %}" defer></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js">
-	<script src="https://cdn.jsdelivr.net/npm/chart.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" 
-	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
-	<script src="https://unpkg.com/jspdf-autotable@3.5.22/dist/jspdf.plugin.autotable.js"></script>
+	<script src="{% static 'js/dashboard.js' %}" defer></script>
+	<script src="{% static 'js/reporting.js' %}"></script>
   </body>
 </html>

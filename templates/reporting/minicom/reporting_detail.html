@@ -1,0 +1,43 @@
+{% extends "base_layout.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block main_data_load %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <a href="{% url 'reporting:admin-reporting' %}" class="link-button">&larr; Back</a>
+        <h1>Production Reporting Details For: {{ company_site.company.name }}</h1>
+        <p><strong>For The Reporting Period:</strong> {{ period.start_date|date:"d M Y" }} To {{ period.end_date|date:"d M Y" }}</p>
+    </header>
+
+    <div class="report-section">
+        <h3>Pending Product Production Reports</h3>
+        {% if has_unreported_products %}
+            <p>The following products are missing a production report for the selected period: <strong>{{ period.start_date|date:"d M Y" }} to {{ period.end_date|date:"d M Y" }}</strong></p>
+            <table id="products-table" class="compliance-table">
+                <thead>
+                    <tr>
+                        <th>Product Code</th>
+                        <th>Product Name</th>
+                        <th>Brand Name</th>
+                        <th>Installed Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in unreported_products %}
+                        <tr>
+                            <td>{{ product.product.product_code }}</td>
+                            <td>{{ product.product.name|title }}</td>
+                            <td>{{ product.product_brand_name|title }}</td>
+                            <td>{{ product.production_installed_capacity|format_number:2 }} {{ product.production_installed_capacity_unit }} / {{ product.production_installed_capacity_period }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-success" style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px;">
+                <strong>All Clear!</strong> This company has submitted all required production reports for this period.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
