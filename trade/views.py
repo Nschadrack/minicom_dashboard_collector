@@ -228,6 +228,20 @@ def formal_trade_upload_view(request):
     import_columns = sorted(columns + ["PROV", "ORIG", "FREIGHT", "INSURANCE", "OTHER COSTS", "CIF"])
     export_columns = sorted(columns + ["DEST"])
     re_export_columns = sorted(columns + ["ORIG", "DEST"])
+
+    import csv
+
+    with open("import_columns.csv", mode="w", encoding="UTF-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(import_columns)
+    
+    with open("export_columns.csv", mode="w", encoding="UTF-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(export_columns)
+    
+    with open("re_export_columns.csv", mode="w", encoding="UTF-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(re_export_columns)
     
     context = {
         "import_columns": import_columns,

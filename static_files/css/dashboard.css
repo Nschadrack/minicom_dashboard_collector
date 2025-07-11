@@ -153,38 +153,52 @@ body {
 /* KPI Cards */
 .kpi-grid {
     display: grid;
-    gap: 0.9rem;
-    margin-bottom: 1.2rem;
-    border-bottom: 2px double #2d3748;
+    gap: 0.2rem;
+    margin-bottom: 1.5rem;
+    /* border-bottom: 2px double #2d3748; */
 }
 
-.kpi-grid-5 { grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); }
-.kpi-grid-4 { grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); }
-
+.kpi-grid-5 { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+.kpi-grid-4 { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
 
 .kpi-card {
-    background-color: #fff;
-    padding: 0.9rem;
+    padding: 0;
     border-radius: 6px;
     text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #eaf0f6;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-
+.kpi-card-export{
+    background-color: rgba(9, 117, 175, 0.622);
+}
+.kpi-card-balance{
+    background-color: #97c1ff;
+}
+.kpi-card-import{
+    background-color: rgb(58, 148, 218);
+}
+.kpi-card-re-export{
+    background-color: #07a8d4;
+}
 .kpi-title {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #718096;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #141414;
+    font-weight: bold;
+     color: #4a5568;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    margin: 0 0 0.3rem 0;
+    margin: 0 0 0.5rem 0;
+    background-color: white;
 }
 
 .kpi-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #1a202c;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgb(59, 72, 93);
     margin: 0;
-    letter-spacing: -0.05em;
+    padding: 0.4rem 0.1rem;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 /* Chart Containers */

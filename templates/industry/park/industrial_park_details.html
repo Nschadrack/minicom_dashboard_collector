@@ -11,9 +11,9 @@
     <div id="tabs-container">
         <ul class="tabs">
             <li class="tab-link active" data-tab="park-detail">Information Details</li>
-            <li class="tab-link" data-tab="partitioned-plots">Partitioned Plots</li>
-            <li class="tab-link" data-tab="allocated-plots">Allocated Plots</li>
-            <li class="tab-link" data-tab="company-industries">Industries In Parks</li>
+            <li class="tab-link" data-tab="partitioned-plots">Partitioned Plots In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</li>
+            <li class="tab-link" data-tab="allocated-plots">Allocated Plots In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</li>
+            <li class="tab-link" data-tab="company-industries">Industries In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</li>
         </ul>
     </div>
 
@@ -59,7 +59,7 @@
                 {% endif %}		
                 <div class="current_price_list table-data">     
                     {% if park_partitioned_plots|length > 0 %}	
-                        <h4>List of Plots Partitioned In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		
+                        {% comment %} <h4>List of Plots Partitioned In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		 {% endcomment %}
                         <table class="table-data">
                             <thead>
                                 <th>#</th>
@@ -117,7 +117,7 @@
             <div class="upper-detail-div">
                 <div class="current_price_list table-data">     
                     {% if allocated_plots|length > 0 %}	
-                        <h4>List of Allocated Plots In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		
+                        {% comment %} <h4>List of Allocated Plots In {{ industrial_park.name|title}} {{ industrial_park.category|title}}</h4>		 {% endcomment %}
                         <table class="table-data">
                             <thead>
                                 <th>#</th>
@@ -162,7 +162,7 @@
         <div id="company-industries" class="tab-content">
             <div class="upper-detail-div">
                 <div  class="current_price_list table-data">
-                    <h4>List of Industries In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</h4>		
+                    {% comment %} <h4>List of Industries In {{ industrial_park.name|title }} {{ industrial_park.category|title }}</h4>		 {% endcomment %}
                     <table class="table-data">
                         <thead>
                             <th>#</th>

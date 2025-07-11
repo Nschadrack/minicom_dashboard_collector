@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const professionalColors = ['#1d4ed8', '#7c3aed', '#db2777', '#f59e0b', '#16a34a', '#0ea5e9', '#64748b', '#be185d'];
+    const professionalColors = ['rgb(58, 148, 218)', 'rgba(9, 117, 175, 0.622)', '#07a8d4', '#f59e0b', '#97c1ff', '#0ea5e9', '#64748b', '#be185d'];
     let charts = {};
 
     // --- Tab Handling ---
@@ -22,7 +22,55 @@ document.addEventListener('DOMContentLoaded', function () {
         charts[id] = new Chart(ctx, { type, data, options });
     };
     const formatNumber = (num) => new Intl.NumberFormat('en-US').format(Math.round(num));
-    const formatCurrency = (num, unit = 'M', divisor = 1e6) => `$${(num / divisor).toFixed(2)}${unit}`;
+    
+    const formatCurrency = (num, unit = 'M', divisor = 1e6) => {
+        // Calculate the value after division.
+        const value = num / divisor;
+
+        // Use Intl.NumberFormat to format the number with commas and 2 decimal places.
+        // 'en-US' locale is used here to ensure commas are used as thousand separators.
+        const formattedValue = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value);
+
+        return `$${formattedValue}${unit}`;
+    };
+
+    const formatRwfCurrency = (num, unit = 'M', divisor = 1e6) => {
+        // Calculate the value after division.
+        const value = num / divisor;
+
+        // Use Intl.NumberFormat to format the number with commas and 2 decimal places.
+        const formattedValue = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value);
+
+        return `${formattedValue}${unit} Rwf`;
+    };
+
+    const roundValue = (num, figure=1e6, places=1e2) => {
+        return Math.round((num / figure) * places) / places
+    };
+
+    function cleanFormalProduct(product) {
+        // Trim whitespace from the beginning and end of the line.
+        let cleanedLine = product.trim();
+
+        // Rule 1: Use a regular expression to remove any leading commas,
+        // hyphens, or whitespace characters.
+        // ^      - matches the beginning of the string
+        // [,\s-] - matches any character in the set: comma, whitespace, or hyphen
+        // +      - matches one or more of the preceding characters
+        cleanedLine = cleanedLine.replace(/^[,\s-]+/, '');
+
+        // Rule 2: Split the line on '(' and take the first part.
+        // This effectively removes the parenthesis and anything after it.
+        cleanedLine = cleanedLine.split('(')[0];
+        return cleanedLine;
+    };
+
 
     // --- Data Fetching & Rendering ---
     const fetchData = async (url) => {
@@ -52,37 +100,432 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const renderDashboard = (data) => {
         // Industry
-        document.getElementById('total-companies').textContent = formatNumber(data.industry.total_companies);
+        document.getElementById('total-companies').textContent = formatNumber(data.industry.total_industries);
+        document.getElementById('total-companies-locations').textContent = formatNumber(data.industry.total_industries_locations);
         document.getElementById('total-investment').textContent = formatCurrency(data.industry.total_investment);
         document.getElementById('avg-investment').textContent = formatCurrency(data.industry.avg_investment, 'K', 1e3);
-        document.getElementById('total-employees').textContent = formatNumber(data.industry.total_employees);
-        document.getElementById('companies-under-construction').textContent = formatNumber(data.industry.companies_under_construction);
-        createOrUpdateChart('company-by-sector-chart', 'bar', { labels: Object.keys(data.industry.company_by_sector), datasets: [{ label: 'Companies', data: Object.values(data.industry.company_by_sector), backgroundColor: professionalColors[0] }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Companies by Economic Sector' } } });
-        createOrUpdateChart('operational-status-chart', 'pie', { labels: Object.keys(data.industry.operational_status), datasets: [{ data: Object.values(data.industry.operational_status), backgroundColor: professionalColors }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Company Operational Status' } } });
-        createOrUpdateChart('production-by-product-chart', 'doughnut', { labels: Object.keys(data.industry.production_by_product), datasets: [{ data: Object.values(data.industry.production_by_product), backgroundColor: professionalColors }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Production Volume by Top 5 Products' } } });
-        createOrUpdateChart('employment-by-gender-chart', 'bar', { labels: ['Male', 'Female'], datasets: [{ label: 'Employees', data: [data.industry.employment_by_gender.male, data.industry.employment_by_gender.female], backgroundColor: [professionalColors[0], professionalColors[2]] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Employment by Gender' } } });
+
+        createOrUpdateChart('company-by-sector-chart', 'bar', { labels: Object.keys(data.industry.company_by_sector), 
+                                                                datasets: [{ label: 'Industries', data: Object.values(data.industry.company_by_sector), 
+                                                                backgroundColor: Object.values(data.industry.company_by_sector).map((v, index) => professionalColors[index])}]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries by Economic Sector' } } });
+        
+        createOrUpdateChart('company-by-size-chart', 'bar', { labels: Object.keys(data.industry.industry_size), 
+                                                                datasets: [{ label: 'Industries', data: Object.values(data.industry.industry_size), 
+                                                                backgroundColor: Object.values(data.industry.industry_size).map((v, index) => professionalColors[index])}]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries by Size' } } });
+
+        createOrUpdateChart('operational-status-chart', 'pie', { labels: Object.keys(data.industry.operational_status), 
+                                                                datasets: [{ data: Object.values(data.industry.operational_status), 
+                                                                backgroundColor: Object.values(data.industry.operational_status).map((v, index) => professionalColors[index + 2])}]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries By Operational Status' } } });
+        createOrUpdateChart('electricity-tarrif-chart', 'doughnut', { labels: Object.keys(data.industry.electricity_tariff).map(v => v == "true"? "YES": "NO"), 
+                                                                datasets: [{ data: Object.values(data.industry.electricity_tariff), 
+                                                                backgroundColor: Object.values(data.industry.operational_status).map((v, index) => professionalColors[index + 2])}]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries Benefited Electricity Tariff' } } });                                                        
+
+        createOrUpdateChart('location-industry-chart', 'doughnut', { labels: Object.keys(data.industry.location).map(v => v == "true"? "In The Park": "Not In The Park"), 
+                                                                    datasets: [{ data: Object.values(data.industry.location), 
+                                                                        backgroundColor: [professionalColors[2], professionalColors[3]] }] }, 
+                                                                        { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries By Location' } } });
 
         // Parks
         document.getElementById('total-parks').textContent = formatNumber(data.parks.total_parks);
-        document.getElementById('total-land').textContent = formatNumber(data.parks.total_land);
+        document.getElementById('total-parks-land').textContent = formatNumber(data.parks.total_parks_land);
+        document.getElementById('total-leasable-land').textContent = formatNumber(data.parks.total_parks_leasable_land);
+        document.getElementById('total-unleasable-land').textContent = formatNumber(data.parks.total_parks_unleasable_land);
+        document.getElementById('total-leased-land').textContent = formatNumber(data.parks.total_leased_land);
         document.getElementById('total-allocated-plots').textContent = formatNumber(data.parks.total_allocated_plots);
         document.getElementById('total-available-plots').textContent = formatNumber(data.parks.total_available_plots);
-        createOrUpdateChart('industries-by-park-chart', 'bar', { labels: Object.keys(data.parks.industries_by_park), datasets: [{ label: 'Industries', data: Object.values(data.parks.industries_by_park), backgroundColor: professionalColors[1] }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries per Park' } } });
-        createOrUpdateChart('park-occupancy-chart', 'bar', { labels: Object.keys(data.parks.park_occupancy), datasets: [{ label: 'Occupancy Rate (%)', data: Object.values(data.parks.park_occupancy), backgroundColor: professionalColors[4] }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Park Land Occupancy Rate' } } });
-        createOrUpdateChart('plot-status-by-park-chart', 'bar', { labels: Object.keys(data.parks.plot_status), datasets: [{ label: 'Allocated', data: Object.values(data.parks.plot_status).map(d => d.allocated), backgroundColor: professionalColors[5] }, { label: 'Available', data: Object.values(data.parks.plot_status).map(d => d.available), backgroundColor: professionalColors[6] }] }, { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { title: { display: true, text: 'Plot Status in Parks' } } });
-        createOrUpdateChart('investment-by-park-chart', 'doughnut', { labels: Object.keys(data.parks.investment_by_park), datasets: [{ label: 'Investment (USD)', data: Object.values(data.parks.investment_by_park), backgroundColor: professionalColors }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Investment Distribution by Park' } } });
 
-        // Trade
-        document.getElementById('formal-trade-value').textContent = formatCurrency(data.trade.formal_total);
-        document.getElementById('informal-trade-value').textContent = formatCurrency(data.trade.informal_total);
-        document.getElementById('trade-balance').textContent = formatCurrency(data.trade.trade_balance);
-        document.getElementById('top-partner').textContent = data.trade.top_partner;
-        createOrUpdateChart('trade-comparison-chart', 'bar', { labels: ['Formal Trade', 'Informal Trade'], datasets: [{ label: 'Trade Value (USD M)', data: [data.trade.formal_total / 1e6, data.trade.informal_total / 1e6], backgroundColor: [professionalColors[3], professionalColors[7]] }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Formal vs Informal Trade' } } });
-        createOrUpdateChart('trade-flow-chart', 'line', { labels: data.trade.trade_flow.labels, datasets: [{ label: 'Imports (USD M)', data: data.trade.trade_flow.imports.map(v => v / 1e6), borderColor: professionalColors[3], fill: false }, { label: 'Exports (USD M)', data: data.trade.trade_flow.exports.map(v => v / 1e6), borderColor: professionalColors[4], fill: false }] }, { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Monthly Trade Flow' } } });
+        createOrUpdateChart('industries-by-park-chart', 'bar', { labels: Object.keys(data.parks.industries_by_park), 
+                                                                datasets: [{ label: 'Industries', data: Object.values(data.parks.industries_by_park), 
+                                                                backgroundColor: professionalColors[1] }] }, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries per Park' } } });
         
-        // FIX: Changed 'horizontalBar' to 'bar' and added indexAxis: 'y'
-        createOrUpdateChart('top-import-products-chart', 'bar', { labels: Object.keys(data.trade.top_imports), datasets: [{ label: 'Import Value (USD)', data: Object.values(data.trade.top_imports), backgroundColor: professionalColors[5] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top 5 Imported Products' } } });
-        createOrUpdateChart('top-export-products-chart', 'bar', { labels: Object.keys(data.trade.top_exports), datasets: [{ label: 'Export Value (USD)', data: Object.values(data.trade.top_exports), backgroundColor: professionalColors[6] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top 5 Exported Products' } } });
+        // 2. Define the data for the pie chart.
+        const unavailableParkOccupancy = data.parks.total_leased_land;
+        const availableParkOccupancy = data.parks.total_unleased_land;
+        let pieChartData = {
+            labels: ['Used', 'Unused'],
+            datasets: [{
+                label: 'Occupancy Rate (%)', // This label appears in tooltips
+                data: [
+                    roundValue(unavailableParkOccupancy),
+                    roundValue(availableParkOccupancy)
+                ],
+                backgroundColor: [
+                    professionalColors[3],
+                    professionalColors[0]
+                ],
+                borderColor: '#ffffff', // Add a border to slices for better separation
+                borderWidth: 1
+            }]
+        };
+
+        // 3. Define the options for the pie chart, including the plugin to show percentages.
+        let pieChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Industrial Parks Occupancy Rate (%)', // New title
+                    font: {
+                        size: 12
+                    }
+                },
+                tooltip: {
+                    // Customize tooltips to show the value and percentage
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                            return `${percentage})`;
+                        }
+                    }
+                },
+                datalabels: {
+                    // This plugin configuration displays the percentage on each slice
+                    formatter: (value, ctx) => {
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                        // Only show the label if the percentage is significant
+                        return (value / sum) > 0.05 ? percentage : '';
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            }
+        };
+
+        createOrUpdateChart('park-occupancy-chart', 'doughnut', pieChartData, pieChartOptions);
+
+        createOrUpdateChart('plot-status-by-park-chart', 'bar', { labels: Object.keys(data.parks.plot_status), 
+                                                                datasets: [{ label: 'Allocated', data: Object.values(data.parks.plot_status).map(d => d.allocated), 
+                                                                backgroundColor: professionalColors[5] }, { label: 'Available', data: Object.values(data.parks.plot_status).map(d => d.available), backgroundColor: professionalColors[6] }] }, 
+                                                                { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { title: { display: true, text: 'Plot Status in Parks' } } });
+
+        pieChartData = {
+            labels: Object.keys(data.parks.construction_status),
+            datasets: [{
+                label: 'Construction status rate (%)', // This label appears in tooltips
+                data: Object.values(data.parks.construction_status),
+                backgroundColor: Object.values(data.parks.construction_status).map((v, index) => professionalColors[index + 1]),
+                borderColor: '#ffffff', // Add a border to slices for better separation
+                borderWidth: 1
+            }]
+        };
+
+        // 3. Define the options for the pie chart, including the plugin to show percentages.
+        pieChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Allocated Plots Construction status rate (%)', // New title
+                    font: {
+                        size: 12
+                    }
+                },
+                tooltip: {
+                    // Customize tooltips to show the value and percentage
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                            return `${percentage})`;
+                        }
+                    }
+                },
+                datalabels: {
+                    // This plugin configuration displays the percentage on each slice
+                    formatter: (value, ctx) => {
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                        // Only show the label if the percentage is significant
+                        return (value / sum) > 0.05 ? percentage : '';
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            }
+        };
+                                                       
+        createOrUpdateChart('construction-status-park-chart', 'doughnut', pieChartData, pieChartOptions);
+
+        createOrUpdateChart('industry-economic-sector-park-chart', 'bar', { labels: Object.keys(data.parks.industry_economic_sector), 
+                                                                datasets: [{ label: 'Industries', data: Object.values(data.parks.industry_economic_sector), 
+                                                                backgroundColor: Object.values(data.parks.industry_economic_sector).map((v, index) => professionalColors[index]) }]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries by Economic Sector' } } });
+        
+        createOrUpdateChart('industry-size-by-park-chart', 'bar', { labels: Object.keys(data.parks.industry_size), 
+                                                                datasets: [{ label: 'Industries', data: Object.values(data.parks.industry_size), 
+                                                                backgroundColor: Object.values(data.parks.industry_size).map((v, index) => professionalColors[index]) }]}, 
+                                                                { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Industries by Size' } } });
+
+        //Trade
+        document.getElementById('formal-export-trade-value').textContent = formatCurrency(data.trade.formal_exports_val);
+        document.getElementById('formal-export-trade-value-rw').textContent = formatRwfCurrency(data.trade.formal_exports_val_rw, 'B', 1e9);
+        document.getElementById('formal-re-export-trade-value').textContent = formatCurrency(data.trade.formal_re_exports_val);
+        document.getElementById('formal-re-export-trade-value-rw').textContent = formatRwfCurrency(data.trade.formal_re_exports_val_rw, 'B', 1e9);
+        document.getElementById('formal-import-trade-value').textContent = formatCurrency(data.trade.formal_imports_val);
+        document.getElementById('formal-import-trade-value-rw').textContent = formatRwfCurrency(data.trade.formal_imports_val_rw, 'B', 1e9);
+        
+        document.getElementById('informal-export-trade-value').textContent = formatCurrency(data.trade.icbt_exports_val);
+        document.getElementById('informal-export-trade-value-rw').textContent = formatRwfCurrency(data.trade.icbt_exports_val_rw, 'B', 1e9);
+        document.getElementById('informal-import-trade-value').textContent = formatCurrency(data.trade.icbt_imports_val);
+        document.getElementById('informal-import-trade-value-rw').textContent = formatRwfCurrency(data.trade.icbt_imports_val_rw, 'B', 1e9);
+
+        document.getElementById('formal-trade-balance').textContent = formatCurrency(data.trade.formal_trade_balance);
+        document.getElementById('formal-trade-balance-rw').textContent = formatRwfCurrency(data.trade.formal_trade_balance_rw, 'B', 1e9);
+        document.getElementById('icbt-trade-balance').textContent = formatCurrency(data.trade.icbt_balance);
+        document.getElementById('icbt-trade-balance-rw').textContent = formatRwfCurrency(data.trade.icbt_balance_rw, 'B', 1e9);
+
+        if(data.trade.formal_trade_balance < 0){
+            document.getElementById('formal-trade-balance').style.color = "red";
+            document.getElementById('formal-trade-balance-rw').style.color = "red";
+        }
+        
+        // Formal Trade Pie Chart
+
+        // 2. Define the data for the pie chart.
+        let importValue = data.trade.formal_imports_val;
+        let exportValue = data.trade.formal_exports_val;
+        pieChartData = {
+            labels: ['ICBT Import', 'ICBT Export'],
+            datasets: [{
+                label: 'Trade Value', // This label appears in tooltips
+                data: [
+                    roundValue(importValue),
+                    roundValue(exportValue)
+                ],
+                backgroundColor: [
+                    professionalColors[0], // Color for Imports
+                    professionalColors[3]  // Color for Exports
+                ],
+                borderColor: '#ffffff', // Add a border to slices for better separation
+                borderWidth: 1
+            }]
+        };
+
+        // 3. Define the options for the pie chart, including the plugin to show percentages.
+        pieChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Formal Trade (Import vs. Export)', // New title
+                    font: {
+                        size: 12
+                    }
+                },
+                tooltip: {
+                    // Customize tooltips to show the value and percentage
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                            return `$${value}M (${percentage})`;
+                        }
+                    }
+                },
+                datalabels: {
+                    // This plugin configuration displays the percentage on each slice
+                    formatter: (value, ctx) => {
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                        // Only show the label if the percentage is significant
+                        return (value / sum) > 0.05 ? percentage : '';
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            }
+        };
+
+        createOrUpdateChart('formal-trade-comparison-pie-chart', 'doughnut', pieChartData, pieChartOptions); 
+        
+        importValue = data.trade.icbt_imports_val;
+        exportValue = data.trade.icbt_exports_val;
+
+        // 2. Define the data for the pie chart.
+        pieChartData = {
+            labels: ['ICBT Import', 'ICBT Export'],
+            datasets: [{
+                label: 'Trade Value', // This label appears in tooltips
+                data: [
+                    roundValue(importValue),
+                    roundValue(exportValue)
+                ],
+                backgroundColor: [
+                    professionalColors[0], // Color for Imports
+                    professionalColors[3]  // Color for Exports
+                ],
+                borderColor: '#ffffff', // Add a border to slices for better separation
+                borderWidth: 1
+            }]
+        };
+
+        // 3. Define the options for the pie chart, including the plugin to show percentages.
+        pieChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'ICBT (Import vs. Export)', // New title
+                    font: {
+                        size: 12
+                    }
+                },
+                tooltip: {
+                    // Customize tooltips to show the value and percentage
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                            return `$${value}M (${percentage})`;
+                        }
+                    }
+                },
+                datalabels: {
+                    // This plugin configuration displays the percentage on each slice
+                    formatter: (value, ctx) => {
+                        const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                        const percentage = roundValue((value * 100 / sum), 1e0) + '%';
+                        // Only show the label if the percentage is significant
+                        return (value / sum) > 0.05 ? percentage : '';
+                    },
+                    color: '#fff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            }
+        };
+
+        createOrUpdateChart('icbt-comparison-pie-chart', 'doughnut', pieChartData, pieChartOptions); 
+
+        createOrUpdateChart('formal-trade-flow-chart', 'line', { labels: data.trade.trade_flow.labels, 
+                                                        datasets: [{ label: 'Imports (USD M)', data: data.trade.trade_flow.imports.map(v => roundValue(v)), borderColor: professionalColors[0], fill: false }, 
+                                                                    { label: 'Exports (USD M)', data: data.trade.trade_flow.exports.map(v => roundValue(v)), borderColor: professionalColors[3], fill: false },
+                                                                    { label: 'Re-Exports (USD M)', data: data.trade.trade_flow.re_exports.map(v => roundValue(v)), borderColor: professionalColors[7], fill: false }]}, 
+                                                                    { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Monthly Formal Trade Trends' } } });
+
+        createOrUpdateChart('icbt-flow-chart', 'line', { labels: data.trade.icbt_flow.labels, 
+                                                        datasets: [{ label: 'Imports (USD M)', data: data.trade.icbt_flow.imports.map(v => roundValue(v)), borderColor: professionalColors[0], fill: false }, 
+                                                                    { label: 'Exports (USD M)', data: data.trade.icbt_flow.exports.map(v => roundValue(v)), borderColor: professionalColors[3], fill: false }]},
+                                                                    { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Monthly ICBT Trends' } } });
+        
+        // Top Partners
+        createOrUpdateChart('top-import-formal-partners-chart', 'bar', { labels: Object.keys(data.trade.formal_top_imports), 
+                                                                        datasets: [{ label: 'Import Value (USD M)', data: Object.values(data.trade.formal_top_imports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[0] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Partners - Formal Trade Imports' } } });
+
+        createOrUpdateChart('top-export-formal-partners-chart', 'bar', { labels: Object.keys(data.trade.formal_top_exports), 
+                                                                        datasets: [{ label: 'Export Value (USD M)', data: Object.values(data.trade.formal_top_exports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[3] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Partners - Formal Trade Exports' } } });  
+        
+        createOrUpdateChart('top-re-export-formal-partners-chart', 'bar', { labels: Object.keys(data.trade.formal_top_re_exports), 
+                                                                        datasets: [{ label: 'Re-Export Value (USD M)', data: Object.values(data.trade.formal_top_re_exports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[2] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Partners - Formal Trade Re-Exports' } } });      
+
+        
+        // Top Products
+        createOrUpdateChart('top-import-formal-products-chart', 'bar', { labels: Object.keys(data.trade.formal_top_product_imports).map(p => cleanFormalProduct(p)), 
+                                                                        datasets: [{ label: 'Import Value (USD M)', data: Object.values(data.trade.formal_top_product_imports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[0] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Products - Formal Trade Imports' } } });
+
+        createOrUpdateChart('top-export-formal-products-chart', 'bar', { labels: Object.keys(data.trade.formal_top_product_exports).map(p => cleanFormalProduct(p)), 
+                                                                        datasets: [{ label: 'Export Value (USD M)', data: Object.values(data.trade.formal_top_product_exports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[3] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Products - Formal Trade Exports' } } });  
+        
+        createOrUpdateChart('top-re-export-formal-products-chart', 'bar', { labels: Object.keys(data.trade.formal_top_re_product_exports).map(p => cleanFormalProduct(p)), 
+                                                                        datasets: [{ label: 'Re-Export Value (USD M)', data: Object.values(data.trade.formal_top_re_product_exports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[2] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Products - Formal Trade Re-Exports' } } });  
+                                                                        
+        createOrUpdateChart('top-export-icbt-products-chart', 'bar', { labels: Object.keys(data.trade.icbt_top_product_imports), 
+                                                                        datasets: [{ label:  'Import Value (USD M)', data: Object.values(data.trade.icbt_top_product_imports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[0] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Products - ICBT Imports' } } });  
+                                                                        
+        createOrUpdateChart('top-import-icbt-products-chart', 'bar', { labels: Object.keys(data.trade.icbt_top_product_exports), 
+                                                                        datasets: [{ label:  'Export Value (USD M)', data: Object.values(data.trade.icbt_top_product_exports).map(v => roundValue(v)), 
+                                                                        backgroundColor: professionalColors[3] }] }, { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { title: { display: true, text: 'Top Products - ICBT Exports' } } });                                                                  
+
+        // ICBT
+        const allPartners = [...new Set([
+            ...Object.keys(data.trade.icbt_top_imports), 
+            ...Object.keys(data.trade.icbt_top_exports)
+        ])]; 
+        
+        // Create data arrays for imports and exports that match the order of `allPartners`.
+        // If a country doesn't have an import/export value, use 0.
+        const importData = allPartners.map(country => roundValue(data.trade.icbt_top_imports[country] || 0));
+        const exportData = allPartners.map(country => roundValue(data.trade.icbt_top_exports[country] || 0));
+
+        // Define the new combined chart configuration.
+        const combinedChartData = {
+            labels: allPartners,
+            datasets: [
+                {
+                    label: 'Import Value (USD M)',
+                    data: importData,
+                    backgroundColor: professionalColors[0] // Original import color
+                },
+                {
+                    label: 'Export Value (USD M)',
+                    data: exportData,
+                    backgroundColor: professionalColors[3] // Original export color
+                }
+            ]
+        };
+
+        const combinedChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'x', // Keep it as a horizontal bar chart
+            scales: {
+                x: {
+                    stacked: false, // Ensure bars are side-by-side (grouped), not stacked
+                    title: {
+                        display: true,
+                        text: 'Value (USD M)'
+                    }
+                },
+                y: {
+                    stacked: false
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'ICBT Imports vs. Exports by Partner Country' // New, combined title
+                }
+            }
+        };
+        createOrUpdateChart('icbt-trade-comparison-chart', 'bar', combinedChartData, combinedChartOptions);
+       
 
         // Payments
         document.getElementById('total-paid').textContent = formatCurrency(data.payments.total_paid);

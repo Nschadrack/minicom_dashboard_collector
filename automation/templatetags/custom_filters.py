@@ -14,6 +14,10 @@ def is_user_allowed_access(user, args):
     permission_value = int(permission_value)
     return is_user_permitted(user, module_id, permission_value)
 
+@register.filter(name="is_not_company_user")
+def is_not_company_user(user):
+    return user.user_category.upper() != "COMPANY"
+
 @register.filter(name="list_loop")
 def loop_list(sequence, position):
     try:

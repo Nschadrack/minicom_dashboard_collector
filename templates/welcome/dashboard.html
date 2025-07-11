@@ -70,16 +70,16 @@
                         </div>
                         <div class="kpi-grid kpi-grid-5">
                             <div class="kpi-card"><h4 class="kpi-title">Total Industries</h4><p id="total-companies" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Total Investment (USD M)</h4><p id="total-investment" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Avg. Investment / Co. (USD K)</h4><p id="avg-investment" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Total Employees</h4><p id="total-employees" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Industries Under Construction</h4><p id="companies-under-construction" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Industries Locations</h4><p id="total-companies-locations" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Investment (USD M)</h4><p id="total-investment" class="kpi-value">$0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Avg. Investment (USD K)</h4><p id="avg-investment" class="kpi-value">$0</p></div>
                         </div>
                         <div class="chart-grid">
+                            <div class="chart-container"><canvas id="operational-status-chart"></canvas></div>                           
+                            <div class="chart-container"><canvas id="electricity-tarrif-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="company-by-size-chart"></canvas></div>
                             <div class="chart-container"><canvas id="company-by-sector-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="operational-status-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="production-by-product-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="employment-by-gender-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="location-industry-chart"></canvas></div>
                         </div>
                     </div>
 
@@ -92,16 +92,21 @@
                             </div>
                         </div>
                         <div class="kpi-grid kpi-grid-4">
-                            <div class="kpi-card"><h4 class="kpi-title">Total Parks</h4><p id="total-parks" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Total Leasable Land (Ha)</h4><p id="total-land" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Total Allocated Plots</h4><p id="total-allocated-plots" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Available Plots</h4><p id="total-available-plots" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">All Parks <b><sup></sup></b> </h4><p id="total-parks" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Parks Size ( <b>m<sup>2</sup></b> )</h4><p id="total-parks-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Leasable Land ( <b>m<sup>2</sup></b> )</h4><p id="total-leasable-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Unleasable Land ( <b>m<sup>2</sup></b> )</h4><p id="total-unleasable-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Leased Land ( <b>m<sup>2</sup></b> )</h4><p id="total-leased-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Allocated Plots <b><sup></sup></b> </h4><p id="total-allocated-plots" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Available Plots <b><sup></sup></b> </h4><p id="total-available-plots" class="kpi-value">0</p></div>
                         </div>
                         <div class="chart-grid">
                             <div class="chart-container"><canvas id="industries-by-park-chart"></canvas></div>
                             <div class="chart-container"><canvas id="park-occupancy-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="construction-status-park-chart"></canvas></div>
                             <div class="chart-container"><canvas id="plot-status-by-park-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="investment-by-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="industry-economic-sector-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="industry-size-by-park-chart"></canvas></div>
                         </div>
                     </div>
 
@@ -115,16 +120,56 @@
                             </div>
                         </div>
                         <div class="kpi-grid kpi-grid-4">
-                            <div class="kpi-card"><h4 class="kpi-title">Formal Trade (USD M)</h4><p id="formal-trade-value" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Informal Trade (USD M)</h4><p id="informal-trade-value" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Trade Balance (USD M)</h4><p id="trade-balance" class="kpi-value">0</p></div>
-                            <div class="kpi-card"><h4 class="kpi-title">Top Partner</h4><p id="top-partner" class="kpi-value">-</p></div>
+                            <div class="kpi-card kpi-card-re-export">
+                                <h4 class="kpi-title">Formal Re-Exports(FOB)</h4>
+                                <p id="formal-re-export-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-re-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-export">
+                                <h4 class="kpi-title">Formal Exports(FOB)</h4>
+                                <p id="formal-export-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-import">
+                                <h4 class="kpi-title">Formal Imports(CIF)</h4>
+                                <p id="formal-import-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-import-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                             <div class="kpi-card kpi-card-balance">
+                                <h4 class="kpi-title">Formal Balance (FOB - CIF)</h4>
+                                <p id="formal-trade-balance" class="kpi-value">$0</p>
+                                <p id="formal-trade-balance-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-export">
+                                <h4 class="kpi-title">ICBT Exports</h4>
+                                <p id="informal-export-trade-value" class="kpi-value">$0</p>
+                                <p id="informal-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-import">
+                                <h4 class="kpi-title">ICBT Imports</h4>
+                                <p id="informal-import-trade-value" class="kpi-value">$0</p>
+                                <p id="informal-import-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-balance">
+                                <h4 class="kpi-title">ICBT Balance (Exp - Imp)</h4>
+                                <p id="icbt-trade-balance" class="kpi-value">$0</p>
+                                <p id="icbt-trade-balance-rw" class="kpi-value">0 RWF</p>
+                            </div>
                         </div>
                         <div class="chart-grid">
-                            <div class="chart-container"><canvas id="trade-comparison-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="trade-flow-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="top-import-products-chart"></canvas></div>
-                            <div class="chart-container"><canvas id="top-export-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-import-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-re-export-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-trade-comparison-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="formal-trade-comparison-pie-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-comparison-pie-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-import-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-re-export-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-import-icbt-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-icbt-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="formal-trade-flow-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-flow-chart"></canvas></div>
                         </div>
                     </div>
 

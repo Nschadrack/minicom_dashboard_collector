@@ -17,7 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def reporting(request):
     # Fetch industry IDs efficiently
-    industries = CompanySite.objects.all()
+    industries = CompanySite.objects.filter(company__user__email=request.user.email)
     industry_ids = list(industries.values_list('id', flat=True))
     industry_products= list(IndustryProduct.objects.filter(industry__id__in=industry_ids))
     today = datetime.now().date()

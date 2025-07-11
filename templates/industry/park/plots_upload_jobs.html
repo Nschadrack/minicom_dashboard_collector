@@ -5,7 +5,7 @@
             <a id="view_price_archive_button" href="{% url 'industry:upload-plots' %}">+ new upload</a>
         {% endif %}  
         {% if jobs|length > 0 %}	
-            <h4>List of Upload Jobs For Partitioned Plots</h4>			
+            {% comment %} <h4>List of Upload Jobs For Partitioned Plots</h4>			 {% endcomment %}
             <table>
                 <thead>
                     <th>#</th>

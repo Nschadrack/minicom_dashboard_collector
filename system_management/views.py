@@ -39,7 +39,7 @@ def login_user(request):
                 messages.info(request, message="This is your first time to login, you need to change password!")
                 return redirect(reverse("system_management:change_password", args=(user.email,)))
             login(request, user)
-            return redirect("dashboard:dashboard") 
+            return redirect("dashboard:welcome") 
         else:
             messages.error(request, message="Invalid credentials. username or password is incorrect!")
     

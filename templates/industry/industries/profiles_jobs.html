@@ -5,7 +5,7 @@
             <a id="view_price_archive_button" href="{% url 'industry:bulk-upload-industry-profiles' %}">+ new upload</a>
         {% endif %}  
         {% if jobs|length > 0 %}	
-            <h4>List of Upload Jobs For Industry Profiles</h4>			
+            {% comment %} <h4>List of Upload Jobs For Industry Profiles</h4>			 {% endcomment %}
             <table>
                 <thead>
                     <th>#</th>
