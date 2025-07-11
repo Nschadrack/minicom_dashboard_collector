@@ -24,7 +24,7 @@ def generate_random_code(length=10):
 
 @background()
 def bulk_saving_zoning():
-    with open(os.path.join(os.getcwd(), "zoning.csv")) as filestream:
+    with open(os.path.join(os.getcwd(), "fixtures", "zoning.csv")) as filestream:
         zones = []
         try:
             lines = csv.reader(filestream)
@@ -60,7 +60,7 @@ def bulk_saving_administrative():
         districts.delete()
         provinces.delete()
 
-        with open(os.path.join(os.getcwd(), "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
+        with open(os.path.join(os.getcwd(), "fixtures", "province_district_sector_cell_village_rwanda.csv"), "r", encoding="utf-8-sig") as filestream:
 
             data = csv.reader(filestream)
             count = 0

@@ -1,6 +1,7 @@
 import json
 import os
 import traceback
+import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
@@ -36,11 +37,15 @@ from  system_management.permissions import (check_role_permission_on_module_deco
                                             is_user_permitted)
 from trade.views import clean_csv_file
 from .tasks import process_industry_profile
+from .extractor_data import get_optimized_company_data
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 @check_role_permission_on_module_decorator("0012", 3)
 def industrial_parks_list(request):
+    # paginated_data = get_optimized_company_data(page_number=1, page_size=50)
+    # df = pd.DataFrame(paginated_data)
+    # df.to_csv("industrial_park_test_extracted_dataset.csv", index=False)
     page_number = request.GET.get('page', 1)
     if request.method == "POST":
         page_number = 1

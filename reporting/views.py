@@ -2,17 +2,22 @@ from datetime import datetime, date
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from .models import ReportingPeriodPlan, IndustryProductReport, EmploymentReport
 from industry.models import IndustryProduct, CompanySite
 from automation.utils import format_number
 
+from django.utils import timezone
+from django.db.models import Exists, OuterRef, Count, Q
+from django.http import JsonResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
 def reporting(request):
     # Fetch industry IDs efficiently
-    industries = CompanySite.objects.all()
+    industries = CompanySite.objects.filter(company__user__email=request.user.email)
     industry_ids = list(industries.values_list('id', flat=True))
     industry_products= list(IndustryProduct.objects.filter(industry__id__in=industry_ids))
     today = datetime.now().date()
@@ -319,3 +324,135 @@ def add_employment_report(request, industry_id, start_date, end_date):
         "industry": industry
     }
     return render(request, "reporting/employment_form.html", context)
+
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def admin_report(request):
+    """
+    Main hub for detailed admin reporting. Handles the initial page load and
+    AJAX requests for filtering reported and not reported industries with pagination.
+    """
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to access this page.")
+        return redirect('some_other_page')
+
+    # Handle AJAX/Fetch requests for dynamic filtering
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        period_id = request.GET.get('period_id')
+        status_filter = request.GET.get('status', 'not_reported')
+        prod_page = request.GET.get('prod_page', 1)
+        emp_page = request.GET.get('emp_page', 1)
+
+        if not period_id:
+            return JsonResponse({'error': 'Period ID is required'}, status=400)
+        
+        period = get_object_or_404(ReportingPeriodPlan, id=period_id)
+        all_companies = CompanySite.objects.select_related('company').all()
+
+        # --- Subqueries for efficiency ---
+        reported_employment_subquery = EmploymentReport.objects.filter(
+            industry_id=OuterRef('pk'), start_date=period.start_date, end_date=period.end_date
+        )
+        unreported_product_subquery = IndustryProduct.objects.filter(
+            industry_id=OuterRef('pk')
+        ).exclude(
+            Exists(IndustryProductReport.objects.filter(
+                product_id=OuterRef('pk'), start_date=period.start_date, end_date=period.end_date
+            ))
+        )
+
+        # --- Filter companies based on status ---
+        if status_filter == 'not_reported':
+            non_compliant_employment_qs = all_companies.annotate(has_reported=Exists(reported_employment_subquery)).filter(has_reported=False).order_by('company__name')
+            non_compliant_production_qs = all_companies.annotate(has_unreported_products=Exists(unreported_product_subquery)).filter(has_unreported_products=True).order_by('company__name')
+            
+            # Paginate the querysets
+            prod_paginator = Paginator(non_compliant_production_qs, 10) # 10 items per page
+            emp_paginator = Paginator(non_compliant_employment_qs, 10)
+
+            try:
+                prod_page_obj = prod_paginator.page(prod_page)
+            except (EmptyPage, PageNotAnInteger):
+                prod_page_obj = prod_paginator.page(1)
+
+            try:
+                emp_page_obj = emp_paginator.page(emp_page)
+            except (EmptyPage, PageNotAnInteger):
+                emp_page_obj = emp_paginator.page(1)
+
+            # For stats
+            fully_compliant_count = all_companies.exclude(id__in=non_compliant_employment_qs).exclude(id__in=non_compliant_production_qs).count()
+
+            response_data = {
+                'stats': {
+                    'total': all_companies.count(),
+                    'pending_production': prod_paginator.count,
+                    'pending_employment': emp_paginator.count,
+                    'fully_compliant': fully_compliant_count,
+                },
+                'non_compliant_production': {
+                    'items': list(prod_page_obj.object_list.values('id', 'company__name', 'company__tin_number')),
+                    'has_previous': prod_page_obj.has_previous(),
+                    'previous_page_number': prod_page_obj.previous_page_number() if prod_page_obj.has_previous() else None,
+                    'has_next': prod_page_obj.has_next(),
+                    'next_page_number': prod_page_obj.next_page_number() if prod_page_obj.has_next() else None,
+                    'number': prod_page_obj.number,
+                    'num_pages': prod_paginator.num_pages,
+                },
+                'non_compliant_employment': {
+                    'items': list(emp_page_obj.object_list.values('id', 'company__name', 'company__tin_number')),
+                    'has_previous': emp_page_obj.has_previous(),
+                    'previous_page_number': emp_page_obj.previous_page_number() if emp_page_obj.has_previous() else None,
+                    'has_next': emp_page_obj.has_next(),
+                    'next_page_number': emp_page_obj.next_page_number() if emp_page_obj.has_next() else None,
+                    'number': emp_page_obj.number,
+                    'num_pages': emp_paginator.num_pages,
+                }
+            }
+        else: # status_filter == 'reported'
+            compliant_companies_qs = all_companies.annotate(
+                has_reported_emp=Exists(reported_employment_subquery),
+                has_unreported_prod=Exists(unreported_product_subquery)
+            ).filter(has_reported_emp=True, has_unreported_prod=False).order_by('company__name')
+            
+            # You can paginate this list as well if needed
+            paginator = Paginator(compliant_companies_qs, 10)
+            page_obj = paginator.page(1) # Or get page number from request
+
+            response_data = {
+                'compliant_companies': list(page_obj.object_list.values('id', 'company__name', 'company__tin_number'))
+            }
+
+        return JsonResponse(response_data)
+
+    # --- Initial Page Load ---
+    context = {
+        'reporting_periods': ReportingPeriodPlan.objects.all().order_by('-end_date'),
+    }
+    return render(request, 'reporting/minicom/reporting.html', context)
+
+
+@login_required(login_url="system_management:login", redirect_field_name="redirect_to")
+def admin_report_details(request, company_site_id, period_id):
+    company_site = get_object_or_404(CompanySite.objects.select_related('company'), id=company_site_id)
+    period = get_object_or_404(ReportingPeriodPlan, id=period_id)
+
+    all_products = IndustryProduct.objects.filter(industry=company_site).select_related('product')
+
+    reported_product_ids = IndustryProductReport.objects.filter(
+        product__industry=company_site,
+        start_date=period.start_date,
+        end_date=period.end_date
+    ).values_list('product_id', flat=True)
+
+    unreported_products = all_products.exclude(id__in=reported_product_ids)
+
+    context = {
+        'company_site': company_site,
+        'period': period,
+        'unreported_products': unreported_products,
+        'has_unreported_products': unreported_products.exists(),
+    }
+    return render(request, 'reporting/minicom/reporting_detail.html', context)
+

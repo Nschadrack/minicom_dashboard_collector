@@ -1,0 +1,244 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <div id="card_body_data">
+        <div class="main-content">
+            <div class="dashboard-container">        
+                <!-- Quick Links -->
+                <div class="quick-links-grid">
+                    <a href="{% url 'industry:companies-industries-list' %}" class="quick-link-card">
+                        <i class="fas fa-industry"></i>
+                        <h3>Industries</h3>
+                        <p>Explore data on all registered industrial companies.</p>
+                    </a>
+                    <a href="{% url 'industry:parks-list' %}" class="quick-link-card">
+                        <i class="fas fa-building"></i>
+                        <h3>Industrial Parks</h3>
+                        <p>Analyze occupancy, plots, and investment in zones.</p>
+                    </a>
+                    <a href="{% url 'trade:formal-trade-list' %}" class="quick-link-card">
+                        <i class="fas fa-file-export"></i>
+                        <h3>Formal Trade</h3>
+                        <p>View statistics on official import and export data.</p>
+                    </a>
+                    <a href="#" class="quick-link-card">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Informal Trade</h3>
+                        <p>Insights on informal cross-border trade activities.</p>
+                    </a>
+                    <a href="{% url 'reporting:reporting' %}" class="quick-link-card">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Reporting</h3>
+                        <p>Track reporting compliance and production data.</p>
+                    </a>
+                    <a href="{% url 'industry:all-contracts' %}" class="quick-link-card">
+                        <i class="fas fa-file-contract"></i>
+                        <h3>Contracts</h3>
+                        <p>Manage and review industry contract payments.</p>
+                    </a>
+                    <a href="{% url 'system_management:users-list' %}" class="quick-link-card">
+                        <i class="fas fa-users-cog"></i>
+                        <h3>User Mgt.</h3>
+                        <p>Administer system users, roles, and permissions.</p>
+                    </a>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <ul class="tab-list" id="dashboardTabs" role="tablist">
+                        <li role="presentation"><button class="tab-button" id="parks-tab" type="button" role="tab" aria-controls="parks">Industrial Parks</button></li>
+                        <li role="presentation"><button class="tab-button" id="industry-tab" type="button" role="tab" aria-controls="industry">Industry</button></li>
+                        <li role="presentation"><button class="tab-button" id="payments-tab" type="button" role="tab" aria-controls="payments">Payments</button></li>
+                        <li role="presentation"><button class="tab-button" id="trade-tab" type="button" role="tab" aria-controls="trade">Trade</button></li>
+                        <li role="presentation"><button class="tab-button" id="reporting-tab" type="button" role="tab" aria-controls="reporting">Reporting</button></li>
+                        <li role="presentation"><button class="tab-button" id="admin-tab" type="button" role="tab" aria-controls="admin">Administration</button></li>
+                    </ul>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="dashboardTabContent">
+                    <!-- Industry Tab -->
+                    <div class="tab-panel" id="industry" role="tabpanel" aria-labelledby="industry-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">Industry Overview</h2>
+                            <div class="filter-group">
+                                <select id="industry-year-filter" class="filter-select"><option value="all">All Years</option></select>
+                                <select id="industry-sector-filter" class="filter-select"><option value="all">All Sectors</option></select>
+                                <select id="industry-size-filter" class="filter-select"><option value="all">All Sizes</option></select>
+                            </div>
+                        </div>
+                        <div class="kpi-grid kpi-grid-5">
+                            <div class="kpi-card"><h4 class="kpi-title">Total Industries</h4><p id="total-companies" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Industries Locations</h4><p id="total-companies-locations" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Investment (USD M)</h4><p id="total-investment" class="kpi-value">$0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Avg. Investment (USD K)</h4><p id="avg-investment" class="kpi-value">$0</p></div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="operational-status-chart"></canvas></div>                           
+                            <div class="chart-container"><canvas id="electricity-tarrif-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="company-by-size-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="company-by-sector-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="location-industry-chart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Industrial Parks Tab -->
+                    <div class="tab-panel hidden" id="parks" role="tabpanel" aria-labelledby="parks-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">Industrial Parks Analysis</h2>
+                            <div class="filter-group">
+                                <select id="park-filter" class="filter-select"><option value="all">All Parks</option></select>
+                            </div>
+                        </div>
+                        <div class="kpi-grid kpi-grid-4">
+                            <div class="kpi-card"><h4 class="kpi-title">All Parks <b><sup></sup></b> </h4><p id="total-parks" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Parks Size ( <b>m<sup>2</sup></b> )</h4><p id="total-parks-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Leasable Land ( <b>m<sup>2</sup></b> )</h4><p id="total-leasable-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Unleasable Land ( <b>m<sup>2</sup></b> )</h4><p id="total-unleasable-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Leased Land ( <b>m<sup>2</sup></b> )</h4><p id="total-leased-land" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Allocated Plots <b><sup></sup></b> </h4><p id="total-allocated-plots" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Available Plots <b><sup></sup></b> </h4><p id="total-available-plots" class="kpi-value">0</p></div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="industries-by-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="park-occupancy-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="construction-status-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="plot-status-by-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="industry-economic-sector-park-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="industry-size-by-park-chart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Trade Tab -->
+                    <div class="tab-panel hidden" id="trade" role="tabpanel" aria-labelledby="trade-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">Trade Overview</h2>
+                            <div class="filter-group">
+                                <select id="trade-year-filter" class="filter-select"><option value="all">All Years</option></select>
+                                <select id="trade-country-filter" class="filter-select"><option value="all">All Countries</option></select>
+                            </div>
+                        </div>
+                        <div class="kpi-grid kpi-grid-4">
+                            <div class="kpi-card kpi-card-re-export">
+                                <h4 class="kpi-title">Formal Re-Exports(FOB)</h4>
+                                <p id="formal-re-export-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-re-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-export">
+                                <h4 class="kpi-title">Formal Exports(FOB)</h4>
+                                <p id="formal-export-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-import">
+                                <h4 class="kpi-title">Formal Imports(CIF)</h4>
+                                <p id="formal-import-trade-value" class="kpi-value">$0</p>
+                                <p id="formal-import-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                             <div class="kpi-card kpi-card-balance">
+                                <h4 class="kpi-title">Formal Balance (FOB - CIF)</h4>
+                                <p id="formal-trade-balance" class="kpi-value">$0</p>
+                                <p id="formal-trade-balance-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-export">
+                                <h4 class="kpi-title">ICBT Exports</h4>
+                                <p id="informal-export-trade-value" class="kpi-value">$0</p>
+                                <p id="informal-export-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-import">
+                                <h4 class="kpi-title">ICBT Imports</h4>
+                                <p id="informal-import-trade-value" class="kpi-value">$0</p>
+                                <p id="informal-import-trade-value-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                            <div class="kpi-card kpi-card-balance">
+                                <h4 class="kpi-title">ICBT Balance (Exp - Imp)</h4>
+                                <p id="icbt-trade-balance" class="kpi-value">$0</p>
+                                <p id="icbt-trade-balance-rw" class="kpi-value">0 RWF</p>
+                            </div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="top-import-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-re-export-formal-partners-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-trade-comparison-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="formal-trade-comparison-pie-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-comparison-pie-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-import-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-re-export-formal-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-import-icbt-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-export-icbt-products-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="formal-trade-flow-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="icbt-flow-chart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Payments Tab -->
+                    <div class="tab-panel hidden" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">Contract Payments Overview</h2>
+                            <div class="filter-group">
+                                <select id="payment-year-filter" class="filter-select"><option value="all">All Years</option></select>
+                                <select id="payment-company-filter" class="filter-select"><option value="all">All Companies</option></select>
+                            </div>
+                        </div>
+                        <div class="kpi-grid kpi-grid-4">
+                            <div class="kpi-card"><h4 class="kpi-title">Total Paid (USD M)</h4><p id="total-paid" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Unpaid (USD M)</h4><p id="total-unpaid" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Total Overdue (USD M)</h4><p id="total-overdue" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Contracts w/ Arrears</h4><p id="contracts-in-arrears" class="kpi-value">0</p></div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="payment-status-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="payment-trends-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="top-unpaid-companies-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="payment-modality-chart"></canvas></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reporting Tab -->
+                    <div class="tab-panel hidden" id="reporting" role="tabpanel" aria-labelledby="reporting-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">Reporting Compliance</h2>
+                            <div class="filter-group">
+                                <select id="reporting-period-filter" class="filter-select">
+                                    <option value="last_quarter">Last Quarter</option>
+                                    <option value="last_6_months">Last 6 Months</option>
+                                    <option value="last_year" selected>Last Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="kpi-grid kpi-grid-4">
+                            <div class="kpi-card"><h4 class="kpi-title">Total Active Industries</h4><p id="reporting-total-industries" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Industries Reported</h4><p id="reporting-reported" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Industries Not Reported</h4><p id="reporting-not-reported" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Compliance Rate</h4><p id="reporting-compliance-rate" class="kpi-value">0%</p></div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="reporting-compliance-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="reported-production-by-sector-chart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Administration Tab -->
+                    <div class="tab-panel hidden" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                        <div class="filter-bar">
+                            <h2 class="section-title">System Administration</h2>
+                        </div>
+                        <div class="kpi-grid kpi-grid-4">
+                            <div class="kpi-card"><h4 class="kpi-title">Total Users</h4><p id="admin-total-users" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">MINICOM Staff</h4><p id="admin-staff-users" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Company Users</h4><p id="admin-company-users" class="kpi-value">0</p></div>
+                            <div class="kpi-card"><h4 class="kpi-title">Active Roles</h4><p id="admin-active-roles" class="kpi-value">0</p></div>
+                        </div>
+                        <div class="chart-grid">
+                            <div class="chart-container"><canvas id="admin-users-by-category-chart"></canvas></div>
+                            <div class="chart-container"><canvas id="admin-user-roles-chart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

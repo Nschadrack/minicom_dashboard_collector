@@ -1,6 +1,9 @@
 import json
+import csv
 import os
+import pandas as pd
 from datetime import datetime, timedelta
+from django.db import IntegrityError
 from django.conf import settings
 from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -14,7 +17,10 @@ from .models import (User, Role, UserRole, Module,
                      EconomicSector, EconomicSubSector, 
                      AdministrativeUnit, Product)
 from industry.models import IndustryProduct
-from reporting.models import MonthsReportingPeriodConfig, ReportingPeriodPlan
+from reporting.models import (MonthsReportingPeriodConfig, 
+                              ReportingPeriodPlan)
+from automation.models import (WorldCountry, BNRUSDAveragePrice,
+                               ProductMeasurements, RRACustomCode)
 from .utils import (generate_random_code, build_default_password_email_template,
                     bulk_saving_administrative, bulk_saving_zoning, send_mails)
 from reporting.utils import generate_periods
@@ -33,7 +39,7 @@ def login_user(request):
                 messages.info(request, message="This is your first time to login, you need to change password!")
                 return redirect(reverse("system_management:change_password", args=(user.email,)))
             login(request, user)
-            return redirect("dashboard:dashboard") 
+            return redirect("dashboard:welcome") 
         else:
             messages.error(request, message="Invalid credentials. username or password is incorrect!")
     
@@ -618,6 +624,8 @@ def activate_months_reporting_period(request, month_id):
 
         message = f"Reporting period plan has been modified to restart from {start_date} with {months} month(s) range"
         messages.success(request, message=message)
+        redirect_url = reverse('system_management:configurations')
+        return redirect(f"{redirect_url}#reporting-periods")
     except MonthsReportingPeriodConfig.DoesNotExist:
         message = "Unable to activate the reporting period"
         messages.info(request, message=message)
@@ -625,7 +633,7 @@ def activate_months_reporting_period(request, month_id):
         message = f"Unexpected error ocurred: {str(e)}"
         messages.error(request, message=message)
     redirect_url = reverse('system_management:configurations')
-    return redirect(f"{redirect_url}#add-report")
+    return redirect(f"{redirect_url}#reporting-months")
 
 
 @login_required(login_url="system_management:login", redirect_field_name="redirect_to")
@@ -633,11 +641,21 @@ def activate_months_reporting_period(request, month_id):
 def configurations(request):
     reporting_months = MonthsReportingPeriodConfig.objects.all().order_by("id")
     reporting_periods = list(ReportingPeriodPlan.objects.all().order_by("start_date"))
+    usd_rates = list(BNRUSDAveragePrice.objects.all().order_by("-id"))
+    rra_customs = list(RRACustomCode.objects.all().order_by("code"))
+    countries = list(WorldCountry.objects.all().order_by("country_name"))
+    measurments = list(ProductMeasurements.objects.all().order_by("short_abbr"))
+
     if len(reporting_periods) > 12:
         reporting_periods = reporting_periods[-12:]
     context = {
         "reporting_months": reporting_months,
-        "reporting_periods": reporting_periods
+        "reporting_periods": reporting_periods,
+        "usd_rates": usd_rates,
+        "rra_customs": rra_customs,
+        "countries": countries,
+        "measurments": measurments
+
     }
     
     return render(request, "configurations/configurations.html", context)
@@ -648,7 +666,7 @@ def configurations(request):
 def system_settings(request, flag=None):
     if request.user.is_staff and flag:
         if flag == "modules":
-            with open(os.path.join(os.getcwd(), "modules.json")) as f:
+            with open(os.path.join(os.getcwd(), "fixtures", "modules.json")) as f:
                 modules = json.load(f)
                 for module in modules:
                     exiting_module = Module.objects.filter(module_id=module["module_id"]).first()
@@ -662,7 +680,7 @@ def system_settings(request, flag=None):
             messages.success(request, message="Modules have been seeded successfully!")
             return redirect("systems_management:system-settings")
         elif flag == "reporting_months":
-            with open(os.path.join(os.getcwd(), "reporting_months.json")) as f:
+            with open(os.path.join(os.getcwd(), "fixtures", "reporting_months.json")) as f:
                 months = json.load(f)
                 for month in months:
                     MonthsReportingPeriodConfig.objects.create(
@@ -687,6 +705,66 @@ def system_settings(request, flag=None):
             print("\nStarted backgound task\n")
             messages.info(request, message="Industrial zoning background task has started successfully!")
             return redirect("systems_management:system-settings")
+        elif flag == "countries":
+            reader = pd.read_csv(os.path.join(os.getcwd(), "fixtures", "countries_with_code.csv"))
+            reader.columns = ["code", "name"] 
+            for _, row in reader.iterrows():
+                try:
+                    WorldCountry.objects.create(
+                        country_code=row["code"],
+                        country_name=row["name"]
+                    )
+                except IntegrityError as e:
+                    messages.error(request, f"error: {str(e)}")
+                    return redirect("systems_management:system-settings")
+            messages.success(request, message="Countries have been seeded successfully!")
+            return redirect("systems_management:system-settings")
+        elif flag == "product_measurements":
+            reader = pd.read_csv(os.path.join(os.getcwd(), "fixtures", "unit_measurements_rra.csv"))
+            reader.columns = ["short_abbr", "full_abbr", "full_form", "description"]
+            for _, row in reader.iterrows():
+                try:
+                    ProductMeasurements.objects.create(
+                        short_abbr=row["short_abbr"],
+                        long_abbr=row["full_abbr"],
+                        full_form=row["full_form"],
+                        description=row["description"]
+                    )
+                except IntegrityError as e:
+                    messages.error(request, f"error: {str(e)}")
+                    return redirect("systems_management:system-settings")
+            messages.success(request, message="Product measurements have been seeded successfully!")
+            return redirect("systems_management:system-settings")
+        elif flag == "rra_customs":
+            reader = pd.read_csv(os.path.join(os.getcwd(), "fixtures", "rra_customs_codes.csv"))
+            reader.columns = ["code", "name"]
+            for _, row in reader.iterrows():
+                try:
+                    RRACustomCode.objects.create(
+                        code=row["code"],
+                        custom_name=row["name"]
+                    )
+                except IntegrityError as e:
+                    messages.error(request, f"error: {str(e)}")
+                    return redirect("systems_management:system-settings")
+            messages.success(request, message="RRA customs have been seeded successfully!")
+            return redirect("systems_management:system-settings")
+        elif flag == "bnr_usd_rates":
+            reader = pd.read_csv(os.path.join(os.getcwd(), "fixtures", "bnr_usd_rates.csv"))
+            reader = reader[["year", "month", "rate"]]
+            print(reader.head())
+            for _, row in reader.iterrows():
+                try:
+                    BNRUSDAveragePrice.objects.create(
+                        month=row["month"],
+                        year=row["year"],
+                        rate=row["rate"]
+                    )
+                except IntegrityError as e:
+                    messages.error(request, f"error: {str(e)}")
+                    return redirect("systems_management:system-settings")
+            messages.success(request, message="BNR USD Average rates have been seeded successfully!")
+            return redirect("systems_management:system-settings")
     elif not request.user.is_staff and flag:
         messages.error(request, message=f"You have permission for seeding data({flag.lower().replace('_', ' ')}) in the system")
         
@@ -696,6 +774,8 @@ def system_settings(request, flag=None):
     economic_sectors = len(EconomicSector.objects.all())
     economic_sub_sectors = len(EconomicSubSector.objects.all())
     administrative_divisions = len(AdministrativeUnit.objects.all())
+    countries = len(WorldCountry.objects.all())
+    usd_rates = len(BNRUSDAveragePrice.objects.all())
 
     context ={
         "modules": modules,
@@ -703,7 +783,9 @@ def system_settings(request, flag=None):
         "reporting_months": reporting_months,
         "economic_sectors": economic_sectors,
         "economic_sub_sectors": economic_sub_sectors,
-        "administrative_divisions": administrative_divisions
+        "administrative_divisions": administrative_divisions,
+        "countries": countries,
+        "usd_rates": usd_rates
     }
 
     return render(request, "systems_management/system_settings.html", context=context)

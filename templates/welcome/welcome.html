@@ -5,7 +5,7 @@
     <div id="card_body_data">
         <br/><br/>
         {% include 'helpers/message_alert.html' %}
-        <p>{{ greeting }}</p>
+        <p>{{ greeting|safe }}</p>
         <p>{{ today }}</p>
     </div>
 {% endblock %}

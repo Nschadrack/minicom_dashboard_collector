@@ -12,9 +12,12 @@
                     <div>
                         <p><a href="{% url 'system_management:feed-data' 'modules' %}" class="system_settings_button_feed">Feed Modules</a></p><br/>
                         <p><a href="{% url 'system_management:feed-data' 'zoning' %}" class="system_settings_button_feed">Feed Industrial Zonings</a></p><br/>
+                        <p><a href="{% url 'system_management:feed-data' 'product_measurements' %}" class="system_settings_button_feed">Feed Product Measurements</a></p><br/>
                     </div>
                     <div>
-                        <p><a href="" class="system_settings_button_feed">Feed Economic Sectors</a></p><br/>
+                        <p><a href="{% url 'system_management:feed-data' 'countries' %}" class="system_settings_button_feed">Feed Countries</a></p><br/>
+                        <p><a href="{% url 'system_management:feed-data' 'rra_customs' %}" class="system_settings_button_feed">Feed RRA Customs</a></p><br/>
+                        <p><a href="{% url 'system_management:feed-data' 'bnr_usd_rates' %}" class="system_settings_button_feed">Feed BNR USD Monthly Average Rates</a></p><br/>
                         {% if reporting_months|length != 12 %}
                             <p><a href="{% url 'system_management:feed-data' 'reporting_months' %}" class="system_settings_button_feed">Feed Reporting Months</a></p><br/>
                         {% endif %}
@@ -32,6 +35,8 @@
                         <th>ECONOMIC SECTORS</th>
                         <th>ECONOMIC SUB-SECTORS</th>
                         <th>ADMINISTRATIVE DIVISIONS</th>
+                        <th>WORLD COUNTRIES</th>
+                        <th>USD MONTHLY RATES</th>
                     </thead>
                     <tbody>
                         <tr>
@@ -40,6 +45,8 @@
                             <td>{{ economic_sectors }}</td>
                             <td>{{ economic_sub_sectors }}</td>
                             <td>{{ administrative_divisions }}</td>
+                            <td>{{ countries }}</td>
+                            <td>{{ usd_rates }}</td>
                         </tr>
                     </tbody>
                 </table>					

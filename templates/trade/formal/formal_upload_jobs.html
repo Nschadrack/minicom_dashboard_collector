@@ -1,0 +1,53 @@
+{% load custom_filters %}
+<div class="upper-detail-div">
+    {% if request.user|is_user_permitted:"0021,1" %}
+        <a id="view_price_archive_button" href="{% url 'trade:upload-formal-trade' %}">Upload New Formal Trade Data</a>	
+    {% endif %}
+    <div class="current_price_list table-data">     
+        {% if formal_trade_jobs|length > 0 %}	
+            {% comment %} <h4>List of Formal Trade Bulk Upload Jobs</h4>			 {% endcomment %}
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>UPLOAD CREATED BY</th>
+                    <th>UPLOAD STATUS</th>
+                    <th>UPLOADED FILE</th>
+                    <th>UPLOAD CREATED ON</th>
+                    <th>PROCESSING TIME</th>
+                    <th>RECORDS PROCESSED</th>
+                    <th>RECORDS SUCCEEDED</th>
+                    <th>RECORDS FAILED</th>
+                    <th colspan="2">ACTION</th>
+                </thead>
+                <tbody>
+                    {% for record in formal_trade_jobs %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ record.user.first_name|title }} {{ record.user.last_name|title }}</td>
+                            <td>{{ record.status|upper }}</td>
+                            <td>{{ record.uploaded_file }}</td>
+                            <td>{{ record.created_at|date:'d-m-Y H:i' }}</td>
+                            {% if record.processing_minutes %}
+                                <td>{{ record.processing_minutes }} minutes</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                            <td>{{ record.processed_count }}</td>
+                            <td>{{ record.success_count }}</td>
+                            <td>{{ record.failure_count }}</td>
+                            <td><a href="{% url 'automation:job_detail' record.id %}" class="view_button">view details</a></td>
+                            {% if request.user|is_user_permitted:"0020,4" or request.user == record.user %}
+                                {% if record.status|lower == "completed" or record.status|lower == "failed" or record.status|lower == "completed_with_errors" %}
+                                    <td><a class="delete_button" onclick="openModal('{% url 'automation:delete_job' record.id %}', 'delete upload job', ' for {{ record.category }}?')">delete</a></td>
+                                {% endif %}
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'helpers/pup-up-modal.html' %}
+        {% else %}
+            <h4>There are no bulk upload jobs for formal trade</h4>
+        {% endif %}						
+    </div>
+</div>

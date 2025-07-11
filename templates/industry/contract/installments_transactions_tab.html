@@ -2,7 +2,7 @@
 <div id="installments-transactions" class="tab-content">
     <div class="upper-detail-div">
         <div id="car_table_data" class="table-data">
-            <h4 style="border-bottom: 2px double black; text-align:center;">List Of Transactions For The Installments </h4>
+            {% comment %} <h4 style="border-bottom: 2px double black; text-align:center;">List Of Transactions For The Installments </h4> {% endcomment %}
             {% if unpaid_installment and request.user|is_user_permitted:"0014,2" %}
                 <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+add new transaction</button>
             {% endif %}

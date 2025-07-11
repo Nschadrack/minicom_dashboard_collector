@@ -1,0 +1,35 @@
+{% extends "base_layout.html" %}
+{% load humanize %}
+{% load custom_filters %}
+{% block main_data_load %}
+    <br/>
+    <!-- Tabs Navigation -->
+    <div id="tabs-container">
+        <ul class="tabs">
+            <li class="tab-link" data-tab="formal-import" id="tab-formal-import">Formal Trade Imports</li>
+            <li class="tab-link" data-tab="formal-export" id="tab-formal-export">Formal Trade Exports</li>
+            <li class="tab-link" data-tab="formal-re-export" id="tab-formal-export">Formal Trade Re-Exports</li>
+            <li class="tab-link" data-tab="formal-upload-job" id="tab-formal-upload-job">Formal Trade Bulk Jobs</li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="card_body_data">
+        {% include "helpers/message_alert.html" %}
+        <div id="formal-import" class="tab-content active">
+           {% include 'trade/formal/import.html' %}
+        </div>
+
+        <div id="formal-export" class="tab-content">
+            {% include 'trade/formal/export.html' %}
+        </div>
+
+        <div id="formal-re-export" class="tab-content">
+            {% include 'trade/formal/re_export.html' %}
+        </div>
+
+        <div id="formal-upload-job" class="tab-content">
+            {% include 'trade/formal/formal_upload_jobs.html' %}
+        </div>
+    </div>
+{% endblock %}

@@ -278,17 +278,17 @@ body{
 	height: 100%;
 	background-color: var(--table_tr_background_color);
 	border: none;
+	padding-top: 4px;
 }
 #main_load_header button img{
-	width: 2rem;
-	height: 2.1rem;
+	width: 1.8rem;
+	height: 1.3rem;
 }
 #main_load_header p{
 	text-align: center;
 	font-size: 1rem;
 	font-weight: bold;
 	font-style: italic;
-	border: 1px double var(--darkBlue);
 	padding: 3px 10px;
 	margin-left: 10px;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -386,38 +386,40 @@ body{
 /* styling the tabs */
 /* Tabs Styling */
 #tabs-container {
-    margin-top: 23px;
+    margin-top: 20px;
+	border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 1.1rem;
 }
 
 .tabs {
-    display: flex;
-    list-style-type: none;
+	display: flex;
+    flex-wrap: wrap;
     padding: 0;
     margin: 0;
-    border-bottom: 1px solid #ccc;
-	float: left;
+    list-style: none;
 }
 
 .tabs .tab-link {
-    padding: 5px;
+	padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4a5568;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
     cursor: pointer;
-    /* border: 1px solid #ccc; */
-    border-bottom: none;
-    margin-right: 0;
-    background-color: var(--table_header_background_color);
-    border-radius: 0;
-	font-size: 1rem;
-	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    margin-bottom: -1px;
 }
 
 .tabs .tab-link.active {
-    background-color: var(--darkBlue);
-	color: white;
+	color: #2b6cb0;
+	border-color: #2b6cb0;
 }
 
 .tab-content {
     display: none;
-    padding: 5px 0;
+    padding: 0;
     border-top: none;
 	border-radius: 5px;
 	height: auto;
@@ -601,36 +603,30 @@ body{
 	text-align: center;
 	
 }
-/* styling new form car */
+/* 
 .car_new_form_div, .car_new_form_div_edit{
-	height: 100%;
+	height: auto;
 	width: 100%;
-	margin: auto;
-	overflow: auto;
+	margin: 2.5rem auto;
 	background-color: var(--aside_fg);
 	display: none;
-	justify-content: center; /* Center horizontally */
-	align-items: center;     /* Center vertically */
+	justify-content: center;
+	align-items: center;
 }
 .car_new_form_div_edit{
 	display: block;
 }
 
 .car_new_form_div div, .car_new_form_div_edit div{
-	width:100%;
-	height: auto;
-	overflow: auto;
 	margin-bottom: 2px;
 	border-radius: 3px;
 	padding: 10px;
 	float: right;
 }
+
 .car_new_form{
-	width: 80%;
 	height: auto;
 	overflow: auto;
-	margin: 5px 10%;
-	padding: 10px;
 	float: left;
 	border-radius: 10px;
 }
@@ -640,14 +636,14 @@ body{
 	outline: none;
 	border: none;
 	border-bottom: 1px solid var(--scroll_bar_color);
-	width: 100%;
+	width: 75%;
 	font-size: 1rem;
 	color: #888;
 	margin-top: 2px;
 }
 
 .car_new_form textarea{
-	width: 100%;
+	width: 75%;
 	height: 150px;
 	color: #888;
 	font-size: 1rem;
@@ -710,6 +706,159 @@ body{
 	text-align: center;
 	margin-right: 10px;
 	cursor: pointer;
+} */
+
+/* Updated styling for new form car */
+.car_new_form_div, .car_new_form_div_edit {
+    height: auto;
+    width: 100%;
+    margin: 2.5rem auto;
+    background-color: var(--aside_fg);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+.car_new_form_div_edit {
+    display: block;
+}
+
+.car_new_form {
+    height: auto;
+    width: 40%; /* Full width */
+    padding: 15px;
+	margin-left: auto;
+	margin-right: auto;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- For Tablets and Small Desktops (768px and wider) --- */
+@media (min-width: 768px) {
+  .car_new_form {
+      width: 100%; /* Full width */
+  }
+
+  .car_new_form legend {
+    font-size: 1.4rem; /* Make the title slightly larger */
+  }
+}
+
+/* --- For Large Desktops (1024px and wider) --- */
+@media (min-width: 1024px) {
+  .car_new_form {
+	  max-width: 50%; /* Full width */
+  }
+  
+}
+
+.car_new_form fieldset {
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 10px;
+}
+
+.car_new_form .form-group {
+    margin-bottom: 0px;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.car_new_form select, 
+.car_new_form input,
+.car_new_form textarea {
+    border-radius: 3px;
+    padding: 8px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--scroll_bar_color);
+    width: 100%; /* Full width */
+    font-size: 1rem;
+    color: #888;
+    margin-top: 5px;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.car_new_form textarea {
+    height: 150px;
+    border: 2px solid var(--scroll_bar_color);
+}
+
+.car_new_form legend {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    border-bottom: 2px double var(--darkBlue);
+    padding-bottom: 8px;
+}
+
+.car_new_form label {
+    font-weight: normal;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 3px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Button container */
+.car_new_form .form-group:last-child {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+
+.car_new_form input[type="submit"],
+.car_new_form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.car_new_form input[type="submit"] {
+    background-color: var(--darkBlue);
+    color: var(--aside_fg);
+}
+
+.car_new_form button {
+    background-color: var(--peru_car);
+    color: var(--aside_fg);
+}
+
+/* File upload styling */
+.upload-container {
+    border: 1px dashed #ccc;
+    padding: 15px;
+    text-align: center;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+
+.upload-title {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.file-name {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+}
+
+small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.85rem;
 }
 
 /*  styling car services page */
@@ -857,8 +1006,8 @@ body{
 	background-color: var(--darkBlue);
 	color: var(--aside_fg);
 	margin-right: 5px;
-	margin-top: 0px;
-	margin-bottom: 0;
+	margin-top: -5px;
+	margin-bottom: 5px;
 }
 #price_archive_list{
 	width: 100%;

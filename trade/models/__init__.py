@@ -1,1 +1,1 @@
-from .trade import ICBTRecord
+from .trade import ICBTRecord, FormalTrade

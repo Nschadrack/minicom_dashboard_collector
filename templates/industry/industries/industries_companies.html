@@ -25,7 +25,7 @@
                 {% endif %}
                 <div class="current_price_list table-data">     
                     {% if companies_industries_profiles|length > 0 %}	
-                        <h4>List of Industries Profiles</h4>			
+                        {% comment %} <h4>List of Industries Profiles</h4>			 {% endcomment %}
                         <table>
                             <thead>
                                 <th>#</th>
@@ -89,7 +89,7 @@
                     <button id="view_price_archive_button" onclick='showAssignmentTable("block")'>+ add industry out of industrial zone</button>		
                 {% endif %}
                 <div  class="current_price_list table-data">
-                    <h4>List of Industries In Parks, Zones and Other</h4>		
+                    {% comment %} <h4>List of Industries In Parks, Zones and Other</h4>		 {% endcomment %}
                     <table>
                         <thead>
                             <th>#</th>

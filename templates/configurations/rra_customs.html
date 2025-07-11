@@ -1,0 +1,18 @@
+{% load custom_filters %}
+{% comment %} <h4>RRA Custom Offices</h4>			 {% endcomment %}
+<table class="table-data">
+    <thead>
+        <th>#</th>
+        <th>Custom Code</th>
+        <th>Custom Office Name</th>
+    </thead>
+    <tbody>
+        {% for rra_custom in rra_customs %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ rra_custom.code|upper }}</td>
+                <td>{{ rra_custom.custom_name|title }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

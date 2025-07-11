@@ -1,7 +1,7 @@
 import csv
 import os
 from decimal import Decimal
-from django.http import HttpRequest
+import pandas as pd
 from django.conf import settings
 
 from .models import (IndustrialZone, PartitionedPlot, 
@@ -30,14 +30,13 @@ def get_base_domain(request=None, return_domain_name=False):
     return base_domain
 
 def load_countries():
-    DATA_PATH_FILE = os.path.join(os.getcwd(), "all_countries.csv")
-    with open(DATA_PATH_FILE, mode='r', newline='', encoding='utf-8') as file_reader:
-        csv_reader = csv.reader(file_reader)
-        countries = []
-        for row in csv_reader:
-            countries.append(row[0])
-    return countries[1:]
-
+    DATA_PATH_FILE = os.path.join(os.getcwd(), "fixtures", "countries_with_code.csv")
+    reader = pd.read_csv(DATA_PATH_FILE)
+    reader.columns = ["code", "name"] 
+    countries = []      
+    for _, row in reader.iterrows():
+        countries.append(row["name"])
+    return countries
 
 def get_zones_and_partitioned_plots_in_park(park_id=None):
     """

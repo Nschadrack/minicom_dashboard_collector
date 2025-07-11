@@ -1,0 +1,79 @@
+{% load custom_filters %}
+<div class="upper-detail-div">
+    <div class="current_price_list table-data">     
+        {% if re_exports_formal|length > 0 %}	
+            {% comment %} <h4>List of Re-Exports of Formal Trade</h4>			 {% endcomment %}
+            <table>
+                <thead>
+                    <th>#</th>
+                    <th>DATE</th>
+                    <th>MONTH</th>
+                    <th>TIN</th>
+                    <th>NAME OF TAXPAYER</th>
+                    <th>NAME OF SUPPLIER</th>
+                    <th>CUSTOMS OFFICE CODE</th>
+                    <th>CUSTOMS OFFICE NAME</th>
+                    <th>CUSTOMS BORDER POST CODE</th>
+                    <th>CUSTOMS BORDER POST NAME</th>
+                    <th>REGIME</th>
+                    <th>NBR SAD</th> 
+                    <th>HS CODE</th>
+                    <th>HS 2</th>
+                    <th>HS 4</th>
+                    <th>HS 6</th>
+                    <th>DESCRIPTION OF GOODS</th>
+                    <th>LOCAL DESCRIPTION OF GOODS(MARK)</th>
+                    <th>ITEM NBR</th>
+                    <th>STAT UNIT</th>
+                    <th>STAT UNIT(RRA)</th>
+                    <th>QUANTITY</th>
+                    <th>NET WEIGHT</th>
+                    <th>FOB(RWF)</th>
+                    <th>FOB(USD)</th>
+                    <th>ORIGINE CODE</th>
+                    <th>ORIGINE NAME</th>
+                    <th>DESTINATION CODE</th>
+                    <th>DESTINATION NAME</th>     
+                </thead>
+                <tbody>
+                    {% for record in re_exports_formal %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ record.rra_recorded_date|date:'d-m-Y' }}</td>
+                            <td>{{ record.month|title }}</td>
+                            <td>{% if record.tin_number  %}{{ record.tin_number }} {% endif %}</td>
+                            <td>{{ record.tax_payer_name|title }}</td>
+                            <td>{{ record.supplier_name|title }}</td>
+                            <td>{{ record.rra_custom_office_code|upper }}</td>
+                            <td>{{ record.rra_custom_office_name|upper }}</td>
+                            <td>{{ record.custom_border_post_code|upper }}</td>
+                            <td>{{ record.custom_border_post_name|upper }}</td>
+                            <td>{{ record.regime|upper }}</td>
+                            <td>{{ record.nbr_sad }}</td>
+                            <td>{{ record.hs_code }}</td>
+                            <td>{{ record.hs2_code }}</td>
+                            <td>{{ record.hs4_code }}</td>
+                            <td>{{ record.hs6_code }}</td>
+                            <td>{{ record.product_description|title }}</td>
+                            <td>{{ record.local_product_description|title }}</td>
+                            <td>{{ record.item_nbr }}</td>
+                            <td>{{ record.stat_unit_common|upper }}</td>
+                            <td>{{ record.stat_unit_rra|upper }}</td>
+                            <td>{{ record.quantity|format_number }}</td>
+                            <td>{{ record.net_weight|format_number }}</td>
+                            <td>{{ record.fob|format_number }}</td>
+                            <td>{{ record.fob_usd|format_number }}</td>
+                            <td>{{ record.origin_country_code|upper }}</td>
+                            <td>{{ record.origin_country_name|upper }}</td>
+                            <td>{{ record.destination_country_code|upper }}</td>
+                            <td>{{ record.destination_country_name|upper }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <h4>There are no re-export formal trade records</h4>
+        {% endif %}						
+    </div>
+    {% include 'helpers/pagination/re_exports_formal.html' %}
+</div>
